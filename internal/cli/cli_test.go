@@ -90,6 +90,9 @@ func TestVersion(t *testing.T) {
 		{"tagged", &debug.BuildInfo{Main: debug.Module{Version: "v0.1.0"}}, true, "v0.1.0"},
 		{"empty version", &debug.BuildInfo{}, true, "(devel)"},
 		{"no build info", nil, false, "(devel)"},
+		{"devel", &debug.BuildInfo{Main: debug.Module{Version: "(devel)"}}, true, "(devel)"},
+		{"pseudo-version", &debug.BuildInfo{Main: debug.Module{Version: "v0.0.0-20261011232240-19408631a724+dirty"}}, true, "(devel)"},
+		{"tag with dirty", &debug.BuildInfo{Main: debug.Module{Version: "v0.1.0+dirty"}}, true, "v0.1.0+dirty"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
