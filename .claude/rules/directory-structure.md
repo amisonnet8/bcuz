@@ -47,7 +47,6 @@
 
 - **`cmd/bcuz/`**: R0 で作る。`main.go`は引数を`internal/cli`に渡すだけにする
 - **`internal/`**: Goの仕組みとして、モジュールの外からimportできない。外へ公開するパッケージは`internal/`に置かない
-- **`internal/doc.go`**: `package`宣言だけのプレースホルダー。Goのパッケージが1つも無いと`qsoku vet`・`lint`・`unit`が失敗するので、空のモジュールでも`qsoku check`が通るように置いてある。**R0 で実際のパッケージを足したら消す**
 - **`go.sum`**: コミットする（改ざん検知・再現可能なビルドのため）
 - **`.mtqg/`**: コミットされる。中のファイルは直接編集せず、すべて`mtqg`のコマンド経由で書く（`.claude/rules/mtqg-usage.md`）。`.mtqg/.local/`はコミットされない
 - **`.mcp.json`**: `mtqg mcp`と`srwr mcp`（MCPサーバー）の配線。`mtqg init --agent claude-code`・`srwr init`が書くものと同じ
