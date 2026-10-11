@@ -1,0 +1,3 @@
+{"id":"203cd380162b4c2e87cf580d7f4af291","op":"create","type":"rule","text":"mtqgには日本語で登録する","v":1,"ts":"2026-09-30T10:20:45Z","author":{"kind":"human","name":"amisonnet8"}}
+{"id":"e18903c15c3044f3bb7e4398aa82a3b6","op":"create","type":"rule","text":"設計や実装に関わる質問は、聞き方（チャットでの一言、AskUserQuestion、プランモード中の確認など）を問わず、必ずmtqg qで記録する。","v":1,"ts":"2026-09-30T10:20:45Z","author":{"kind":"human","name":"amisonnet8"}}
+{"id":"8a6af0ba38044708845cd444fb925daf","op":"create","type":"rule","text":"todoは着手前に立てすぐdoneにする、区切りごとにその場でmemoを書く、人間に委ねる判断はq addでも開けておく——mtqg contextだけでこのリポジトリの現状・今後が分かる状態を保つ。詳細は.claude/rules/mtqg-usage.md「こまめに記録する」。","v":1,"ts":"2026-09-30T10:20:45Z","author":{"kind":"human","name":"amisonnet8"}}
