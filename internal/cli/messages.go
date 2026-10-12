@@ -20,6 +20,11 @@ const (
 	msgReasonEmpty    = "bcuz: reason is empty"
 	msgMissingCommand = "bcuz: missing command after reason"
 	fmtUnknownOption  = "bcuz: unknown option: %s (use '--' before a reason starting with '-')"
+
+	msgCreated        = "bcuz: created .bcuz/"
+	fmtCreatedShadows = "bcuz: created .bcuz/ (shadows %s)"
+	msgAlreadyExists  = "bcuz: .bcuz/ already exists"
+	fmtCannotCreate   = "bcuz: cannot create .bcuz/: %s"
 )
 
 // fmtNotImplemented is a stand-in for the features that later stages (R1 to

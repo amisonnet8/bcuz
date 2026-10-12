@@ -3,6 +3,8 @@ package cli
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"runtime/debug"
 	"strings"
 	"testing"
@@ -32,7 +34,6 @@ func TestMain_options(t *testing.T) {
 		{"--version", []string{"--version"}, 0, "bcuz v9.9.9\n", ""},
 		{"-H", []string{"-H"}, 125, "", notImpl("history")},
 		{"--history", []string{"--history"}, 125, "", notImpl("history")},
-		{"--init", []string{"--init"}, 125, "", notImpl("init")},
 
 		{"unknown option", []string{"-x"}, 125, "", fmt.Sprintf(fmtUnknownOption, "-x") + "\n"},
 		{"unknown long option", []string{"--foo", "ls"}, 125, "", fmt.Sprintf(fmtUnknownOption, "--foo") + "\n"},
@@ -75,6 +76,77 @@ func TestMain_options(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestInit(t *testing.T) {
+	// Each case works in a new directory tree: tmp/work/sub.
+	setup := func(t *testing.T) (work, sub string) {
+		t.Helper()
+		work = filepath.Join(t.TempDir(), "work")
+		sub = filepath.Join(work, "sub")
+		if err := os.MkdirAll(sub, 0o750); err != nil {
+			t.Fatal(err)
+		}
+		return work, sub
+	}
+
+	t.Run("created, then already exists", func(t *testing.T) {
+		work, _ := setup(t)
+		t.Chdir(work)
+
+		code, stdout, stderr := run(t, "--init")
+		if code != 0 || stdout != msgCreated+"\n" || stderr != "" {
+			t.Errorf("first: code %d, stdout %q, stderr %q", code, stdout, stderr)
+		}
+		fi, err := os.Stat(filepath.Join(work, ".bcuz", "history.jsonl"))
+		if err != nil || fi.Size() != 0 {
+			t.Errorf("history.jsonl: %v, %v; want an empty file", fi, err)
+		}
+
+		code, stdout, stderr = run(t, "--init")
+		if code != 0 || stdout != msgAlreadyExists+"\n" || stderr != "" {
+			t.Errorf("second: code %d, stdout %q, stderr %q", code, stdout, stderr)
+		}
+	})
+
+	t.Run("shadows the .bcuz/ of a parent", func(t *testing.T) {
+		work, sub := setup(t)
+		if err := os.Mkdir(filepath.Join(work, ".bcuz"), 0o750); err != nil {
+			t.Fatal(err)
+		}
+		t.Chdir(sub)
+		wd, err := os.Getwd()
+		if err != nil {
+			t.Fatal(err)
+		}
+		parent := filepath.Join(filepath.Dir(wd), ".bcuz") + string(filepath.Separator)
+
+		code, stdout, stderr := run(t, "--init")
+		want := fmt.Sprintf(fmtCreatedShadows, parent) + "\n"
+		if code != 0 || stdout != want || stderr != "" {
+			t.Errorf("code %d, stdout %q (want %q), stderr %q", code, stdout, want, stderr)
+		}
+		if _, err := os.Stat(filepath.Join(sub, ".bcuz", "history.jsonl")); err != nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("cannot create", func(t *testing.T) {
+		work, _ := setup(t)
+		if err := os.WriteFile(filepath.Join(work, ".bcuz"), nil, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		t.Chdir(work)
+
+		code, stdout, stderr := run(t, "--init")
+		if code != 125 || stdout != "" {
+			t.Errorf("code %d, stdout %q", code, stdout)
+		}
+		prefix := strings.TrimSuffix(fmtCannotCreate, "%s")
+		if !strings.HasPrefix(stderr, prefix) || !strings.HasSuffix(stderr, "\n") || strings.Count(stderr, "\n") != 1 {
+			t.Errorf("stderr = %q, want one line starting with %q", stderr, prefix)
+		}
+	})
 }
 
 func TestVersion(t *testing.T) {

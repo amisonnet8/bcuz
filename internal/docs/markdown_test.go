@@ -46,6 +46,28 @@ func fencedBlockAfter(t *testing.T, md, heading string) string {
 	return ""
 }
 
+// fencedBlocks returns the content of every fenced code block whose info
+// string is lang (for example "json"), in order.
+func fencedBlocks(md, lang string) []string {
+	var blocks []string
+	var cur []string
+	in, match := false, false
+	for _, line := range strings.Split(md, "\n") {
+		switch {
+		case !in && strings.HasPrefix(line, "```"):
+			in, match, cur = true, strings.TrimPrefix(line, "```") == lang, nil
+		case in && strings.HasPrefix(line, "```"):
+			if match {
+				blocks = append(blocks, strings.Join(cur, "\n")+"\n")
+			}
+			in = false
+		case in:
+			cur = append(cur, line)
+		}
+	}
+	return blocks
+}
+
 // stripCode removes fenced code blocks and inline code, so that what looks
 // like a link inside code is not checked.
 func stripCode(md string) string {

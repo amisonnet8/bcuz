@@ -4,7 +4,11 @@ package cli
 import (
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
+
+	"github.com/amisonnet8/bcuz/internal/record"
 )
 
 // Main runs bcuz with the arguments after the program name and returns the
@@ -27,7 +31,7 @@ func Main(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	case "-H", "--history":
 		return fail(stderr, fmt.Sprintf(fmtNotImplemented, "history"))
 	case "--init":
-		return fail(stderr, fmt.Sprintf(fmtNotImplemented, "init"))
+		return runInit(stdout, stderr)
 	case "--":
 		args = args[1:]
 		if len(args) == 0 {
@@ -47,6 +51,28 @@ func Main(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return fail(stderr, msgMissingCommand)
 	}
 	return fail(stderr, fmt.Sprintf(fmtNotImplemented, "run"))
+}
+
+// runInit makes .bcuz/ in the current directory (--init).
+func runInit(stdout, stderr io.Writer) int {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fail(stderr, fmt.Sprintf(fmtCannotCreate, err))
+	}
+	res, err := record.Init(cwd)
+	if err != nil {
+		return fail(stderr, fmt.Sprintf(fmtCannotCreate, err))
+	}
+	switch res.Status {
+	case record.CreatedShadowing:
+		shadowed := filepath.Join(res.Shadowed, record.DirName) + string(filepath.Separator)
+		write(stdout, fmt.Sprintf(fmtCreatedShadows, shadowed)+"\n")
+	case record.AlreadyExists:
+		write(stdout, msgAlreadyExists+"\n")
+	default:
+		write(stdout, msgCreated+"\n")
+	}
+	return 0
 }
 
 // fail writes one error line and returns the exit code of bcuz's own errors.
