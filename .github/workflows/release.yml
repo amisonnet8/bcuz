@@ -2,12 +2,24 @@ name: Release
 
 # A tag v* makes a draft release with the binaries. A person looks at the
 # draft and publishes it (.claude/rules/distribution.md).
+#
+# If the release of the tag already exists (made by hand on the Releases page),
+# the binaries are attached to it. The workflow can also be run by hand, for a
+# tag that already exists: Actions > Release > Run workflow, and give the tag.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'An existing tag, such as v0.1.0'
+        required: true
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   draft:
@@ -15,6 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ env.TAG }}
           fetch-depth: 0
       - uses: actions/setup-go@v7
         with:
@@ -25,9 +38,16 @@ jobs:
         run: qsoku unit
       - name: Build the binaries
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ env.TAG }}
         run: qsoku dist
-      - name: Make the draft release
+      - name: List what was built
+        run: ls -l dist
+      - name: Make the draft release, or attach to the existing one
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --draft --verify-tag --generate-notes dist/*
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" --draft --verify-tag --generate-notes dist/*
+          fi
