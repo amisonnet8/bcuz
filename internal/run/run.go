@@ -1,6 +1,6 @@
 // Package run starts a command and waits for it. It does not know about
 // records or messages: it returns how the command ended, when it started and
-// how long it ran (docs/reference/cli.md, "実行").
+// how long it ran (docs/reference/cli.md, "Running a command").
 package run
 
 import (

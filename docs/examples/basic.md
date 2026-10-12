@@ -1,6 +1,8 @@
-# 基本
+*[日本語](basic_ja.md) | **English***
 
-## 初めに `.bcuz/` を作る
+# Basics
+
+## Create `.bcuz/` first
 
 ```
 $ cd /home/me/work
@@ -10,31 +12,31 @@ $ bcuz --init
 bcuz: .bcuz/ already exists
 ```
 
-## 実行する
+## Run a command
 
-コマンドの出力はそのまま出る。bcuz は何も足さない。
+The output of the command appears as it is. bcuz adds nothing.
 
 ```
-$ bcuz "xxテスト実施" make test
+$ bcuz "run the tests" make test
 go test ./...
 ok      example.com/work/xx    8.102s
 $ echo $?
 0
 ```
 
-`.bcuz/history.jsonl` に1行足される。
+One line is added to `.bcuz/history.jsonl`.
 
 ```json
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"xxテスト実施","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"run the tests","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
 ```
 
-## サブディレクトリから打つ
+## From a subdirectory
 
-上の `.bcuz/` に記録され、`dir` に場所が残る。
+It is recorded in the `.bcuz/` above, and `dir` keeps the place.
 
 ```
 $ cd backend
-$ bcuz "lint の指摘を確認" golangci-lint run
+$ bcuz "check the lint findings" golangci-lint run
 handler.go:12:2: ineffectual assignment to err (ineffassign)
 1 issues:
 * ineffassign: 1
@@ -43,13 +45,13 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:40:03.020+09:00","why":"lint の指摘を確認","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
+{"v":1,"ts":"2026-10-12T06:40:03.020+09:00","why":"check the lint findings","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
 ```
 
-## Ctrl-C で止める
+## Stop with Ctrl-C
 
 ```
-$ bcuz "ログを眺める" tail -f app.log
+$ bcuz "watch the log" tail -f app.log
 ...
 ^C
 $ echo $?
@@ -57,23 +59,23 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:41:30.500+09:00","why":"ログを眺める","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
+{"v":1,"ts":"2026-10-12T06:41:30.500+09:00","why":"watch the log","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
 ```
 
-## 履歴を見る
+## See the history
 
-新しい順。
+Newest first.
 
 ```
 $ bcuz -H
-2026-10-12 06:41:30  130   1m05s  backend  ログを眺める  $ tail -f app.log
-2026-10-12 06:40:03    1    2.4s  backend  lint の指摘を確認  $ golangci-lint run
-2026-10-12 06:35:12    0    8.3s  .  xxテスト実施  $ make test
+2026-10-12 06:41:30  130   1m05s  backend  watch the log  $ tail -f app.log
+2026-10-12 06:40:03    1    2.4s  backend  check the lint findings  $ golangci-lint run
+2026-10-12 06:35:12    0    8.3s  .  run the tests  $ make test
 ```
 
-`-H` と `--history` は同じ。どのサブディレクトリから打っても、同じ履歴が出る。
+`-H` and `--history` are the same. The same history appears from any subdirectory.
 
-## 使い方を見る
+## See the usage
 
 ```
 $ bcuz -h
@@ -89,10 +91,10 @@ usage:
 dates are YYYY-MM-DD. records go to the nearest .bcuz/history.jsonl.
 ```
 
-## 理由の後ろのオプションは、コマンドに渡る
+## Options after the reason go to the command
 
 ```
-$ bcuz "サイズを見る" ls -h
+$ bcuz "check the size" ls -h
 ```
 
-`-h` は bcuz ではなく `ls` に渡る（bcuz がオプションとして読むのは第1引数だけ）。
+`-h` goes to `ls`, not to bcuz (bcuz reads only the first argument as an option).

@@ -1,19 +1,21 @@
-# 失敗と誤り
+*[日本語](errors_ja.md) | **English***
 
-## `.bcuz/` が無い
+# Failures and mistakes
 
-コマンドは実行される。終わったあとに警告が出る。終了コードはコマンドのもの。
+## No `.bcuz/`
+
+The command runs. A warning appears after it ends. The exit code is the command's.
 
 ```
 $ cd /tmp/scratch
-$ bcuz "試しに動かす" echo hello
+$ bcuz "try it out" echo hello
 hello
 bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')
 $ echo $?
 0
 ```
 
-履歴も見られない。
+The history cannot be seen either.
 
 ```
 $ bcuz -H
@@ -22,37 +24,37 @@ $ echo $?
 125
 ```
 
-## コマンドが見つからない（記録する）
+## Command not found (recorded)
 
 ```
 $ cd /home/me/work
-$ bcuz "ビルド" mkae build
+$ bcuz "build" mkae build
 bcuz: command not found: mkae
 $ echo $?
 127
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:45:00.000+09:00","why":"ビルド","cmd":["mkae","build"],"dir":".","exit":127,"ms":0}
+{"v":1,"ts":"2026-10-12T06:45:00.000+09:00","why":"build","cmd":["mkae","build"],"dir":".","exit":127,"ms":0}
 ```
 
-## 起動できない（記録する）
+## Cannot be started (recorded)
 
 ```
-$ bcuz "スクリプトを試す" ./build.sh
+$ bcuz "try the script" ./build.sh
 bcuz: cannot run ./build.sh: permission denied
 $ echo $?
 126
 ```
 
-## 引数の誤り（記録しない）
+## Wrong arguments (not recorded)
 
 ```
 $ bcuz
 bcuz: missing reason and command (see 'bcuz -h')
 $ echo $?
 125
-$ bcuz "テスト"
+$ bcuz "tests"
 bcuz: missing command after reason
 $ bcuz "  " make test
 bcuz: reason is empty
@@ -60,17 +62,17 @@ $ bcuz -x make test
 bcuz: unknown option: -x (use '--' before a reason starting with '-')
 ```
 
-理由を `-` で始めたいときは `--` を付ける。
+To start a reason with `-`, put `--` before it.
 
 ```
-$ bcuz -- "-v を付けて再確認" go test -v ./...
+$ bcuz -- "-v this time" go test -v ./...
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T07:00:00.000+09:00","why":"-v を付けて再確認","cmd":["go","test","-v","./..."],"dir":".","exit":0,"ms":9100}
+{"v":1,"ts":"2026-10-12T07:00:00.000+09:00","why":"-v this time","cmd":["go","test","-v","./..."],"dir":".","exit":0,"ms":9100}
 ```
 
-## 親にも `.bcuz/` があるところで `--init`
+## `--init` where a parent has `.bcuz/` too
 
 ```
 $ cd /home/me/work/frontend
@@ -78,4 +80,4 @@ $ bcuz --init
 bcuz: created .bcuz/ (shadows /home/me/work/.bcuz/)
 ```
 
-以後、`frontend/` より下で打ったものは `frontend/.bcuz/` に記録される。
+From then on, runs below `frontend/` are recorded in `frontend/.bcuz/`.

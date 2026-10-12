@@ -1,76 +1,78 @@
-# 判断とその理由
+*[日本語](decisions_ja.md) | **English***
 
-## 仕様
+# Decisions and their reasons
 
-### 理由を先頭、コマンドを後ろに置く
-`bcuz "理由" make test`。コマンドの引数は数も形も自由なので、後ろに置いて「残りは全部コマンド」とするのが、いちばん曖昧さが無い。sudo と同じく、既存のコマンドの前に足すだけで使える。
+## Specification
 
-### オプションは第1引数だけ読む
-コマンドの引数（`ls -h` の `-h` など）を bcuz が横取りしないため。理由が `-` で始まるときだけ `--` を使う。
+### The reason comes first, the command after it
+`bcuz "reason" make test`. The arguments of a command may be any number and any shape, so putting the command after the reason and saying "everything else is the command" is the least ambiguous. Like sudo, it is used by adding it in front of an existing command.
 
-### `-h` は help、`-H` は history
-`-h` はほとんどのツールで help。履歴に使うと、help のつもりで打った人に履歴が出る。
+### Only the first argument is read as an option
+So that bcuz does not take the arguments of the command (such as the `-h` of `ls -h`). `--` is needed only when the reason starts with `-`.
 
-### 記録先は、親へたどって最初の `.bcuz/`
-プロジェクトごとに履歴が分かれ、サブディレクトリから打っても同じ履歴に入る。git・qsoku などと同じ探し方で、覚えることが少ない。どこで打ったかは `dir` に残す。
+### `-h` is help, `-H` is history
+`-h` is help in almost every tool. If it showed the history, a person who typed it expecting help would get the history.
 
-### `.bcuz/` が無くても実行する（警告だけ）
-ラッパーが作業を止めると、付けるのをやめられてしまう。記録漏れは、標準エラー出力の警告で気づける（AI エージェントも読める）。
+### The place to record is the first `.bcuz/` found going up
+The history is separate for each project, and the same history is used from a subdirectory. The lookup is the same as in git, qsoku and others, so there is little to remember. Where the command was typed is kept in `dir`.
 
-### `--init` を用意する
-`mkdir .bcuz` でも動くが、何を作ればよいかを利用者が知らなくて済むようにする。`.gitignore` は作らない（入れるかは、プロジェクトによる）。
+### Run even without `.bcuz/` (only a warning)
+If a wrapper stops the work, people stop using it. A missing record is noticed through the warning on standard error (AI agents can read it too).
 
-### 終了コードは、コマンドのものをそのまま返す
-`bcuz` を付けても、スクリプトや CI の判定が変わらないようにする。bcuz 自身のエラーは、`env`・`timeout` などの慣習（125・126・127）に合わせ、コマンドの終了コードとぶつかりにくくする。
+### Provide `--init`
+`mkdir .bcuz` works too, but the user should not have to know what to create. `.gitignore` is not created (whether to include it depends on the project).
 
-### 記録に失敗しても、終了コードは変えない
-記録は副産物。ディスクが一杯などで記録できなくても、コマンドの結果を変えない。
+### The exit code is the command's, as it is
+So that adding `bcuz` does not change what scripts and CI decide. bcuz's own errors follow the conventions of `env`, `timeout` and others (125, 126, 127), so that they are unlikely to collide with the exit codes of commands.
 
-### 126・127 も記録する、125 は記録しない
-126・127 は「理由を付けて実行しようとした」ことなので残す価値がある。125 は bcuz の使い方の誤りで、実行の意図がはっきりしない。
+### A failure to record does not change the exit code
+Recording is a by-product. Even if recording is impossible (the disk is full, for example), the result of the command is not changed.
 
-### シグナル
-端末の Ctrl-C は、フォアグラウンドのプロセスグループ全体（bcuz とコマンド）に届く。bcuz がこれで先に終わると、記録が残らない。そこで bcuz は SIGINT・SIGQUIT では終わらず、コマンドの終わりを待つ。転送はしない（二重に届くため）。SIGTERM・SIGHUP は、bcuz だけに送られることが多いので、コマンドに転送する。
-シグナルで終わったコマンドは、シェルと同じく 128＋番号を返す。bcuz が同じシグナルで自分を終わらせ直すことはしない（単純さを優先）。
+### 126 and 127 are recorded, 125 is not
+126 and 127 mean "an attempt to run with a reason was made", which is worth keeping. 125 is a mistake in using bcuz, and the intention to run is not clear.
 
-### 標準入出力は、パイプを挟まずに渡す
-TTY を前提にするコマンド（色付きの出力、対話、`vim` など）が、bcuz なしと同じに動くようにする。
+### Signals
+The Ctrl-C of a terminal reaches the whole foreground process group (bcuz and the command). If bcuz ended first on it, the record would not be left. So bcuz does not end on SIGINT or SIGQUIT, and waits for the command to end. It does not forward them (they would arrive twice). SIGTERM and SIGHUP are often sent to bcuz only, so they are forwarded to the command.
+A command ended by a signal returns 128 + number, as a shell does. bcuz does not kill itself again with the same signal (simplicity first).
 
-## 記録の形式
+### Standard input and output are passed without a pipe
+So that commands that assume a TTY (colored output, interaction, `vim` and so on) work the same as without bcuz.
 
-### JSONL、1実行1行、終わってから書く
-追記だけで壊れにくく、`grep`・`jq` でそのまま読める。終わってから書くので、1行に終了コードと時間までそろう。
+## Record format
 
-### `cmd` は配列
-空白・引用符を含む引数を、崩さずに残すため。表示のときだけ、シェルで打てる形に直す。
+### JSONL, one line per run, written afterwards
+Append only is hard to break, and `grep` and `jq` can read it as it is. It is written after the end, so the exit code and the duration are in the same line.
 
-### `ts` は始めた時刻、タイムゾーン付き
-「いつ打ったか」を残す。終わった時刻は `ts`＋`ms` で分かる。タイムゾーンを付けて、別の環境で読んでも時刻がずれないようにする。
+### `cmd` is an array
+So that arguments with spaces or quotes are kept intact. It is rewritten into a form a shell can run only when displayed.
 
-### `ms` を入れる
-1項目で、遅いコマンド（テスト、ビルド）が後から分かる。
+### `ts` is the start time, with the time zone
+It keeps "when it was typed". The end time is known from `ts` + `ms`. The time zone is attached so that the time does not shift when read in another environment.
 
-### `dir` は `.bcuz/` からの相対パス
-絶対パスは、リポジトリの置き場所や利用者の名前を含み、共有したときに邪魔になる。
+### Include `ms`
+With one field, slow commands (tests, builds) can be found afterwards.
 
-### `v` を入れる
-形式を変えたときに、古い記録と見分けるため。
+### `dir` is relative to `.bcuz/`
+An absolute path contains where the repository is and the name of the user, which gets in the way when shared.
 
-## 履歴の表示
+### Include `v`
+To tell records apart from old ones when the format changes.
 
-### 新しい順
-見たいのは、たいてい最近のこと。
+## Displaying the history
 
-### 日付は、見る側のタイムゾーンで比べる
-「今日」と言ったとき、見ている人の今日を指すため。
+### Newest first
+What people want to see is usually what happened recently.
 
-### 色・ページャ・整列は持たない
-最小限にする。`bcuz -H | less` で足りる。
+### Dates are compared in the time zone of the viewer
+So that "today" means the viewer's today.
 
-## 作り
+### No colors, pager or alignment
+To keep it minimal. `bcuz -H | less` is enough.
 
-### Go の単一バイナリ、外部依存なし
-入れるのが簡単（`go install`）。3つの OS で同じに動く。JSON・プロセスの起動・シグナルは標準ライブラリで足りる。
+## How it is made
 
-### メッセージは英語
-CLI のメッセージとして、どの環境でも読めて、検索しやすい。文書は日本語。
+### A single Go binary, no external dependencies
+Easy to install (`go install`). It works the same on the three OSes. JSON, starting processes and signals are covered by the standard library.
+
+### Messages are in English
+As the messages of a CLI, they can be read in any environment and are easy to search for. The documents are in English, with a Japanese translation next to each (`_ja.md`).

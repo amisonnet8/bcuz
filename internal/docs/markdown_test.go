@@ -68,6 +68,32 @@ func fencedBlocks(md, lang string) []string {
 	return blocks
 }
 
+// block is a fenced block of a document, with its info string.
+type block struct {
+	lang string
+	text string
+}
+
+// allBlocks returns every fenced block of md, of any language, in order.
+func allBlocks(md string) []block {
+	var blocks []block
+	var cur []string
+	var lang string
+	in := false
+	for _, line := range strings.Split(md, "\n") {
+		switch {
+		case !in && strings.HasPrefix(line, "```"):
+			in, lang, cur = true, strings.TrimPrefix(line, "```"), nil
+		case in && strings.HasPrefix(line, "```"):
+			blocks = append(blocks, block{lang, strings.Join(cur, "\n") + "\n"})
+			in = false
+		case in:
+			cur = append(cur, line)
+		}
+	}
+	return blocks
+}
+
 // stripCode removes fenced code blocks and inline code, so that what looks
 // like a link inside code is not checked.
 func stripCode(md string) string {

@@ -1,41 +1,43 @@
-# 概要
+*[日本語](overview_ja.md) | **English***
 
-## 目的
+# Overview
 
-コマンドを打つときに、**なぜ打つのか**を一緒に残す。
+## Purpose
+
+When you type a command, keep **why you typed it** together with it.
 
 ```
-bcuz "xxテスト実施" make test
+bcuz "run the tests" make test
 ```
 
-あとで履歴を見たとき、「何をしたか」だけでなく「なぜしたか」と「どうなったか（終了コード・時間）」が分かる。
+When you look at the history later, you see not only "what was done", but also "why" and "what came of it (exit code and duration)".
 
-名前は because（bcuz）から。`sudo` と同じく、前に付けるだけで使える。
+The name comes from "because" (bcuz). Like `sudo`, it works by putting it in front.
 
-## 使う場面
+## When to use it
 
-- **AI エージェント**（Claude Code など）にコマンドを打たせるとき、`bcuz` を付けさせる。人間はあとで `bcuz -H` で、エージェントが何のために何を打ったかを読める
-- 人間が、あとで振り返りたい作業（デプロイ、データの移行、調査の試行）に付ける
+- When you let an **AI agent** (such as Claude Code) type commands, have it put `bcuz` in front. Later, a human can read with `bcuz -H` what the agent typed and for what purpose
+- When a human puts it in front of work that they want to look back on (a deploy, a data migration, a trial in an investigation)
 
-## 作り
+## How it is made
 
-- Go の単一バイナリ `bcuz`。外部依存なし
-- Linux・macOS・Windows
-- 記録は、カレントディレクトリから親へたどって最初の `.bcuz/history.jsonl`
+- A single Go binary `bcuz`. No external dependencies
+- Linux, macOS and Windows
+- Records go to the first `.bcuz/history.jsonl` found from the current directory going up through its parents
 
 ```
 project/
 ├── .bcuz/
-│   └── history.jsonl    ← ここに追記
-├── backend/             ← ここで打っても、上の .bcuz/ に記録（dir は "backend"）
+│   └── history.jsonl    ← appended here
+├── backend/             ← typed here, it is still recorded in the .bcuz/ above (dir is "backend")
 └── frontend/
 ```
 
-## やらないこと
+## What it does not do
 
-- **権限を上げない。** 名前は sudo に似ているが、sudo の機能は無い
-- **出力を残さない。** 標準出力・標準エラー出力は素通しするだけ
-- **シェルを通さない。** パイプや `&&` ごと記録したいときは、`bcuz "理由" sh -c '…'` と書く
-- **記録を強制しない。** `.bcuz/` が無くてもコマンドは動く（警告だけ）
-- **記録を書き換えない・消さない。** 追記だけ
-- 設定ファイル、色、ページャ、`--json` などの出力形式は持たない（[limitations.md](limitations.md) の候補）
+- **It does not raise privileges.** The name looks like sudo, but it has nothing of sudo
+- **It does not keep output.** Standard output and standard error only pass through
+- **It does not go through a shell.** To record a pipe or `&&` as a whole, write `bcuz "reason" sh -c '…'`
+- **It does not force recording.** The command runs even without `.bcuz/` (only a warning)
+- **It does not rewrite or delete records.** Append only
+- It has no configuration file, colors, pager, or output formats such as `--json` (candidates in [limitations.md](limitations.md))

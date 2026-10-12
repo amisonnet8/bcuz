@@ -1,35 +1,38 @@
-# bcuz の文書
+*[日本語](README_ja.md) | **English***
 
-**bcuz** は、理由を付けてコマンドを実行し、「いつ・なぜ・何を・どうなったか」を JSONL に残すラッパー。
+# bcuz documents
+
+**bcuz** is a wrapper that runs a command with a reason, and keeps "when, why, what and the result" as JSONL.
 
 ```
-bcuz "xxテスト実施" make test
+bcuz "run the tests" make test
 ```
 
-## 構成
+## Layout
 
-| 場所 | 中身 | 読む人 |
+| Place | Content | For |
 |---|---|---|
-| [reference/](reference/) | **正本。** 守る約束（コマンドの使い方、記録の形式） | 使う人・作る人 |
-| [design/](design/) | なぜそう決めたか、やらないこと、制限と追加の候補 | 作る人 |
-| [examples/](examples/) | 実際の入力と出力の例 | 使う人・作る人（テストの答え） |
+| [reference/](reference/) | **The source of truth.** The promises to keep (how to use the command, the format of the records) | users and makers |
+| [design/](design/) | Why it is decided so, what it does not do, limitations and candidates | makers |
+| [examples/](examples/) | Examples of real input and output | users and makers (the answers of the tests) |
 
 ### reference/
 
-- [cli.md](reference/cli.md)：コマンドの使い方（実行、`--init`、`-H`/`--history`、`-h`/`--help`、`--version`）、`.bcuz/` の探し方、終了コード、メッセージ
-- [history.md](reference/history.md)：記録の形式（`history.jsonl` の1行）
+- [cli.md](reference/cli.md): how to use the command (running, `--init`, `-H`/`--history`, `-h`/`--help`, `--version`), how `.bcuz/` is found, exit codes, messages
+- [history.md](reference/history.md): the format of the records (one line of `history.jsonl`)
 
 ### design/
 
-- [overview.md](design/overview.md)：目的、使う場面、やらないこと
-- [decisions.md](design/decisions.md)：判断とその理由
-- [limitations.md](design/limitations.md)：制限と、追加の候補
+- [overview.md](design/overview.md): purpose, when to use it, what it does not do
+- [decisions.md](design/decisions.md): decisions and their reasons
+- [limitations.md](design/limitations.md): limitations and candidates
 
 ### examples/
 
-- [README.md](examples/README.md)：例の一覧
+- [README.md](examples/README.md): the list of examples
 
-## 文書の決まり
+## Rules for the documents
 
-- `reference/` が正本。実装と食い違ったら、`reference/` に合わせる。仕様を変えるときは、先に `reference/` を直す
-- `examples/` の出力は、実装の出力と一字一句同じにする（時刻・時間など毎回変わる値は、例の中で断る）
+- `reference/` is the source of truth. If the implementation differs, it is made to follow `reference/`. When the specification changes, `reference/` is changed first
+- The output in `examples/` is character for character the same as the output of the implementation (values that change on every run, such as time and duration, are declared as such in the example)
+- The English files (`X.md`) are the source of truth. The Japanese files (`X_ja.md`) are translations, and always have the same structure

@@ -48,31 +48,6 @@ const (
 	docScratch = "/tmp/scratch"
 )
 
-// block is a fenced block of a document, with its info string.
-type block struct {
-	lang string
-	text string
-}
-
-func allBlocks(md string) []block {
-	var blocks []block
-	var cur []string
-	var lang string
-	in := false
-	for _, line := range strings.Split(md, "\n") {
-		switch {
-		case !in && strings.HasPrefix(line, "```"):
-			in, lang, cur = true, strings.TrimPrefix(line, "```"), nil
-		case in && strings.HasPrefix(line, "```"):
-			blocks = append(blocks, block{lang, strings.Join(cur, "\n") + "\n"})
-			in = false
-		case in:
-			cur = append(cur, line)
-		}
-	}
-	return blocks
-}
-
 // step is a command of a transcript and the lines printed under it.
 type step struct {
 	cmd string
@@ -450,6 +425,7 @@ func (s *docSession) checkJSON(n int, text string) {
 }
 
 // basic.md starts in a workspace without .bcuz/. The others start with it.
+// The Japanese translations are the same sessions with Japanese reasons.
 func TestExamplesRunAsDocumented(t *testing.T) {
 	for _, tc := range []struct {
 		file     string
@@ -458,6 +434,9 @@ func TestExamplesRunAsDocumented(t *testing.T) {
 		{"basic.md", false},
 		{"errors.md", true},
 		{"shell.md", true},
+		{"basic_ja.md", false},
+		{"errors_ja.md", true},
+		{"shell_ja.md", true},
 	} {
 		t.Run(tc.file, func(t *testing.T) {
 			s := newDocSession(t, tc.withBcuz)
@@ -482,8 +461,9 @@ func TestReadmeExample(t *testing.T) {
 
 // The usage lines of README.md are lines of cli.md or of bcuz -h.
 func TestReadmeUsageLines(t *testing.T) {
-	// The 書式 block and the usage text of bcuz -h are both in cli.md.
-	known := readRepoFile(t, "docs/reference/cli.md")
+	// The 書式 block and the usage text of bcuz -h are both in cli_ja.md (the
+	// README is in Japanese).
+	known := readRepoFile(t, "docs/reference/cli_ja.md")
 	var lines []string
 	for _, b := range allBlocks(readRepoFile(t, "README.md")) {
 		if strings.HasPrefix(b.text, "bcuz ") {

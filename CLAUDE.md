@@ -6,7 +6,7 @@
 
 **bcuz** は、理由を付けてコマンドを実行し、「いつ・なぜ・何を・どうなったか」を `.bcuz/history.jsonl` に残すラッパー（`bcuz "xxテスト実施" make test`）。Go の単一バイナリ、外部依存なし、Linux・macOS・Windows。
 
-- **仕様は `docs/` で確定している（正本）。** 使い方・出力・メッセージ・終了コードは `docs/reference/cli.md`、記録の形式は `docs/reference/history.md`、入出力の例は `docs/examples/`。実装はこれに一字一句合わせる
+- **仕様は `docs/` で確定している（正本）。`docs/` は英語が正本（`X.md`）で、日本語は翻訳（`X_ja.md`）。** 使い方・出力・メッセージ・終了コードは `docs/reference/cli.md`、記録の形式は `docs/reference/history.md`、入出力の例は `docs/examples/`。実装はこれに一字一句合わせる
 - 判断の理由は `docs/design/decisions.md`、やらないことは `docs/design/overview.md`、追加の候補は `docs/design/limitations.md`（候補は、人間が決めるまで作らない）
 
 ### 最初に読むもの

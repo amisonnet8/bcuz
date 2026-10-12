@@ -1,37 +1,39 @@
-# 記録の形式（`.bcuz/history.jsonl`）
+*[日本語](history_ja.md) | **English***
 
-## ファイル
+# Record format (`.bcuz/history.jsonl`)
 
-- UTF-8 の JSON Lines。**1回の実行＝1行**。行の終わりは `\n`
-- **追記だけ。** 既存の行を書き換えない・消さない
-- 1行を**1回の write** で、追記モード（`O_APPEND`）で書く。同時に複数の bcuz が書いても、行が混ざらないようにするため
-- 書くのはコマンドが終わった後。実行中の記録は無い
+## File
 
-## 1行の形
+- UTF-8 JSON Lines. **One run = one line**. A line ends with `\n`
+- **Append only.** Existing lines are never rewritten or deleted
+- A line is written with **one write call**, in append mode (`O_APPEND`), so that lines do not mix even when several bcuz write at the same time
+- It is written after the command ends. There is no record of a run in progress
+
+## Shape of a line
 
 ```json
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"xxテスト実施","cmd":["make","test"],"dir":"backend","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"run the tests","cmd":["make","test"],"dir":"backend","exit":0,"ms":8312}
 ```
 
-| 項目 | 型 | 内容 |
+| Field | Type | Content |
 |---|---|---|
-| `v` | 数 | 形式のバージョン。今は `1` |
-| `ts` | 文字列 | コマンドを**始めた**時刻。RFC 3339、ミリ秒まで、実行した環境のタイムゾーン付き |
-| `why` | 文字列 | 理由。受け取ったまま（改行も含めて）。空にはならない |
-| `cmd` | 文字列の配列 | コマンドと引数。受け取ったまま。1要素以上 |
-| `dir` | 文字列 | 実行した場所。`.bcuz/` のあるディレクトリからの相対パス。区切りは OS によらず `/`。直下は `"."` |
-| `exit` | 数 | 終了コード。シグナルで終わったら 128＋番号。起動できなければ 126、見つからなければ 127 |
-| `ms` | 数 | 始めてから終わるまでのミリ秒（整数）。起動できなかったら `0` |
+| `v` | number | Version of the format. Now `1` |
+| `ts` | string | The time the command was **started**. RFC 3339, with milliseconds, in the time zone of the machine that ran it |
+| `why` | string | The reason, as received (line breaks included). Never empty |
+| `cmd` | array of strings | The command and its arguments, as received. At least one element |
+| `dir` | string | Where it ran, as a path relative to the directory that has `.bcuz/`. The separator is `/` on every OS. The top is `"."` |
+| `exit` | number | The exit code. 128 + number when ended by a signal. 126 if it could not be started, 127 if it was not found |
+| `ms` | number | Milliseconds from start to end (an integer). `0` if it could not be started |
 
-- 項目はこの順で書く（読む側は順に頼らない）
-- 7項目すべて必須。値の無い項目は無い
+- Fields are written in this order (readers must not rely on the order)
+- All seven fields are required. There is no field without a value
 
-## 互換性
+## Compatibility
 
-- **項目を足すのはよい**（`v` は上げない）。読む側は知らない項目を無視する
-- 既存の項目の意味を変える・消すときは、`v` を上げる
-- 読む側（`-H`）は、`v` が知らない値の行を、読めない行として飛ばす
+- **Adding a field is fine** (`v` stays). Readers ignore fields they do not know
+- Changing the meaning of a field, or removing one, raises `v`
+- A reader (`-H`) skips a line whose `v` it does not know, as an unreadable line
 
-## 例
+## Example
 
 [../examples/history.jsonl](../examples/history.jsonl)

@@ -39,11 +39,14 @@ func checkRecordLines(t *testing.T, where, text string) {
 }
 
 func TestExampleHistoryRoundTrips(t *testing.T) {
-	text := readRepoFile(t, "docs/examples/history.jsonl")
-	if !strings.HasSuffix(text, "\n") {
-		t.Error("docs/examples/history.jsonl does not end with a newline")
+	for _, name := range []string{"history.jsonl", "history_ja.jsonl"} {
+		rel := "docs/examples/" + name
+		text := readRepoFile(t, rel)
+		if !strings.HasSuffix(text, "\n") {
+			t.Errorf("%s does not end with a newline", rel)
+		}
+		checkRecordLines(t, rel, text)
 	}
-	checkRecordLines(t, "docs/examples/history.jsonl", text)
 }
 
 // Every json block in the documents is a record in the documented format.
@@ -52,7 +55,9 @@ func TestJSONBlocksAreRecords(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	files = append(files, filepath.Join(repoRoot, "docs", "reference", "history.md"))
+	for _, name := range []string{"history.md", "history_ja.md"} {
+		files = append(files, filepath.Join(repoRoot, "docs", "reference", name))
+	}
 
 	blocks := 0
 	for _, f := range files {

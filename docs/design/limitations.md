@@ -1,38 +1,40 @@
-# 制限と、追加の候補
+*[日本語](limitations_ja.md) | **English***
 
-## 制限
+# Limitations and candidates
 
-### 記録されないことがある
-- bcuz 自身が SIGKILL で殺されたとき、電源が落ちたとき（記録はコマンドの終了後に書くため）
-- `.bcuz/` が見つからないとき（警告だけ出る）
-- bcuz 自身の引数の誤り（125）
+## Limitations
 
-### 秘密情報がそのまま残る
-`cmd` は受け取った引数をそのまま記録する。パスワードやトークンを引数で渡すと、`history.jsonl` に残る。環境変数で渡すこと（環境変数は記録しない）。`.bcuz/` を git に入れるときは特に注意する。
+### Some runs are not recorded
+- When bcuz itself is killed with SIGKILL, or the power goes off (the record is written after the command ends)
+- When `.bcuz/` is not found (only a warning is printed)
+- When bcuz's own arguments are wrong (125)
 
-### シェルの構文は記録されない
-`bcuz "理由" make test && make lint` では、bcuz が見るのは `make test` だけ（`&&` 以降は、呼んだシェルが bcuz の外で実行する）。まとめて記録するなら `bcuz "理由" sh -c 'make test && make lint'`。
+### Secrets are kept as they are
+`cmd` records the arguments as received. A password or a token passed as an argument stays in `history.jsonl`. Pass them through environment variables (environment variables are not recorded). Be especially careful when `.bcuz/` goes into git.
 
-### 同時の書き込み
-1行を1回の追記で書くので、ローカルのファイルシステムでは行は混ざらない。ネットワークファイルシステム（NFS など）では、追記の原子性が保証されない。
+### Shell syntax is not recorded
+With `bcuz "reason" make test && make lint`, bcuz sees only `make test` (what follows `&&` is run by the calling shell, outside of bcuz). To record them together, use `bcuz "reason" sh -c 'make test && make lint'`.
+
+### Concurrent writes
+A line is written with a single append, so lines do not mix on a local file system. On network file systems (NFS and the like), the atomicity of appends is not guaranteed.
 
 ### Windows
-- シグナルの転送は無い。Ctrl-C で bcuz は終わらず、コマンドの終了を待つ
-- 終了コードは、コマンドが返した値そのまま（128＋番号への置き換えは無い）
+- Signals are not forwarded. Ctrl-C does not end bcuz: it waits for the command to end
+- The exit code is the value the command returned (there is no conversion to 128 + number)
 
-### シグナルで終わったときの振る舞い
-コマンドがシグナルで終わったとき、bcuz は 128＋番号で**正常に終わる**。親のプロセスから見ると「シグナルで終わった」ではなく「終了コード 130 などで終わった」になる。シェルのスクリプトの多くは同じに扱うが、厳密には違う。
+### Behavior when ended by a signal
+When the command is ended by a signal, bcuz **ends normally** with 128 + number. To the parent process it looks like "ended with exit code 130" and not like "ended by a signal". Most shell scripts treat them the same, but strictly they differ.
 
-## 追加の候補（未定）
+## Candidates (undecided)
 
-決まったら、`reference/` に書いて、ここから消す。
+When one is decided, it is written in `reference/` and removed from here.
 
-| 候補 | 内容 |
+| Candidate | Content |
 |---|---|
-| `-n N` | 履歴の最新 N 件だけ |
-| `--date today`・`yesterday` | 日付の代わりの言葉 |
-| `--here` | 今のディレクトリ（`dir`）の記録だけ |
-| `--failed` | 終了コードが 0 以外だけ |
-| `--json` | 絞り込んだ行を JSONL のまま出す（`jq` に渡す） |
-| AI エージェント向けの設定例 | Claude Code の hook で、Bash のコマンドに `bcuz` が付いているかを確かめる |
-| 理由を後から引く | `git commit` などと記録を突き合わせる |
+| `-n N` | Only the newest N records of the history |
+| `--date today`, `yesterday` | Words in place of a date |
+| `--here` | Only the records of the current directory (`dir`) |
+| `--failed` | Only exit codes other than 0 |
+| `--json` | Print the filtered lines as JSONL as they are (to pass to `jq`) |
+| Configuration for AI agents | With a Claude Code hook, check that Bash commands have `bcuz` in front |
+| Look up the reason afterwards | Match records against `git commit` and the like |
