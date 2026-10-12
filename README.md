@@ -14,7 +14,7 @@
   <a href="https://github.com/amisonnet8/bcuz/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/amisonnet8/bcuz/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/amisonnet8/bcuz/releases"><img alt="Release" src="https://img.shields.io/github/v/release/amisonnet8/bcuz"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/amisonnet8/bcuz"></a>
-  <img alt="Go" src="https://img.shields.io/github/go-mod-go-version/amisonnet8/bcuz">
+  <img alt="Go" src="https://img.shields.io/github/go-mod/go-version/amisonnet8/bcuz">
   <img alt="Platforms" src="https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-informational">
 </p>
 
