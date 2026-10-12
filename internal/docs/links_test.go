@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"unicode"
 )
 
 var linkRE = regexp.MustCompile(`\[[^\]]*\]\(([^)\s]+)\)`)
@@ -124,5 +125,84 @@ func TestLinkChecksDetectProblems(t *testing.T) {
 	dev := devLinks("docs/reference/cli.md", "[a](../../dev/roadmap.md) [b](../examples/x.md) [c](https://e.com/dev/x)")
 	if len(dev) != 1 || dev[0] != "../../dev/roadmap.md" {
 		t.Errorf("devLinks = %q, want [../../dev/roadmap.md]", dev)
+	}
+}
+
+var (
+	htmlAnchorRE = regexp.MustCompile(`href="#([^"]+)"`)
+	mdAnchorRE   = regexp.MustCompile(`\]\(#([^)\s]+)\)`)
+)
+
+// anchorOf is the anchor GitHub makes of a heading: lower case, spaces become
+// hyphens, and everything but letters, digits, "-" and "_" is dropped.
+func anchorOf(heading string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(strings.TrimSpace(heading)) {
+		switch {
+		case r == ' ':
+			b.WriteByte('-')
+		case r == '-' || r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r):
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+// anchorsOf returns the anchors of the headings of md (outside code blocks).
+func anchorsOf(md string) map[string]bool {
+	anchors := map[string]bool{}
+	inFence := false
+	for _, line := range strings.Split(md, "\n") {
+		switch {
+		case strings.HasPrefix(line, "```"):
+			inFence = !inFence
+		case !inFence && strings.HasPrefix(line, "#"):
+			anchors[anchorOf(strings.ReplaceAll(strings.TrimLeft(line, "#"), "`", ""))] = true
+		}
+	}
+	return anchors
+}
+
+// missingAnchors returns the in-page links (#anchor) of md that match no
+// heading of md.
+func missingAnchors(md string) []string {
+	anchors := anchorsOf(md)
+	var missing []string
+	for _, re := range []*regexp.Regexp{htmlAnchorRE, mdAnchorRE} {
+		for _, m := range re.FindAllStringSubmatch(stripCode(md), -1) {
+			if !anchors[m[1]] {
+				missing = append(missing, m[1])
+			}
+		}
+	}
+	return missing
+}
+
+// The links of the table of contents at the top of a README point at
+// headings that exist.
+func TestAnchorLinksExist(t *testing.T) {
+	for _, file := range markdownFiles(t) {
+		for _, a := range missingAnchors(readRepoFile(t, file)) {
+			t.Errorf("%s: no heading for the link #%s", file, a)
+		}
+	}
+}
+
+func TestAnchorChecksDetectProblems(t *testing.T) {
+	for in, want := range map[string]string{
+		"At a glance":        "at-a-glance",
+		"Exit codes":         "exit-codes",
+		"`--init`":           "--init",
+		"ひと目で":               "ひと目で",
+		"Good to know (now)": "good-to-know-now",
+	} {
+		if got := anchorOf(strings.ReplaceAll(in, "`", "")); got != want {
+			t.Errorf("anchorOf(%q) = %q, want %q", in, got, want)
+		}
+	}
+	md := "# T\n\n## At a glance\n\n<a href=\"#at-a-glance\">ok</a> [x](#at-a-glance) <a href=\"#gone\">bad</a> [y](#gone2)\n\n```\n## Hidden\n```\n"
+	got := missingAnchors(md)
+	if len(got) != 2 || got[0] != "gone" || got[1] != "gone2" {
+		t.Errorf("missingAnchors = %q, want [gone gone2]", got)
 	}
 }

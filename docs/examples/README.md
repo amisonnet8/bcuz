@@ -4,7 +4,7 @@
 
 Real input and output. Lines that start with `$` are input, the others are output.
 
-- The time (`ts`, the date and time column) and the duration (`ms`, the duration column) change on every run. Everything else is character for character the same as the output of the implementation
+- The time (`ts`, the date and time column) and the duration (`ms`, the duration column) change on every run. Everything else is character for character the same as the output of the implementation (the output of other commands, such as `make test`, is only an illustration)
 - The time zone of the examples is Asia/Tokyo (+09:00)
 - The workspace of the examples is `/home/me/work` (`.bcuz/` is there)
 

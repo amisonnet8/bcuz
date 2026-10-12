@@ -108,7 +108,7 @@ bcuz --version
 
 ## Development
 
-Open it in the devcontainer, and read `CLAUDE.md` and `dev/roadmap.md`. Build and test with `qsoku check`.
+Open it in the devcontainer, and read `CLAUDE.md` and `dev/roadmap.md`. Build and test with `qsoku check` (or `go test ./...`).
 
 ## License
 

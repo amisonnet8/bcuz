@@ -108,7 +108,7 @@ bcuz --version
 
 ## 開発
 
-devcontainer で開き、`CLAUDE.md` と `dev/roadmap.md` を読みます。ビルドとテストは `qsoku check` です。
+devcontainer で開き、`CLAUDE.md` と `dev/roadmap.md` を読みます。ビルドとテストは `qsoku check`（`go test ./...` でも動きます）です。
 
 ## ライセンス
 

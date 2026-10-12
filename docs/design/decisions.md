@@ -14,7 +14,7 @@ So that bcuz does not take the arguments of the command (such as the `-h` of `ls
 `-h` is help in almost every tool. If it showed the history, a person who typed it expecting help would get the history.
 
 ### The place to record is the first `.bcuz/` found going up
-The history is separate for each project, and the same history is used from a subdirectory. The lookup is the same as in git, qsoku and others, so there is little to remember. Where the command was typed is kept in `dir`.
+The history is separate for each project, and the same history is used from a subdirectory. The lookup is the same as in git and similar tools, so there is little to remember. Where the command was typed is kept in `dir`.
 
 ### Run even without `.bcuz/` (only a warning)
 If a wrapper stops the work, people stop using it. A missing record is noticed through the warning on standard error (AI agents can read it too).
