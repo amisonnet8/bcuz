@@ -106,10 +106,6 @@ bcuz --version
 - [例](docs/examples/README_ja.md)：実際の入力と出力
 - [設計](docs/design/overview_ja.md)：目的、判断の理由、制限
 
-## 開発
-
-devcontainer で開き、`CLAUDE.md` と `dev/roadmap.md` を読みます。ビルドとテストは `qsoku check`（`go test ./...` でも動きます）です。
-
 ## ライセンス
 
 [MIT](LICENSE)

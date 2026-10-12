@@ -106,10 +106,6 @@ bcuz --version
 - [Examples](docs/examples/README.md): real input and output
 - [Design](docs/design/overview.md): purpose, reasons for the decisions, limitations
 
-## Development
-
-Open it in the devcontainer, and read `CLAUDE.md` and `dev/roadmap.md`. Build and test with `qsoku check` (or `go test ./...`).
-
 ## License
 
 [MIT](LICENSE)
