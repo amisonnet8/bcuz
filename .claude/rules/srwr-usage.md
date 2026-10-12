@@ -2,11 +2,12 @@
 
 このプロジェクトでは、AIのファイル編集を**srwr**（`github.com/amisonnet8/srwr`）の道具で行う。すべての編集に理由（`why`）が付き、操作が**テープ**（`.srwr/tapes/`）に残り、人間がコマ送りで再生できる。`srwr init`の既定である**厳格モード**で使う。
 
-## 最初に（新しいプロジェクトで1回）
+## 最初に（テンプレートから作ったプロジェクトでは、何も要らない）
 
 - `.devcontainer/postCreate.sh`が`srwr`を`@latest`で入れる（`srwr --version`で確かめる）
-- **`srwr init`を1回動かす**（人間のターミナルで。下の「落とし穴」）。`.srwr/`と鍵ができ、すでに`.mcp.json`・`.claude/settings.json`・`.gitignore`にあるテンプレートの設定は、何も書き換えられない（`Already set up. Nothing was rewritten.`か`unchanged`と出る）
-- **Claude Codeを開き直す。** `.mcp.json`のsrwrサーバーと許可は起動時に読まれるので、開き直すまで`mcp__srwr__*`は現れない
+- **`srwr init`は動かさなくてよい。** 設定（`.mcp.json`・`.claude/settings.json`・`.gitignore`）はテンプレートに入っていて、`srwr init`が書くものと同じ。**`.srwr/`と鍵は、最初のhookかMCPの呼び出しで自動的にできる**（動かさないままで確かめた）。確かめたいときだけ動かす：設定が揃っていれば`Already set up. Nothing was rewritten.`と出て、何も書き換えない
+- **`srwr init`が要るのは**、テンプレートを使わず、すでにあるプロジェクトにsrwrを足すとき、srwrを更新して道具の名前が変わったとき、厳格⇄緩いを切り替えるとき（下の「落とし穴」）
+- **Claude Codeを開き直す。** `.mcp.json`のsrwrサーバーと許可は起動時に読まれるので、開き直すまで`mcp__srwr__*`は現れない（コンテナを開き直す場合は、そのとき読まれる）
 
 ## 厳格モードとは
 
@@ -80,7 +81,7 @@ git add … && git commit …
 
 ## 落とし穴
 
-- **`srwr init`は、Bashサンドボックスの中では`.mcp.json`・`.claude/settings.json`を書き換えられない**（一時ファイルから`rename`するが、サンドボックスが`device or resource busy`にする。`.srwr/`の鍵だけが先にできる）。人間がサンドボックスの外のターミナルで動かす。このテンプレートの設定はすでにsrwr用になっているので、新しいプロジェクトでの`srwr init`は、鍵を作るだけで済む
+- **`srwr init`は、書き換えるものがあるときは、Bashサンドボックスの中では`.mcp.json`・`.claude/settings.json`を書き換えられない**（一時ファイルから`rename`するが、サンドボックスが`device or resource busy`にする。`.srwr/`の鍵だけが先にできる）。書き換えるものが無ければ（`Already set up`）、サンドボックスの中でも動く。書き換えが要るときは、人間がサンドボックスの外のターミナルで動かす
 - `srwr`が`PATH`に無いと、`.mcp.json`もhookも動かない（hookは失敗しても作業は止まらず、記録だけが抜ける）。`srwr --version`で確かめる
 - **`session`を呼ぶと、作業場全体のテープが切り替わる**（`srwr tapes new`と同じ）。ほかのセッション（人間が別のClaude Codeを動かしているなど）にも効く。範囲トークンは、閉じたテープのものは使えなくなるので、`session`のあとは`look`し直す
 - `srwr view`は`~/.cache/srwr`に書くので、サンドボックスの中では動かさず、人間のターミナルで動かす
