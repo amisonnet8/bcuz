@@ -18,6 +18,8 @@
 | `qsoku race` | `CGO_ENABLED=1 go test -race` | 並行性・排他に関わる変更 |
 | `qsoku trivy` | 既知の脆弱性・ライセンスの検査 | 依存を足したとき |
 | `qsoku shellcheck` | 追跡中の`*.sh`・`*.bash`をShellCheckにかける | シェルスクリプトを足したとき |
+| `qsoku install-check [版]` | 一時ディレクトリに`go install`して、`--version`・`--init`・実行・`-H`を通す（`dev/install-check.sh`）。版なしはこのチェックアウト、`v0.1.0`・`latest`は公開済みのもの | 配布に関わる変更のあと、タグを公開したあと（CIの`check`ジョブも動かす） |
+| `qsoku dist` | `dist/`に6つのバイナリと`SHA256SUMS`を作る（`dev/dist.sh`）。`VERSION=v0.1.0 qsoku dist`で、版の一致も確かめる | リリースのビルド（`release.yml`が動かす）、手元の試し |
 
 一覧は、今ある`qsokufile`の内容そのもの。`qsoku .list`（名前とコマンド）か`qsoku .names`（名前だけ）で確かめる。**引数なしで`qsoku`とだけ打っても、使い方と定義済みの名前が出る。**
 
@@ -27,7 +29,7 @@
 qsoku <名前> [引数...]
 ```
 
-- 引数は、項目のコマンドの中で`"$@"`・`$1`として受けられる。**このプロジェクトの`qsokufile`の項目は、どれも引数を受けていない**（書いていない引数は捨てられる）。受けたいときは、項目を`unit: (cd //; go test "$@")`のように書き換える。そうすれば`qsoku unit -run TestFoo ./internal/...`が使える
+- 引数は、項目のコマンドの中で`"$@"`・`$1`として受けられる。**このプロジェクトの`qsokufile`で引数を受けるのは`install-check`だけ**（ほかは、書いていない引数は捨てられる）。受けたいときは、項目を`unit: (cd //; go test "$@")`のように書き換える。そうすれば`qsoku unit -run TestFoo ./internal/...`が使える
 - **qsoku自身のオプションは無い。** `--help`・`--version`は**名前として調べられる**ので、「定義されていない」というエラーになる。使い方は`qsoku .help`、バージョンは`qsoku .version`
 - コマンドは、どのOSでも、また呼び出し元がどのシェルでも、常に`sh`で実行される
 - 標準入出力・標準エラー出力はそのまま素通し。終了コードは、コマンドのものがそのまま返る

@@ -7,5 +7,8 @@
 - **cgo は使わない**（`CGO_ENABLED=0`）。シグナルなど OS に依存する処理は、ビルドタグで OS ごとに分け、cgo なしで書く
 - **外部依存を足さない。** JSON・プロセスの起動・シグナル・日付はすべて標準ライブラリで足りる。足すのは重要な判断（`.claude/rules/working-with-human.md` 1章）
 - **バージョン**：`bcuz --version` は `runtime/debug.ReadBuildInfo()` のモジュールのバージョンを出す（`go install …@vX.Y.Z` で入れたときにタグが入る）。取れないとき（手元のビルド）は `(devel)`。出力の形は `docs/reference/cli.md`
+- **リリースの流れ**：人間がタグ（`v0.1.0` の形）を打って push する → `.github/workflows/release.yml` が、`qsoku unit` と `VERSION=<タグ> qsoku dist` を通し、**下書きの Release**（`--draft`）にバイナリと `SHA256SUMS` を添付する → 人間が中身を見て公開する。Claude Code は、タグも Release も作らない（`gh release create` は deny。workflow の中だけが動かす）
+- **配布物**（`qsoku dist`、`dev/dist.sh`）：`bcuz-<版>-<os>-<arch>`（Windows は `.exe`）を、linux・darwin・windows × amd64・arm64 の6つ。`CGO_ENABLED=0`・`-trimpath`。`VERSION` を付けたときは、この環境向けのバイナリの `--version` がその版と一致しなければ失敗する（タグの上で、変更の無い状態でビルドしていない印）
+- **`go install` の確認**（`qsoku install-check`、`dev/install-check.sh`）：一時ディレクトリに入れ、`--version`・`--init`・実行・`-H` を通す。引数なしはこのチェックアウト、`v0.1.0`・`latest` は公開済みのモジュール。3 OS の CI（`check` ジョブ）が引数なしを動かす。**タグを公開したあとは、`qsoku install-check <タグ>` で確かめる**（サンドボックスでは、モジュールのキャッシュ `/go/pkg/mod` に書けず動かないことがある。そのときは人間のターミナルで）
 - ビルド済みバイナリはリポジトリにコミットしない（`/bin/`・`/dist/` は `.gitignore` 済み）
 - 記録の形式（`v`）を上げたら、古い記録も読めることを確かめる（`docs/reference/history.md` の互換性）

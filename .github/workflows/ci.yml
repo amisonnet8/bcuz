@@ -34,6 +34,9 @@ jobs:
       - name: qsoku check
         shell: bash
         run: qsoku check
+      - name: qsoku install-check
+        shell: bash
+        run: qsoku install-check
 
   # -race needs a C compiler, which windows-latest does not have.
   race:

@@ -29,7 +29,7 @@
 ├── dev/                    ← 開発のうちうち。roadmap.md、review/（了承をもらう資料）
 ├── .devcontainer/          ← 開発環境（devcontainer.json、postCreate.sh）
 ├── .claude/                ← rules/（ルール）、hooks/、settings.json（人間が管理する）
-├── .github/workflows/      ← CI
+├── .github/workflows/      ← CI（ci.yml）、タグで下書きの Release を作る（release.yml）
 └── .mtqg/                  ← mtqgの記録
 ```
 
@@ -57,6 +57,6 @@
 - **`.gitignore`のドットファイル**: ルート直下のドットファイル・ドットディレクトリは**許可リスト方式**（`/.*`を無視し、追跡するものだけ`!`で戻す。`.claude/`の中は`/.claude/*`を無視して`settings.json`・`rules/`・`skills/`・`hooks/`だけ戻す）。サンドボックスが作業ディレクトリ直下に出すダミーファイルを`git add -A`で混ぜないため（`.claude/rules/testing.md`）。**追跡するドットファイルを新しく足すときは、`.gitignore`に`!`の行を足すこと**。足さないと`git add`が無視する
 - **配布物（ビルド済みバイナリ）**: リポジトリにコミットしない。`.gitignore`には**ルート直下に限定して**書く（`/名前`）。名前だけを書くと、同名のソースディレクトリまで無視される
 - **`docs/`**: 正本の文書（`.claude/rules/documentation.md`）。`docs/examples/history.jsonl` はテストの答えでもある
-- **`dev/`**: 開発のうちうち。`docs/` から参照しない。`roadmap.md`・`review/`のほか、人間の確認を始める`try.sh`（`qsoku try`が呼ぶ。`qsoku shellcheck`の対象）を置く
+- **`dev/`**: 開発のうちうち。`docs/` から参照しない。`roadmap.md`・`review/`のほか、人間の確認を始める`try.sh`（`qsoku try`が呼ぶ）、配布の`install-check.sh`・`dist.sh`（`qsoku install-check`・`qsoku dist`が呼ぶ。`.claude/rules/distribution.md`）を置く。シェルスクリプトは`qsoku shellcheck`の対象
 - **`.bcuz/`**: この開発リポジトリの直下には作らない（`.gitignore` の `/.*` で無視される）。bcuz を動かすテストは `t.TempDir()` の中で行う
 - **シェルスクリプト**: 最小限にする。追跡中のものは`qsoku shellcheck`の対象になる（`.claude/rules/testing.md`）

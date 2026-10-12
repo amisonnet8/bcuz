@@ -35,3 +35,12 @@ race: (cd //; CGO_ENABLED=1 go test -race -count=1 ./...)
 trivy: (cd //; trivy fs --config trivy.yaml .)
 
 shellcheck: (cd //; git ls-files '*.sh' '*.bash' | xargs -r shellcheck)
+
+# go install into a temporary directory and use it (dev/install-check.sh).
+# Without an argument it installs this checkout; with v0.1.0 or latest, the
+# published module.
+install-check: (cd //; bash dev/install-check.sh "$@")
+
+# Build the six binaries and SHA256SUMS into dist/ (dev/dist.sh). Set VERSION
+# for a release build: VERSION=v0.1.0 qsoku dist.
+dist: (cd //; bash dev/dist.sh)

@@ -1,0 +1,33 @@
+name: Release
+
+# A tag v* makes a draft release with the binaries. A person looks at the
+# draft and publishes it (.claude/rules/distribution.md).
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Install qsoku
+        run: go install github.com/amisonnet8/qsoku/cmd/qsoku@latest
+      - name: qsoku unit
+        run: qsoku unit
+      - name: Build the binaries
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: qsoku dist
+      - name: Make the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --draft --verify-tag --generate-notes dist/*
