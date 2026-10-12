@@ -32,9 +32,17 @@ const (
 	fmtNotRecorded     = "bcuz: warning: not recorded: %s"
 )
 
-// fmtNotImplemented is a stand-in for the features that later stages (R1 to
-// R3 in dev/roadmap.md) replace. Delete it when the last one is implemented.
-const fmtNotImplemented = "bcuz: not implemented yet: %s"
+// The messages of -H.
+const (
+	fmtInvalidDate     = "bcuz: invalid date: %s"
+	msgDateWithRange   = "bcuz: --date cannot be used with --since or --until"
+	fmtDuplicateOption = "bcuz: duplicate option: %s"
+	fmtUnknownArgument = "bcuz: unknown argument: %s"
+	fmtMissingDate     = "bcuz: missing date after %s"
+	msgNoBcuzDirHist   = "bcuz: no .bcuz/ found (run 'bcuz --init')"
+	fmtCannotRead      = "bcuz: cannot read .bcuz/history.jsonl: %s"
+	fmtUnreadableLine  = "bcuz: warning: .bcuz/history.jsonl:%d: skipped unreadable line"
+)
 
 // exitUsage is the exit code of bcuz's own errors (docs/reference/cli.md).
 const exitUsage = 125

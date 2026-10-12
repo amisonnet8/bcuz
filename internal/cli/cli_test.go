@@ -18,8 +18,6 @@ func runMain(t *testing.T, args ...string) (code int, stdout, stderr string) {
 }
 
 func TestMain_options(t *testing.T) {
-	notImpl := func(what string) string { return fmt.Sprintf(fmtNotImplemented, what) + "\n" }
-
 	tests := []struct {
 		name       string
 		args       []string
@@ -32,8 +30,6 @@ func TestMain_options(t *testing.T) {
 		{"--help", []string{"--help"}, 0, usage, ""},
 		{"-h ignores what follows", []string{"-h", "x"}, 0, usage, ""},
 		{"--version", []string{"--version"}, 0, "bcuz v9.9.9\n", ""},
-		{"-H", []string{"-H"}, 125, "", notImpl("history")},
-		{"--history", []string{"--history"}, 125, "", notImpl("history")},
 
 		{"unknown option", []string{"-x"}, 125, "", fmt.Sprintf(fmtUnknownOption, "-x") + "\n"},
 		{"unknown long option", []string{"--foo", "ls"}, 125, "", fmt.Sprintf(fmtUnknownOption, "--foo") + "\n"},

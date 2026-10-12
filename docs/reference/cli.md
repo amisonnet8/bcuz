@@ -162,6 +162,14 @@ bcuz: no .bcuz/ found (run 'bcuz --init')
 
 標準エラー出力に出して、125 で終わる。
 
+### 履歴を読めないとき
+
+`history.jsonl` が無ければ、1件も無いものとして扱う（何も出さずに 0）。あるのに読めなければ、標準エラー出力に出して、125 で終わる。
+
+```
+bcuz: cannot read .bcuz/history.jsonl: permission denied
+```
+
 ## `-h`・`--help`
 
 使い方を標準出力に出して、0 で終わる。
@@ -204,6 +212,7 @@ bcuz v0.1.0
 | 日付が無い | `bcuz: missing date after --date` | 125 |
 | `.bcuz/` が無い（実行） | `bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')` | コマンドのもの |
 | `.bcuz/` が無い（`-H`） | `bcuz: no .bcuz/ found (run 'bcuz --init')` | 125 |
+| 履歴を読めない（`-H`） | `bcuz: cannot read .bcuz/history.jsonl: permission denied` | 125 |
 | 読めない行（`-H`） | `bcuz: warning: .bcuz/history.jsonl:12: skipped unreadable line` | 0 |
 | コマンドが見つからない | `bcuz: command not found: mkae` | 127 |
 | 起動できない | `bcuz: cannot run ./build.sh: permission denied` | 126 |

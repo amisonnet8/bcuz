@@ -34,12 +34,12 @@ cat <<'EOF'
  3. bcuz "編集" vi x.txt        （適当に打って :q! で終わる）
       -> vi が普通に使える（画面が崩れない）
 
-シェルを閉じると、記録（history.jsonl）を表示します。
+シェルを閉じると、履歴（bcuz -H）を表示します。
 
 EOF
 
 PATH="$work/bin:$PATH" PS1='bcuz-try$ ' bash --norc -i || true
 
 echo
-echo "== history.jsonl（1回の実行が1行。exit が 0・130 などになっているはず）"
-cat "$work/proj/.bcuz/history.jsonl"
+echo "== bcuz -H（1回の実行が1行。終了コードが 0・130 などになっているはず）"
+"$bcuz_bin" -H
