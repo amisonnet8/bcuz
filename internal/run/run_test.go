@@ -113,8 +113,15 @@ func TestRunNotFound(t *testing.T) {
 }
 
 func TestRunCannotRun(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "script")
-	if err := os.WriteFile(path, []byte("#!/bin/sh\n"), 0o600); err != nil { // not executable
+	// Not an executable: no permission on Unix. Windows has no such bit, and
+	// a name without an extension is not looked up as a command at all (127),
+	// so there it is an .exe that is not a program.
+	name := "script"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	path := filepath.Join(t.TempDir(), name)
+	if err := os.WriteFile(path, []byte("#!/bin/sh\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 

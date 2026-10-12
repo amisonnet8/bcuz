@@ -249,8 +249,14 @@ func TestExecuteNotFound(t *testing.T) {
 
 func TestExecuteCannotRun(t *testing.T) {
 	work := workspace(t)
-	script := filepath.Join(work, "build.sh")
-	if err := os.WriteFile(script, []byte("#!/bin/sh\necho hi\n"), 0o600); err != nil { // not executable
+	// Not an executable: no permission on Unix; on Windows an .exe that is
+	// not a program (a name without an extension would be "not found").
+	name := "build.sh"
+	if runtime.GOOS == "windows" {
+		name = "build.exe"
+	}
+	script := filepath.Join(work, name)
+	if err := os.WriteFile(script, []byte("#!/bin/sh\necho hi\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 
