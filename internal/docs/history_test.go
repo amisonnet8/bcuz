@@ -58,6 +58,7 @@ func TestJSONBlocksAreRecords(t *testing.T) {
 	for _, name := range []string{"history.md", "history_ja.md"} {
 		files = append(files, filepath.Join(repoRoot, "docs", "reference", name))
 	}
+	files = append(files, filepath.Join(repoRoot, "README.md"), filepath.Join(repoRoot, "README_ja.md"))
 
 	blocks := 0
 	for _, f := range files {

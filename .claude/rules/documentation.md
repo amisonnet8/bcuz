@@ -8,7 +8,7 @@
 | `docs/design/` | 開発に加わる人向け：`overview.md`（目的・やらないこと）・`decisions.md`（判断と理由）・`limitations.md`（制限と追加の候補） | 判断が変わったとき。候補を採用したら `limitations.md` から消し、`reference/` に書く |
 | `docs/examples/` | 実際の入出力。`internal/docs` のテストが実装との一致を確かめる | 挙動を変えたとき（テストが落ちる） |
 | `dev/` | 開発のうちうち：`roadmap.md`（段階）、`review/`（了承をもらう資料） | 段階が進んだとき |
-| `README.md` | 利用者向けの入口（入れ方、使い方の要点、`docs/` への案内） | 使い方が変わったとき |
+| `README.md`・`README_ja.md` | 利用者向けの入口（ヘッダー・バッジ・特徴・入れ方・使い方の要点・`docs/` への案内）。英語が正本で、`docs/` と同じ対の決まり | 使い方が変わったとき。両方を同じ変更に入れる |
 | `CLAUDE.md`・`.claude/rules/` | 開発のルール | 気づき・落とし穴が見つかったとき |
 
 - `docs/` から `dev/` を参照しない（`docs/` は利用者にも見せる）
@@ -24,7 +24,7 @@
 
 - **`docs/` は英語が正本**（`X.md`）。日本語は翻訳で、同じ場所に `X_ja.md`（`history.jsonl` は `history_ja.jsonl`）を置く。各ファイルの1行目に、言語の切り替え（英語：`*[日本語](X_ja.md) | **English***`、日本語：`*[English](X.md) | **日本語***`）を置く
 - **英語と日本語の対は、同じ構造にする**（見出し・表・箇条書き・コードブロックの数と並び）。コードブロックのうち日本語を含まないもの（メッセージ・使い方・コマンド）は、一字一句同じ。リンクは、同じ言語のファイルを指す。`internal/docs` のテスト（`translations_test.go`）が確かめる
-- `docs/` 以外の文書（`dev/`・`.claude/`・`CLAUDE.md`）は**日本語**。`README.md` は別途決める。コード中のコメントは英語
+- `docs/` 以外の文書（`dev/`・`.claude/`・`CLAUDE.md`）は**日本語**。コード中のコメントは英語。`README.md` は `docs/` と同じで英語が正本（日本語は `README_ja.md`）。README の最初のコンソール例と使い方の行はテストが照合する（`transcript_unix_test.go`）ので、例を変えるときは `docs/` の例と合わせる
 - bcuz が出すメッセージは**英語**（`docs/design/decisions.md`）
 - 文は短く、1文1つのこと。結論を先に書く
 - 用語は `.claude/rules/naming.md` の表に揃える

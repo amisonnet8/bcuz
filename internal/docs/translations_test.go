@@ -20,8 +20,8 @@ func jaName(en string) string {
 	return strings.TrimSuffix(en, ext) + jaSuffix + ext
 }
 
-// translatedFiles lists the English files under docs/ that have a Japanese
-// pair: every .md, and the .jsonl of the examples.
+// translatedFiles lists the English files that have a Japanese pair: the
+// README.md, and under docs/ every .md and the .jsonl of the examples.
 func translatedFiles(t *testing.T) []string {
 	t.Helper()
 	var files []string
@@ -46,7 +46,8 @@ func translatedFiles(t *testing.T) []string {
 	if len(files) == 0 {
 		t.Fatal("no documents found")
 	}
-	return files
+	// The README at the top is a pair like the others.
+	return append([]string{"README.md"}, files...)
 }
 
 func exists(t *testing.T, rel string) bool {

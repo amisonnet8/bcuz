@@ -18,7 +18,7 @@
 - **答えは `docs/`。** `docs/reference/` の書式・メッセージ・終了コードと、`docs/examples/` の入出力に、一字一句合わせる。食い違えば実装を直す（`docs/` が誤りだと思うときは、`.claude/rules/working-with-human.md` 1章の「重要な判断」として聞く）
 - **`docs/` の英語と日本語（`_ja.md`）は、`internal/docs/translations_test.go` が対で確かめる**（揃っていること、見出し・表・箇条書き・コードブロックの構造が同じこと、先頭の切り替え、リンクが同じ言語を指すこと）。`examples/` の照合と `cli.md` の使い方の照合は、両方の言語で回る。例を足すときは、英語を正本に書き、日本語を対にする
 - **`examples/` は `internal/docs` のテストが照合する。** `history-filter.md` の各ブロックは、`examples/history.jsonl` を履歴の表示に通した結果と、タイムゾーンを固定して（Asia/Tokyo・UTC）比べる。`json` のブロックは、記録の形式（7項目、この順）に合うかを確かめる。例を書き換えて合わせない
-- **`basic.md`・`errors.md`・`shell.md` と `README.md` の最初の例**は、`internal/docs/transcript_unix_test.go` が、書き起こしを本物の bcuz に通す（Unix のみ）。`make`・`git` などは、テストのバイナリ自身への偽のコマンド（`PATH` はその置き場だけ。`mkae` は無いので 127）で、文書に書かれた出力を出し、書かれた終了コードで終わる。確かめるのは bcuz の出力・メッセージ・終了コード・記録で、`ts`・`ms`（履歴の日時・時間の欄）は比べない。`json` ブロックは直前の実行の記録と、`$` の無い履歴の行は、その記録の表示と比べる
+- **`basic.md`・`errors.md`・`shell.md`（とその `_ja.md`）と、`README.md`・`README_ja.md` の最初の例（README の使い方の行も）**は、`internal/docs/transcript_unix_test.go` が、書き起こしを本物の bcuz に通す（Unix のみ）。`make`・`git` などは、テストのバイナリ自身への偽のコマンド（`PATH` はその置き場だけ。`mkae` は無いので 127）で、文書に書かれた出力を出し、書かれた終了コードで終わる。確かめるのは bcuz の出力・メッセージ・終了コード・記録で、`ts`・`ms`（履歴の日時・時間の欄）は比べない。`json` ブロックは直前の実行の記録と、`$` の無い履歴の行は、その記録の表示と比べる
 - **実行の通しテスト**は、`go build` した本物の `bcuz` を `t.TempDir()` の作業場で動かす。**子のコマンドには、テストのバイナリ自身を使う**（環境変数で「指定の終了コードで終わる」「眠る」「シグナルを待つ」などに切り替える）。`sh`・`sleep` などの外部コマンドは、Windows に無いので使わない
 - **シグナル**（SIGINT で bcuz が先に終わらない、SIGTERM・SIGHUP の転送、130 などの終了コード、記録が残ること）は、Unix のビルドタグのテストで押さえる。Windows は Ctrl-C で bcuz が終わらないことだけ
 - **TTY の素通し**は、Linux で `script -qec '<bcuz …>' /dev/null` を使い、子が端末を見ていること（`isatty`）を確かめる。`script` が無ければ `t.Skip`

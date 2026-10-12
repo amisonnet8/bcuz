@@ -15,7 +15,7 @@ var linkRE = regexp.MustCompile(`\[[^\]]*\]\(([^)\s]+)\)`)
 // repository root with forward slashes.
 func markdownFiles(t *testing.T) []string {
 	t.Helper()
-	files := []string{"README.md"}
+	files := []string{"README.md", "README_ja.md"}
 	root := filepath.Join(repoRoot, "docs")
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {

@@ -8,7 +8,7 @@
 .
 ├── CLAUDE.md               ← プロジェクトルール（参照先の案内）
 ├── LICENSE                 （MIT）
-├── README.md               ← 利用者向けの入口
+├── README.md               ← 利用者向けの入口（英語が正本。日本語は README_ja.md）
 ├── qsokufile               ← ビルド・テストの近道（qsoku）
 ├── go.mod / go.sum         （module github.com/amisonnet8/bcuz）
 ├── .gitattributes          （`* text=auto eol=lf`）
@@ -25,7 +25,7 @@
 │   ├── run/                ← コマンドの起動、終了コード、シグナル（`_unix.go`・`_windows.go`）（R2）
 │   ├── history/            ← 履歴の読み込み、日付の絞り込み、1行の表示（R3）
 │   └── docs/               ← `docs/` の検査だけのテスト（リンク切れ、`examples/` との照合）（R0〜R4）
-├── docs/                   ← 正本（英語。日本語は `_ja.md`）。reference/・design/・examples/（`docs/README.md`）
+├── docs/                   ← 正本（英語。日本語は `_ja.md`）。reference/・design/・examples/・images/（README のヘッダー画像。`docs/README.md`）
 ├── dev/                    ← 開発のうちうち。roadmap.md、review/（了承をもらう資料）
 ├── .devcontainer/          ← 開発環境（devcontainer.json、postCreate.sh）
 ├── .claude/                ← rules/（ルール）、hooks/、settings.json（人間が管理する）

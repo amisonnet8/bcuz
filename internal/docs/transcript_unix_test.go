@@ -445,38 +445,52 @@ func TestExamplesRunAsDocumented(t *testing.T) {
 	}
 }
 
-// The first example of README.md is the same session.
+// readmes are the two languages of the README, with the command reference of
+// the same language.
+var readmes = []struct{ readme, cli string }{
+	{"README.md", "docs/reference/cli.md"},
+	{"README_ja.md", "docs/reference/cli_ja.md"},
+}
+
+// The first example of each README is the same session.
 func TestReadmeExample(t *testing.T) {
-	md := readRepoFile(t, "README.md")
-	blocks := allBlocks(md)
-	if len(blocks) == 0 || !strings.HasPrefix(blocks[0].text, "$ ") {
-		t.Fatal("README.md does not start with an example")
-	}
-	s := newDocSession(t, false)
-	want := blocks[0].text
-	if got := s.runSteps(want); mask(got) != mask(want) {
-		t.Errorf("README example does not match.\n--- got\n%s--- want\n%s", mask(got), mask(want))
+	for _, r := range readmes {
+		t.Run(r.readme, func(t *testing.T) {
+			blocks := allBlocks(readRepoFile(t, r.readme))
+			if len(blocks) == 0 || !strings.HasPrefix(blocks[0].text, "$ ") {
+				t.Fatalf("%s does not start with an example", r.readme)
+			}
+			s := newDocSession(t, false)
+			want := blocks[0].text
+			if got := s.runSteps(want); mask(got) != mask(want) {
+				t.Errorf("README example does not match.\n--- got\n%s--- want\n%s", mask(got), mask(want))
+			}
+		})
 	}
 }
 
-// The usage lines of README.md are lines of cli.md or of bcuz -h.
+// The usage lines of each README (the block with the info string "text") are
+// lines of the command reference of the same language, or of bcuz -h.
 func TestReadmeUsageLines(t *testing.T) {
-	// The 書式 block and the usage text of bcuz -h are both in cli_ja.md (the
-	// README is in Japanese).
-	known := readRepoFile(t, "docs/reference/cli_ja.md")
-	var lines []string
-	for _, b := range allBlocks(readRepoFile(t, "README.md")) {
-		if strings.HasPrefix(b.text, "bcuz ") {
-			lines = strings.Split(strings.TrimSuffix(b.text, "\n"), "\n")
-		}
-	}
-	if len(lines) == 0 {
-		t.Fatal("no usage block in README.md")
-	}
-	for _, l := range lines {
-		form := strings.TrimRight(regexp.MustCompile(`\s{2,}.*$`).ReplaceAllString(l, ""), " ")
-		if !strings.Contains(known, "\n"+form) && !strings.Contains(known, "  "+form) {
-			t.Errorf("README.md usage line %q (%q) is not in docs/reference/cli.md", l, form)
-		}
+	for _, r := range readmes {
+		t.Run(r.readme, func(t *testing.T) {
+			// The synopsis block and the usage text of bcuz -h are both in cli.md.
+			known := readRepoFile(t, r.cli)
+			var lines []string
+			for _, b := range allBlocks(readRepoFile(t, r.readme)) {
+				if b.lang == "text" {
+					lines = strings.Split(strings.TrimSuffix(b.text, "\n"), "\n")
+				}
+			}
+			if len(lines) == 0 {
+				t.Fatalf("no usage block in %s", r.readme)
+			}
+			for _, l := range lines {
+				form := strings.TrimRight(regexp.MustCompile(`\s{2,}.*$`).ReplaceAllString(l, ""), " ")
+				if !strings.Contains(known, "\n"+form) && !strings.Contains(known, "  "+form) {
+					t.Errorf("%s: usage line %q (%q) is not in %s", r.readme, l, form, r.cli)
+				}
+			}
+		})
 	}
 }
