@@ -15,12 +15,20 @@ cd "$work/proj"
 bcuz_bin="$work/bin/bcuz"
 "$bcuz_bin" --init
 
+# Files that ls colors differently: a directory, an executable and a symlink.
+# An empty workspace shows nothing, and the colors cannot be checked.
+mkdir sample-dir
+printf '#!/bin/sh\n' > run.sh
+chmod +x run.sh
+ln -s run.sh link-to-run.sh
+printf 'hello\n' > notes.txt
+
 cat <<'EOF'
 
 == bcuz を手で試す（シェルを開きます。終わったら exit か Ctrl-D）
 
  1. bcuz "色" ls --color=auto
-      -> ls の出力に色が付く（bcuz を挟んでも端末のまま）
+      -> ls の出力に色が付く（sample-dir は青、run.sh は緑、link-to-run.sh は水色など）
  2. bcuz "止める" sleep 30      （そのまま Ctrl-C を押す）
       -> すぐ戻り、続けて echo $? で 130 が出る
  3. bcuz "編集" vi x.txt        （適当に打って :q! で終わる）
