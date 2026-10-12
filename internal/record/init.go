@@ -55,6 +55,10 @@ func Init(dir string) (InitResult, error) {
 	return res, nil
 }
 
+// Reason returns the plain cause of err (such as "permission denied"),
+// without the operation and the path, for the messages of bcuz.
+func Reason(err error) string { return reason(err).Error() }
+
 // reason returns the cause of a path error without the operation and path.
 func reason(err error) error {
 	var pe *os.PathError

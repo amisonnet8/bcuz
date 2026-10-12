@@ -25,6 +25,11 @@ const (
 	fmtCreatedShadows = "bcuz: created .bcuz/ (shadows %s)"
 	msgAlreadyExists  = "bcuz: .bcuz/ already exists"
 	fmtCannotCreate   = "bcuz: cannot create .bcuz/: %s"
+
+	fmtCommandNotFound = "bcuz: command not found: %s"
+	fmtCannotRun       = "bcuz: cannot run %s: %s"
+	msgNoBcuzDirRun    = "bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')"
+	fmtNotRecorded     = "bcuz: warning: not recorded: %s"
 )
 
 // fmtNotImplemented is a stand-in for the features that later stages (R1 to

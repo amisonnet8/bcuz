@@ -14,6 +14,7 @@
 | `qsoku cross` | `GOOS=windows`・`darwin`で`vet`と`lint` | OS ごとに分けたコード（プロセス・シグナル）を触ったとき（`check`に含む） |
 | `qsoku check` | `vet`・`lint`・`unit`・`cross`をまとめて実行 | **作業の区切りで必ず通す**（`.claude/rules/testing.md`） |
 | `qsoku bin` | `go build -o bin/bcuz ./cmd/bcuz` | 手で`bcuz`を動かして確かめるとき |
+| `qsoku try` | `bin`をビルドし、一時ディレクトリの作業場に`bcuz`を置いたシェルを開く（`dev/try.sh`）。閉じると記録を表示する | **人間が**本物の端末で、Ctrl-C・色・`vi`を確かめるとき（`dev/roadmap.md`の「R2の確認」） |
 | `qsoku race` | `CGO_ENABLED=1 go test -race` | 並行性・排他に関わる変更 |
 | `qsoku trivy` | 既知の脆弱性・ライセンスの検査 | 依存を足したとき |
 | `qsoku shellcheck` | 追跡中の`*.sh`・`*.bash`をShellCheckにかける | シェルスクリプトを足したとき |

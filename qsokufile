@@ -25,6 +25,10 @@ check: qsoku vet && qsoku lint && qsoku unit && qsoku cross
 # Build the bcuz binary into bin/ to try it by hand.
 bin: (cd //; go build -o bin/bcuz ./cmd/bcuz)
 
+# Open a shell in a temporary workspace with bin/bcuz on PATH, to try Ctrl-C,
+# colors and a full-screen editor by hand (dev/try.sh, dev/roadmap.md).
+try: qsoku bin && (cd //; bash dev/try.sh)
+
 # -race needs cgo, which the container turns off (.devcontainer/devcontainer.json).
 race: (cd //; CGO_ENABLED=1 go test -race -count=1 ./...)
 

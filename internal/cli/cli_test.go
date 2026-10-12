@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func run(t *testing.T, args ...string) (code int, stdout, stderr string) {
+func runMain(t *testing.T, args ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	var out, errOut bytes.Buffer
 	code = Main(args, strings.NewReader(""), &out, &errOut)
@@ -41,8 +41,6 @@ func TestMain_options(t *testing.T) {
 		{"reason starting with dash", []string{"-m", "ls"}, 125, "", fmt.Sprintf(fmtUnknownOption, "-m") + "\n"},
 
 		{"only --", []string{"--"}, 125, "", msgMissingArgs + "\n"},
-		{"-- then dash reason", []string{"--", "-x reason", "ls"}, 125, "", notImpl("run")},
-		{"-- then option-like reason", []string{"--", "-h", "ls"}, 125, "", notImpl("run")},
 		{"-- then empty reason", []string{"--", "", "ls"}, 125, "", msgReasonEmpty + "\n"},
 		{"-- then reason only", []string{"--", "why"}, 125, "", msgMissingCommand + "\n"},
 
@@ -50,10 +48,6 @@ func TestMain_options(t *testing.T) {
 		{"blank reason", []string{" \t\n", "ls"}, 125, "", msgReasonEmpty + "\n"},
 		{"empty reason without command", []string{""}, 125, "", msgReasonEmpty + "\n"},
 		{"reason without command", []string{"why"}, 125, "", msgMissingCommand + "\n"},
-
-		{"command", []string{"why", "make", "test"}, 125, "", notImpl("run")},
-		{"-h after the reason belongs to the command", []string{"why", "ls", "-h"}, 125, "", notImpl("run")},
-		{"--version after the reason belongs to the command", []string{"why", "x", "--version"}, 125, "", notImpl("run")},
 	}
 
 	restore := readBuildInfo
@@ -64,7 +58,7 @@ func TestMain_options(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			code, stdout, stderr := run(t, tt.args...)
+			code, stdout, stderr := runMain(t, tt.args...)
 			if code != tt.wantCode {
 				t.Errorf("exit code = %d, want %d", code, tt.wantCode)
 			}
@@ -94,7 +88,7 @@ func TestInit(t *testing.T) {
 		work, _ := setup(t)
 		t.Chdir(work)
 
-		code, stdout, stderr := run(t, "--init")
+		code, stdout, stderr := runMain(t, "--init")
 		if code != 0 || stdout != msgCreated+"\n" || stderr != "" {
 			t.Errorf("first: code %d, stdout %q, stderr %q", code, stdout, stderr)
 		}
@@ -103,7 +97,7 @@ func TestInit(t *testing.T) {
 			t.Errorf("history.jsonl: %v, %v; want an empty file", fi, err)
 		}
 
-		code, stdout, stderr = run(t, "--init")
+		code, stdout, stderr = runMain(t, "--init")
 		if code != 0 || stdout != msgAlreadyExists+"\n" || stderr != "" {
 			t.Errorf("second: code %d, stdout %q, stderr %q", code, stdout, stderr)
 		}
@@ -121,7 +115,7 @@ func TestInit(t *testing.T) {
 		}
 		parent := filepath.Join(filepath.Dir(wd), ".bcuz") + string(filepath.Separator)
 
-		code, stdout, stderr := run(t, "--init")
+		code, stdout, stderr := runMain(t, "--init")
 		want := fmt.Sprintf(fmtCreatedShadows, parent) + "\n"
 		if code != 0 || stdout != want || stderr != "" {
 			t.Errorf("code %d, stdout %q (want %q), stderr %q", code, stdout, want, stderr)
@@ -138,7 +132,7 @@ func TestInit(t *testing.T) {
 		}
 		t.Chdir(work)
 
-		code, stdout, stderr := run(t, "--init")
+		code, stdout, stderr := runMain(t, "--init")
 		if code != 125 || stdout != "" {
 			t.Errorf("code %d, stdout %q", code, stdout)
 		}
@@ -169,7 +163,7 @@ func TestVersion(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			readBuildInfo = func() (*debug.BuildInfo, bool) { return tt.info, tt.ok }
-			_, stdout, _ := run(t, "--version")
+			_, stdout, _ := runMain(t, "--version")
 			if want := "bcuz " + tt.want + "\n"; stdout != want {
 				t.Errorf("stdout = %q, want %q", stdout, want)
 			}
