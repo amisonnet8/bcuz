@@ -78,7 +78,7 @@ bcuz --version
 <summary>記録の形（<code>.bcuz/history.jsonl</code> の1行）</summary>
 
 ```json
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"テストを実行","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"テストを実行","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
 ```
 
 </details>

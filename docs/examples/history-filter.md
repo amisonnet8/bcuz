@@ -74,7 +74,7 @@ $ echo $?
 
 ## Time zones
 
-The date and time column and the comparison of dates use the time zone of **the viewer**. A record whose `ts` is `2026-10-12T06:35:12.345+09:00` is shown as follows in a UTC environment (`TZ=UTC`), and counts as a record of the 11th of October.
+The records keep `ts` in UTC. The date and time column and the comparison of dates use the time zone of **the viewer**. A record whose `ts` is `2026-10-11T21:35:12.345Z` is shown as 06:35:12 of the 12th of October in Asia/Tokyo, and as follows in a UTC environment (`TZ=UTC`), where it counts as a record of the 11th of October.
 
 ```
 $ TZ=UTC bcuz -H --date 2026-10-11

@@ -46,8 +46,8 @@ Append only is hard to break, and `grep` and `jq` can read it as it is. It is wr
 ### `cmd` is an array
 So that arguments with spaces or quotes are kept intact. It is rewritten into a form a shell can run only when displayed.
 
-### `ts` is the start time, with the time zone
-It keeps "when it was typed". The end time is known from `ts` + `ms`. The time zone is attached so that the time does not shift when read in another environment.
+### `ts` is the start time, in UTC
+It keeps "when it was typed". The end time is known from `ts` + `ms`. The data is kept in UTC, so that it means the same thing wherever it is read and sorts the same way as text. The time zone is applied only when the history is displayed (the viewer's time zone).
 
 ### Include `ms`
 With one field, slow commands (tests, builds) can be found afterwards.

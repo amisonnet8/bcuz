@@ -24,7 +24,7 @@ func TestMarshal(t *testing.T) {
 				Exit: 0,
 				MS:   8312,
 			},
-			want: `{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"xxテスト実施","cmd":["make","test"],"dir":"backend","exit":0,"ms":8312}` + "\n",
+			want: `{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"xxテスト実施","cmd":["make","test"],"dir":"backend","exit":0,"ms":8312}` + "\n",
 		},
 		{
 			name: "html characters stay as they are",
@@ -36,7 +36,7 @@ func TestMarshal(t *testing.T) {
 				Exit: 1,
 				MS:   0,
 			},
-			want: `{"v":1,"ts":"2026-10-12T06:35:12.000+09:00","why":"a<b && c>d","cmd":["sh","-c","grep -c '<x>' *.go | sort"],"dir":".","exit":1,"ms":0}` + "\n",
+			want: `{"v":1,"ts":"2026-10-11T21:35:12.000Z","why":"a<b && c>d","cmd":["sh","-c","grep -c '<x>' *.go | sort"],"dir":".","exit":1,"ms":0}` + "\n",
 		},
 		{
 			name: "newline and tab in the reason are escaped, not lost",
@@ -51,7 +51,7 @@ func TestMarshal(t *testing.T) {
 			want: `{"v":1,"ts":"2026-10-12T06:35:12.000Z","why":"a\nb\tc","cmd":["ls"],"dir":".","exit":130,"ms":65200}` + "\n",
 		},
 		{
-			name: "sub-millisecond part is cut, a negative offset is kept",
+			name: "sub-millisecond part is cut, a time with an offset is written in UTC",
 			r: Record{
 				Time: time.Date(2026, 1, 2, 3, 4, 5, 999_999_999, time.FixedZone("", -5*60*60)),
 				Why:  "w",
@@ -60,7 +60,7 @@ func TestMarshal(t *testing.T) {
 				Exit: 127,
 				MS:   0,
 			},
-			want: `{"v":1,"ts":"2026-01-02T03:04:05.999-05:00","why":"w","cmd":["x"],"dir":"a/b","exit":127,"ms":0}` + "\n",
+			want: `{"v":1,"ts":"2026-01-02T08:04:05.999Z","why":"w","cmd":["x"],"dir":"a/b","exit":127,"ms":0}` + "\n",
 		},
 	}
 	for _, tt := range tests {
@@ -126,12 +126,30 @@ func TestUnmarshal(t *testing.T) {
 	}
 }
 
+// An old line, with a time zone offset in ts, is read as the same instant and
+// written again in UTC: the records of earlier versions stay readable.
+func TestOldOffsetLineIsWrittenInUTC(t *testing.T) {
+	in := `{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"w","cmd":["x"],"dir":".","exit":0,"ms":8312}`
+	want := `{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"w","cmd":["x"],"dir":".","exit":0,"ms":8312}` + "\n"
+	r, err := Unmarshal([]byte(in))
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(out) != want {
+		t.Errorf("got %s want %s", out, want)
+	}
+}
+
 // A line that is read and written again is the same line.
 func TestRoundTrip(t *testing.T) {
 	lines := []string{
-		`{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"a<b>&c","cmd":["x","y z"],"dir":"a/b","exit":0,"ms":8312}`,
+		`{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"a<b>&c","cmd":["x","y z"],"dir":"a/b","exit":0,"ms":8312}`,
 		`{"v":1,"ts":"2026-10-12T06:35:12.000Z","why":"改行\nあり","cmd":["x"],"dir":".","exit":130,"ms":0}`,
-		`{"v":1,"ts":"2026-10-12T06:35:12.100-05:30","why":"w","cmd":["x"],"dir":".","exit":127,"ms":1}`,
+		`{"v":1,"ts":"2026-10-12T11:05:12.100Z","why":"w","cmd":["x"],"dir":".","exit":127,"ms":1}`,
 	}
 	for _, in := range lines {
 		r, err := Unmarshal([]byte(in))

@@ -27,7 +27,7 @@ $ echo $?
 One line is added to `.bcuz/history.jsonl`.
 
 ```json
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"run the tests","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"run the tests","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
 ```
 
 ## From a subdirectory
@@ -45,7 +45,7 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:40:03.020+09:00","why":"check the lint findings","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
+{"v":1,"ts":"2026-10-11T21:40:03.020Z","why":"check the lint findings","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
 ```
 
 ## Stop with Ctrl-C
@@ -59,7 +59,7 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:41:30.500+09:00","why":"watch the log","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
+{"v":1,"ts":"2026-10-11T21:41:30.500Z","why":"watch the log","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
 ```
 
 ## See the history

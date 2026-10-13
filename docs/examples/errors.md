@@ -35,7 +35,7 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:45:00.000+09:00","why":"build","cmd":["mkae","build"],"dir":".","exit":127,"ms":0}
+{"v":1,"ts":"2026-10-11T21:45:00.000Z","why":"build","cmd":["mkae","build"],"dir":".","exit":127,"ms":0}
 ```
 
 ## Cannot be started (recorded)
@@ -69,7 +69,7 @@ $ bcuz -- "-v this time" go test -v ./...
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T07:00:00.000+09:00","why":"-v this time","cmd":["go","test","-v","./..."],"dir":".","exit":0,"ms":9100}
+{"v":1,"ts":"2026-10-11T22:00:00.000Z","why":"-v this time","cmd":["go","test","-v","./..."],"dir":".","exit":0,"ms":9100}
 ```
 
 ## `--init` where a parent has `.bcuz/` too

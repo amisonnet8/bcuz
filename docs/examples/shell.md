@@ -19,7 +19,7 @@ cli.go:2
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:50:00.000+09:00","why":"record the whole pipe","cmd":["sh","-c","grep -c TODO *.go | sort -t: -k2 -n"],"dir":".","exit":0,"ms":120}
+{"v":1,"ts":"2026-10-11T21:50:00.000Z","why":"record the whole pipe","cmd":["sh","-c","grep -c TODO *.go | sort -t: -k2 -n"],"dir":".","exit":0,"ms":120}
 ```
 
 ## Arguments are kept as received
@@ -29,7 +29,7 @@ $ bcuz "commit" git commit -m "fix: handle empty reason"
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:52:10.000+09:00","why":"commit","cmd":["git","commit","-m","fix: handle empty reason"],"dir":".","exit":0,"ms":1200}
+{"v":1,"ts":"2026-10-11T21:52:10.000Z","why":"commit","cmd":["git","commit","-m","fix: handle empty reason"],"dir":".","exit":0,"ms":1200}
 ```
 
 The history shows it in a form that a shell can run (an argument that contains anything other than ASCII letters, digits and `-_./=:,+@%` is wrapped in `'…'`).
@@ -58,7 +58,7 @@ count only" ./migrate --dry-run
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T07:10:00.000+09:00","why":"first migration run\ncount only","cmd":["./migrate","--dry-run"],"dir":".","exit":0,"ms":3050}
+{"v":1,"ts":"2026-10-11T22:10:00.000Z","why":"first migration run\ncount only","cmd":["./migrate","--dry-run"],"dir":".","exit":0,"ms":3050}
 ```
 
 ```

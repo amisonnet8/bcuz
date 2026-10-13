@@ -15,7 +15,8 @@ import (
 // Version is the format version written to the "v" field.
 const Version = 1
 
-// tsLayout is RFC 3339 with milliseconds and the time zone offset.
+// tsLayout is RFC 3339 with milliseconds. Records are written in UTC, so the
+// zone is always "Z"; a reader accepts any offset.
 const tsLayout = "2006-01-02T15:04:05.000Z07:00"
 
 // Record is one execution: one line of history.jsonl.
@@ -60,7 +61,7 @@ func Marshal(r Record) ([]byte, error) {
 	enc.SetEscapeHTML(false)
 	err := enc.Encode(line{
 		V:    Version,
-		TS:   r.Time.Format(tsLayout),
+		TS:   r.Time.UTC().Format(tsLayout),
 		Why:  r.Why,
 		Cmd:  r.Cmd,
 		Dir:  r.Dir,

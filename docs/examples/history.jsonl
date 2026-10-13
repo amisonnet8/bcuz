@@ -1,9 +1,9 @@
-{"v":1,"ts":"2026-10-10T17:55:01.200+09:00","why":"check the tags","cmd":["git","tag","--list","v0.*"],"dir":".","exit":0,"ms":950}
-{"v":1,"ts":"2026-10-10T18:02:44.010+09:00","why":"full tests before release","cmd":["make","test"],"dir":".","exit":0,"ms":35000}
-{"v":1,"ts":"2026-10-11T09:15:30.700+09:00","why":"reinstall dependencies","cmd":["npm","ci"],"dir":"frontend","exit":0,"ms":4000}
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"run the tests","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
-{"v":1,"ts":"2026-10-12T06:40:03.020+09:00","why":"check the lint findings","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
-{"v":1,"ts":"2026-10-12T06:41:30.500+09:00","why":"watch the log","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
-{"v":1,"ts":"2026-10-12T06:45:00.000+09:00","why":"build","cmd":["mkae","build"],"dir":".","exit":127,"ms":0}
-{"v":1,"ts":"2026-10-12T06:50:00.000+09:00","why":"record the whole pipe","cmd":["sh","-c","grep -c TODO *.go | sort -t: -k2 -n"],"dir":".","exit":0,"ms":120}
-{"v":1,"ts":"2026-10-12T06:52:10.000+09:00","why":"commit","cmd":["git","commit","-m","fix: handle empty reason"],"dir":".","exit":0,"ms":1200}
+{"v":1,"ts":"2026-10-10T08:55:01.200Z","why":"check the tags","cmd":["git","tag","--list","v0.*"],"dir":".","exit":0,"ms":950}
+{"v":1,"ts":"2026-10-10T09:02:44.010Z","why":"full tests before release","cmd":["make","test"],"dir":".","exit":0,"ms":35000}
+{"v":1,"ts":"2026-10-11T00:15:30.700Z","why":"reinstall dependencies","cmd":["npm","ci"],"dir":"frontend","exit":0,"ms":4000}
+{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"run the tests","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-11T21:40:03.020Z","why":"check the lint findings","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
+{"v":1,"ts":"2026-10-11T21:41:30.500Z","why":"watch the log","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
+{"v":1,"ts":"2026-10-11T21:45:00.000Z","why":"build","cmd":["mkae","build"],"dir":".","exit":127,"ms":0}
+{"v":1,"ts":"2026-10-11T21:50:00.000Z","why":"record the whole pipe","cmd":["sh","-c","grep -c TODO *.go | sort -t: -k2 -n"],"dir":".","exit":0,"ms":120}
+{"v":1,"ts":"2026-10-11T21:52:10.000Z","why":"commit","cmd":["git","commit","-m","fix: handle empty reason"],"dir":".","exit":0,"ms":1200}

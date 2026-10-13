@@ -24,7 +24,7 @@
 
 - 1行は、**項目の順を固定した構造体**から作る（`v`・`ts`・`why`・`cmd`・`dir`・`exit`・`ms`）。`map` は使わない（順が変わる）
 - `json.Marshal` は `<`・`>`・`&` を `<` などにする。**`json.Encoder` の `SetEscapeHTML(false)`** を使い、理由やコマンドの文字をそのまま残す
-- `ts` は `time.Now()` を `2006-01-02T15:04:05.000Z07:00` で書く（ミリ秒、タイムゾーン付き）
+- `ts` は `time.Now()` を **`.UTC()` にして** `2006-01-02T15:04:05.000Z07:00` で書く（ミリ秒、末尾は `Z`）。表示（`-H`）と日付の絞り込みだけが、見る側のタイムゾーン（`time.Local`）に直す。読む側は、古い記録のオフセット付きも受け付ける
 - 追記は `os.OpenFile(…, O_APPEND|O_CREATE|O_WRONLY, 0o644)` に、改行まで含めた1行を**1回の `Write`** で書く
 - `dir` は `filepath.Rel(root, cwd)` を `filepath.ToSlash` したもの。`os.Getwd()` をそのまま使う
 - `.bcuz/` の探索は、`filepath.Dir` を繰り返し、`Dir(x) == x` になったら止める（Windows のドライブのルートでも止まる）。見つけるのは**ディレクトリ**の `.bcuz`（同名のファイルは無視する）

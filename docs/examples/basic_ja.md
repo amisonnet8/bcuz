@@ -27,7 +27,7 @@ $ echo $?
 `.bcuz/history.jsonl` に1行足される。
 
 ```json
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"xxテスト実施","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"xxテスト実施","cmd":["make","test"],"dir":".","exit":0,"ms":8312}
 ```
 
 ## サブディレクトリから打つ
@@ -45,7 +45,7 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:40:03.020+09:00","why":"lint の指摘を確認","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
+{"v":1,"ts":"2026-10-11T21:40:03.020Z","why":"lint の指摘を確認","cmd":["golangci-lint","run"],"dir":"backend","exit":1,"ms":2410}
 ```
 
 ## Ctrl-C で止める
@@ -59,7 +59,7 @@ $ echo $?
 ```
 
 ```json
-{"v":1,"ts":"2026-10-12T06:41:30.500+09:00","why":"ログを眺める","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
+{"v":1,"ts":"2026-10-11T21:41:30.500Z","why":"ログを眺める","cmd":["tail","-f","app.log"],"dir":"backend","exit":130,"ms":65200}
 ```
 
 ## 履歴を見る

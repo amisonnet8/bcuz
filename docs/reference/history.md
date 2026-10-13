@@ -12,13 +12,13 @@
 ## Shape of a line
 
 ```json
-{"v":1,"ts":"2026-10-12T06:35:12.345+09:00","why":"run the tests","cmd":["make","test"],"dir":"backend","exit":0,"ms":8312}
+{"v":1,"ts":"2026-10-11T21:35:12.345Z","why":"run the tests","cmd":["make","test"],"dir":"backend","exit":0,"ms":8312}
 ```
 
 | Field | Type | Content |
 |---|---|---|
 | `v` | number | Version of the format. Now `1` |
-| `ts` | string | The time the command was **started**. RFC 3339, with milliseconds, in the time zone of the machine that ran it |
+| `ts` | string | The time the command was **started**. RFC 3339, with milliseconds, **in UTC** (it ends with `Z`). `-H` shows it in the time zone of the viewer |
 | `why` | string | The reason, as received (line breaks included). Never empty |
 | `cmd` | array of strings | The command and its arguments, as received. At least one element |
 | `dir` | string | Where it ran, as a path relative to the directory that has `.bcuz/`. The separator is `/` on every OS. The top is `"."` |
@@ -33,6 +33,7 @@
 - **Adding a field is fine** (`v` stays). Readers ignore fields they do not know
 - Changing the meaning of a field, or removing one, raises `v`
 - A reader (`-H`) skips a line whose `v` it does not know, as an unreadable line
+- A reader accepts any time zone offset in `ts` (RFC 3339). Records written by earlier versions, with an offset such as `+09:00`, stay as they are and are read as before
 
 ## Example
 

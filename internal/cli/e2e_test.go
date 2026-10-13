@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -322,6 +323,37 @@ func TestExecuteRecordsWhereAndWhen(t *testing.T) {
 	}
 	if r.MS < 150 || time.Duration(r.MS)*time.Millisecond > after.Sub(before) {
 		t.Errorf("ms = %d, want at least 150 and at most %v", r.MS, after.Sub(before))
+	}
+}
+
+// ts is written in UTC whatever the time zone of the machine is, and -H shows
+// it in the time zone of the viewer (docs/reference/history.md).
+func TestExecuteWritesUTC(t *testing.T) {
+	old := time.Local
+	time.Local = time.FixedZone("JST", 9*60*60)
+	t.Cleanup(func() { time.Local = old })
+
+	work := workspace(t)
+	if code, _, stderr := runChild(t, "exit:0", "", "why", self(t)); code != 0 || stderr != "" {
+		t.Fatalf("code %d, stderr %q", code, stderr)
+	}
+	raw, err := os.ReadFile(record.HistoryPath(work))
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := regexp.MustCompile(`^\{"v":1,"ts":"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)"`).FindSubmatch(raw)
+	if m == nil {
+		t.Fatalf("ts is not in UTC: %s", raw)
+	}
+
+	// The same instant, seen from Tokyo: nine hours later than the text.
+	utc, err := time.Parse(time.RFC3339, string(m[1]))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, stdout, _ := runMain(t, "-H")
+	if want := utc.In(time.Local).Format("2006-01-02 15:04:05"); !strings.HasPrefix(stdout, want) {
+		t.Errorf("-H shows %q, want it to start with %q", stdout, want)
 	}
 }
 
