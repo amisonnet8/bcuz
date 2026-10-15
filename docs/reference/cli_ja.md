@@ -192,10 +192,10 @@ dates are YYYY-MM-DD. records go to the nearest .bcuz/history.jsonl.
 ## `--version`
 
 ```
-bcuz v0.1.0
+bcuz v0.1.1
 ```
 
-バージョンは、ビルド情報（`go install …@v0.1.0` で入るタグ）から取る。取れないとき（手元のビルド）は `bcuz (devel)`。
+バージョンは、ビルド情報（`go install …@v0.1.1` で入るタグ）から取る。取れないとき（手元のビルド）は `bcuz (devel)`。
 
 ## エラーのメッセージ
 

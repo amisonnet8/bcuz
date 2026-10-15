@@ -192,10 +192,10 @@ dates are YYYY-MM-DD. records go to the nearest .bcuz/history.jsonl.
 ## `--version`
 
 ```
-bcuz v0.1.0
+bcuz v0.1.1
 ```
 
-The version comes from the build information (the tag that `go install …@v0.1.0` installs). When it is not available (a local build), it is `bcuz (devel)`.
+The version comes from the build information (the tag that `go install …@v0.1.1` installs). When it is not available (a local build), it is `bcuz (devel)`.
 
 ## Error messages
 
