@@ -4,6 +4,7 @@ package cli
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -66,10 +67,10 @@ func bcuzBinary(t *testing.T) string {
 			return
 		}
 		out := filepath.Join(testBinDir, "bcuz")
-		cmd := exec.Command("go", "build", "-o", out, "github.com/amisonnet8/bcuz/cmd/bcuz") //nolint:gosec // out is in a directory this test made
-		cmd.Dir = pkgDir                                                                     // inside the module; tests have moved to a temporary directory
+		cmd := exec.Command("go", "build", "-o", out, "github.com/amisonnet8/bcuz/cmd/bcuz")
+		cmd.Dir = pkgDir // inside the module; tests have moved to a temporary directory
 		if b, err := cmd.CombinedOutput(); err != nil {
-			buildErr = fmt.Errorf("go build: %v\n%s", err, b)
+			buildErr = fmt.Errorf("go build: %w\n%s", err, b)
 		}
 	})
 	if buildErr != nil {
@@ -92,7 +93,7 @@ func start(t *testing.T, mode string) *bcuzProc {
 	t.Helper()
 	work := workspace(t)
 
-	cmd := exec.Command(bcuzBinary(t), "why", self(t)) //nolint:gosec // both are binaries this test built or is
+	cmd := exec.Command(bcuzBinary(t), "why", self(t))
 	cmd.Dir = work
 	cmd.Env = append(os.Environ(), childEnv+"="+mode)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
@@ -138,8 +139,8 @@ func (p *bcuzProc) wait(t *testing.T) int {
 	if err == nil {
 		return 0
 	}
-	ee, ok := err.(*exec.ExitError)
-	if !ok {
+	var ee *exec.ExitError
+	if !errors.As(err, &ee) {
 		t.Fatal(err)
 	}
 	if ws, ok := ee.Sys().(syscall.WaitStatus); ok && ws.Signaled() {
@@ -292,7 +293,7 @@ func TestTerminalPassesThrough(t *testing.T) {
 	}
 	work := workspace(t)
 
-	cmd := exec.Command(script, "-qec", bcuzBinary(t)+" why "+self(t), "/dev/null") //nolint:gosec // script is found by LookPath; the rest is made by this test
+	cmd := exec.Command(script, "-qec", bcuzBinary(t)+" why "+self(t), "/dev/null")
 	cmd.Dir = work
 	cmd.Env = append(os.Environ(), childEnv+"=istty")
 	cmd.Stdin = strings.NewReader("")

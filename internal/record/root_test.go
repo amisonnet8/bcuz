@@ -132,7 +132,7 @@ func TestInit(t *testing.T) {
 		if res, err = Init(tmp); err != nil || res.Status != AlreadyExists {
 			t.Fatalf("result = %+v, %v", res, err)
 		}
-		b, err := os.ReadFile(filepath.Join(dir, FileName)) //nolint:gosec // a file this test made in t.TempDir()
+		b, err := os.ReadFile(filepath.Join(dir, FileName))
 		if err != nil || string(b) != content {
 			t.Errorf("history.jsonl = %q, %v; want %q", b, err, content)
 		}
