@@ -5,9 +5,14 @@
 #
 # Allowed:  bcuz "<reason>" cmd ...   bcuz -- "-x reason" cmd ...
 #           bcuz -H [...]  bcuz --init  bcuz -h  bcuz --version
+#           git commit ...  (the one command run without bcuz: bcuz writes its
+#           record after the command ends, so a commit through bcuz would leave
+#           .bcuz/history.jsonl changed right after every commit. The reason
+#           goes in the commit message.)
 # Refused:  anything that does not start with bcuz, and anything that chains
 #           more commands behind the first one (&&  ||  ;  &  newline, command
 #           substitution), because those would run without a record.
+#           bcuz "<reason>" git commit ...: run git commit without bcuz.
 # Pipes and redirects are allowed (output shaping: `bcuz "x" qsoku check 2>&1 | tail`).
 # Not installed yet (bootstrap, e.g. the first `go install`): allowed.
 #
@@ -45,6 +50,10 @@ check() {
   local cmd=$1 bare
   cmd="${cmd#"${cmd%%[![:space:]]*}"}" # trim leading whitespace
 
+  if [[ $cmd =~ ^git[[:space:]]+commit([[:space:]]|$) ]]; then
+    check_single "$cmd"
+    return
+  fi
   if [[ ! $cmd =~ ^bcuz([[:space:]]|$) ]]; then
     echo "does not start with bcuz"
     return
@@ -56,6 +65,17 @@ check() {
     echo "unknown bcuz option (put '--' before a reason that starts with '-')"
     return
   fi
+  bare=$(strip_quotes "$cmd")
+  if [[ $bare =~ ^bcuz([[:space:]]+--)?[[:space:]]+([^[:space:]]+[[:space:]]+)?git[[:space:]]+commit([[:space:]]|$) ]]; then
+    echo "git commit is run without bcuz (its record would be written after the commit): git commit ..."
+    return
+  fi
+  check_single "$cmd"
+}
+
+# Prints the reason to refuse a command that is not a single command, or nothing.
+check_single() {
+  local cmd=$1 bare
   if [[ $cmd == *'$('* || $cmd == *'`'* || $cmd == *'<('* || $cmd == *'>('* ]]; then
     echo "contains command or process substitution (it would run without a record)"
     return
@@ -92,6 +112,7 @@ cat >&2 <<EOF
 Refused: this Bash command is not run through bcuz ($reason).
 Run it as:  bcuz "<why you are running it>" <command> [args...]
 Example:    bcuz "lint after the refactor" qsoku lint
+Only git commit is run without bcuz: git commit -m "..."
 See .claude/rules/bcuz-usage.md.
 EOF
 exit 2

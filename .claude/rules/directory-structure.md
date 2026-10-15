@@ -61,5 +61,5 @@
 - **配布物（ビルド済みバイナリ）**: リポジトリにコミットしない。`.gitignore`には**ルート直下に限定して**書く（`/名前`）。名前だけを書くと、同名のソースディレクトリまで無視される
 - **`docs/`**: 正本の文書（`.claude/rules/documentation.md`）。`docs/examples/history.jsonl`（英語。日本語は `history_ja.jsonl`）はテストの答えでもある。英語と日本語は対で、同じ構造にする
 - **`dev/`**: 開発のうちうち。`docs/` から参照しない。`roadmap.md`・`review/`のほか、人間の確認を始める`try.sh`（`qsoku try`が呼ぶ）、配布の`install-check.sh`・`dist.sh`（`qsoku install-check`・`qsoku dist`が呼ぶ。`.claude/rules/distribution.md`）を置く。シェルスクリプトは`qsoku shellcheck`の対象
-- **`.bcuz/`**: bcuzが`.bcuz/history.jsonl`に追記する、コマンドの実行の記録（`.claude/rules/bcuz-usage.md`）。**コミットする**（`.gitignore`の`!/.bcuz/`）。行を足すだけなので、`.gitattributes`の`merge=union`で、マージしても両側の行が残る。コミットのコマンド自身の記録はコミットの後に書かれるので、次のコミットに入れる。秘密をコマンドに書かない（記録に残る）。中のファイルは直接編集しない。`.srwrignore`でテープにも載せない。bcuz を動かすテストは `t.TempDir()` の中で行う
+- **`.bcuz/`**: bcuzが`.bcuz/history.jsonl`に追記する、コマンドの実行の記録（`.claude/rules/bcuz-usage.md`）。**コミットする**（`.gitignore`の`!/.bcuz/`）。行を足すだけなので、`.gitattributes`の`merge=union`で、マージしても両側の行が残る。コミットの前に`git add .bcuz/history.jsonl`する（`git commit`は`bcuz`を通さない）。秘密をコマンドに書かない（記録に残る）。中のファイルは直接編集しない。`.srwrignore`でテープにも載せない。bcuz を動かすテストは `t.TempDir()` の中で行う
 - **シェルスクリプト**: 最小限にする。追跡中のものは`qsoku shellcheck`の対象になる（`.claude/rules/testing.md`）

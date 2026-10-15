@@ -18,6 +18,7 @@ bcuz "失敗の原因を探す" git log --oneline -5
 | 後ろに別のコマンドを続ける（`&&`・`\|\|`・`;`・`&`・改行） | 1コマンドずつ`bcuz`で実行する。まとめて1つの作業なら`bcuz "理由" sh -c 'a && b'` |
 | コマンド置換（`$(…)`・`` `…` ``） | 先に別の`bcuz`で値を得るか、`sh -c`の中に書く |
 | `bcuz`の知らないオプション（`bcuz -x …`） | 理由が`-`で始まるなら`bcuz -- "-x の確認" …` |
+| `bcuz`を通した`git commit`（`bcuz "…" git commit …`） | `git commit -m "…"`（bcuz を付けない。下の「bcuz を通さなくてよいもの」） |
 
 - パイプ（`|`）とリダイレクト（`> file`・`2>&1`）は通す（`bcuz "確認" qsoku check 2>&1 \| tail -20`）。パイプの後ろは記録されない（出力の整形用）
 - 環境変数を足すときは`env`で：`bcuz "リリースのビルド" env VERSION=v0.1.0 qsoku dist`
@@ -50,6 +51,13 @@ Bashツールを通らないものは、フックの対象外で、そのまま�
 - 記録：mtqgのMCPツール（`.claude/rules/mtqg-usage.md`）。Bashから`mtqg`を呼ぶなら、`bcuz "記録" mtqg …`
 - フック（`mtqg hook`・`srwr hook`・`build.sh`）。Claude Codeが直接動かす
 
+Bashツールのコマンドで、**`git commit`だけは`bcuz`を通さない**（フックも通す）。
+
+- 理由：`bcuz`はコマンドが終わってから記録を書く。`git commit`を通すと、コミットの直後に`history.jsonl`が必ず変更ありになり、いつまでも片付かない
+- コミットの理由は、コミットメッセージに書く（記録はgitの履歴に残る）
+- `bcuz "…" git commit`はフックが断る。後ろに別のコマンドをつなぐ（`git commit … && …`）・コマンド置換（`-m "$(…)"`）も、ほかのコマンドと同じく断る。複数行のメッセージは、引用符の中で改行するか、`git commit -F <ファイル>`で渡す
+- `git add`・`git status`・`git log`など、ほかの`git`のコマンドは今までどおり`bcuz`を通す
+
 ## 履歴を見る
 
 ```
@@ -75,7 +83,7 @@ bcuz -H --since 2026-10-01 --until 2026-10-10
 
 - `.bcuz/`は、リポジトリ直下に置く。`.devcontainer/postCreate.sh`が`bcuz --init`で作る（すでにあれば何もしない）。無ければコマンドは実行されるが記録されず、`bcuz: not recorded: no .bcuz/ found`が出る
 - **`.bcuz/history.jsonl`はコミットする**（`.gitignore`の`!/.bcuz/`）。mtqgの記録・srwrのテープと同じく、「どのコマンドを、なぜ、いつ動かしたか」をclone先でも`bcuz -H`で読めるようにするため。行を足すだけの形式なので、`.gitattributes`の`merge=union`で、ブランチをマージしても両側の行が残る
-- **コミットのコマンド自身の記録は、そのコミットの後に書かれる。** `bcuz "…" git commit`は、コミットが終わってから1行を足すので、コミットの直後は`history.jsonl`がいつも変更ありになる。これは正常。次のコミットに一緒に入れる（`git add .bcuz/history.jsonl`）。そのためだけのコミットは作らない
+- **コミットの前に`git add .bcuz/history.jsonl`する。** それまでのコマンドの記録が、そのコミットに入る。`git commit`は`bcuz`を通さないので、コミットの後に記録が増えることは無い（上の「bcuz を通さなくてよいもの」）
 - `.bcuz/`の中のファイルを直接編集しない
 - `.srwrignore`で、`.bcuz/`はテープに記録しない（`bcuz`が書くもの）
 

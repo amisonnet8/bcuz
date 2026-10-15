@@ -24,3 +24,10 @@
 {"v":1,"ts":"2026-10-15T03:04:13.558Z","why":"判定の表の書き方を確かめて、git commit の行を足す案を作る","cmd":["grep","-n","-E","^(check|run|t |case)|git|allow|deny",".claude/hooks/require-bcuz.test.sh"],"dir":".","exit":0,"ms":1}
 {"v":1,"ts":"2026-10-15T03:04:29.273Z","why":"コミット前にテープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":9}
 {"v":1,"ts":"2026-10-15T03:04:34.050Z","why":"コミットにテープを入れるため今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}
+{"v":1,"ts":"2026-10-15T03:04:34.238Z","why":"ルール共通化3回目と整理の変更をコミットに含める","cmd":["git","add",".claude/rules/distribution.md",".claude/rules/working-with-human.md","CLAUDE.md",".mtqg/journal.jsonl",".bcuz/history.jsonl",".srwr/tapes"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-15T03:04:39.477Z","why":"ルール共通化3回目（リリースの流れ・rule 9件）と重複の整理を反映する","cmd":["git","commit","-m","ルールを共通化: リリースの流れの節、rule 9件。重複を整理\n\n- distribution.md: 共通の節「リリースの流れ」を足し、元の箇条書きは bcuz 固有の「release.yml が動かすもの」に絞る\n- working-with-human.md: 調査・検討の最中は勝手に実装しない（mtqg rule b404f73606）\n- CLAUDE.md: 登録済みの rule を9件に\n- mtqg memo 6121f73026、srwr テープ 20261015-0301-yh0x\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"],"dir":".","exit":0,"ms":11}
+{"v":1,"ts":"2026-10-15T03:19:08.098Z","why":"人間が別で入れた git commit 例外の変更を把握する","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T03:19:08.450Z","why":"フックの判定の変更を確かめる","cmd":["git","diff","--",".claude/hooks"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T03:19:13.220Z","why":"git commit 例外を入れたフックの判定の表を確かめる","cmd":["qsoku","hook"],"dir":".","exit":0,"ms":1800}
+{"v":1,"ts":"2026-10-15T03:19:15.152Z","why":"フックの変更後もシェルスクリプトの検査が通るか確かめる","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":166}
+{"v":1,"ts":"2026-10-15T03:22:34.279Z","why":"コミット前にテープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":40}

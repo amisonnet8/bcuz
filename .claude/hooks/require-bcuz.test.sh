@@ -42,6 +42,12 @@ expect allow 'bcuz --version'
 expect allow 'bcuz -h'
 expect allow 'bcuz "日本語の理由" git status'
 expect allow 'bcuz "grep" grep -rn "a;b" .'
+expect allow 'git commit -m "fix: a; b && c"'
+expect allow 'git commit'
+expect allow $'git commit -m "title\n\nbody"'
+expect allow '  git commit -F msg.txt'
+expect allow 'bcuz "git commit の前の確認" git status'
+expect allow 'bcuz "x" git commit-tree x'
 
 # refused
 expect deny 'qsoku check'
@@ -58,6 +64,12 @@ expect deny 'bcuz -x ls'
 expect deny 'FOO=1 bcuz "a" ls'
 expect deny 'bcuzz "a" ls'
 expect deny 'echo bcuz'
+expect deny 'bcuz "commit" git commit -m x'
+expect deny 'bcuz -- "-x" git commit -m x'
+expect deny 'git commit -m x && git push'
+expect deny 'git commit -m "$(cat msg)"'
+expect deny 'git push'
+expect deny 'git commit-tree x'
 
 if [ "$fail" -ne 0 ]; then
   exit 1
