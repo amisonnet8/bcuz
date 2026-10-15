@@ -15,3 +15,12 @@
 {"v":1,"ts":"2026-10-15T02:38:36.675Z","why":"コミット前にテープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":8}
 {"v":1,"ts":"2026-10-15T02:38:36.841Z","why":"コミットに入れるファイルを確かめる","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}
 {"v":1,"ts":"2026-10-15T02:38:40.470Z","why":"コミットにテープを入れるため今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}
+{"v":1,"ts":"2026-10-15T02:38:47.881Z","why":"ルール共通化の変更・記録・テープをコミットに含める","cmd":["git","add",".claude/rules/bcuz-usage.md",".claude/rules/directory-structure.md",".claude/rules/testing.md",".gitattributes",".gitignore","CLAUDE.md",".mtqg/journal.jsonl",".bcuz/history.jsonl",".srwr/tapes"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T02:38:52.418Z","why":"ルール共通化（記録のコミット・秘密を書かない）を反映する","cmd":["git","commit","-m","ルールを共通化: .bcuz/history.jsonl をコミットする、秘密をコマンドに書かない\n\n- .gitignore に !/.bcuz/、.gitattributes に merge=union を足す\n- bcuz-usage.md・directory-structure.md・testing.md・CLAUDE.md を新しい方針に合わせる\n- 実装・docs の修正は不要（mtqg memo ff67a55772）\n- srwr テープ 20261015-0236-gd4q\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"],"dir":".","exit":0,"ms":10}
+{"v":1,"ts":"2026-10-15T02:59:13.633Z","why":"再度入ったルール修正を把握する","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-15T02:59:13.989Z","why":"再度入ったルール修正の中身を把握する","cmd":["git","diff","--",".",":!.bcuz",":!.mtqg"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T02:59:20.847Z","why":"追加されたリリースの流れの記述が workflow の実態と合うか確かめる","cmd":["git","grep","-n","-E","tags|qsoku|draft|gh release","--",".github/workflows/release.yml"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T02:59:25.812Z","why":"新しい mtqg rule「調査中は実装しない」がルール文書にもあるか確かめる","cmd":["git","grep","-n","-E","勝手に実装|依頼したときだけ","--","CLAUDE.md",".claude"],"dir":".","exit":1,"ms":3}
+{"v":1,"ts":"2026-10-15T03:04:13.558Z","why":"判定の表の書き方を確かめて、git commit の行を足す案を作る","cmd":["grep","-n","-E","^(check|run|t |case)|git|allow|deny",".claude/hooks/require-bcuz.test.sh"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-15T03:04:29.273Z","why":"コミット前にテープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":9}
+{"v":1,"ts":"2026-10-15T03:04:34.050Z","why":"コミットにテープを入れるため今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}
