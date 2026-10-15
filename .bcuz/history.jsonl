@@ -62,3 +62,8 @@
 {"v":1,"ts":"2026-10-15T22:14:05.798Z","why":"merge の前に未コミットの変更が merge と重ならないか確かめるため","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}
 {"v":1,"ts":"2026-10-15T22:14:05.982Z","why":"journal.jsonl が merge で両側の行を残す設定か確かめるため","cmd":["git","check-attr","merge","--",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":1}
 {"v":1,"ts":"2026-10-15T22:14:06.162Z","why":"merge の前にテープに無い変更が無いか確かめるため","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":44}
+{"v":1,"ts":"2026-10-15T22:14:09.649Z","why":"merge の前に v0.1.2 要否の調査の記録をコミットに入れるため","cmd":["git","add",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:14:17.012Z","why":"v0.1.1 のタグのコミット（文書の版の例・memo・テープ）を main に戻すため","cmd":["git","merge","--no-ff","4546333","-m","v0.1.1 のタグのコミットを main に取り込む\n\nタグ v0.1.1 は 4546333 を指していたが、main はその手前の d86ba9f から分かれていた。\ndocs/reference/cli(+_ja).md の --version の例（v0.1.1）、memo 574ef5c06f、テープ 20261013-0213-xszm を戻す（q e62e35ab41）。\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"],"dir":".","exit":0,"ms":21}
+{"v":1,"ts":"2026-10-15T22:14:22.232Z","why":"タグ v0.1.1 が main の履歴に入ったか確かめるため","cmd":["git","describe","--tags"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:14:22.414Z","why":"merge で journal.jsonl が壊れず取り込んだ memo が読めるか確かめるため","cmd":["mtqg","show","574ef5c06f"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-15T22:14:22.598Z","why":"文書の版の例を戻したあとも docs のテストが通るか確かめるため","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1128}
