@@ -27,15 +27,35 @@
 - 進捗は mtqg の todo。**最初のセッションで、`dev/roadmap.md` の段階を `mtqg t add` で立てる**（段階ごとに1件。中のタスクは着手前に足す）
 - 仕様と実装がずれたら `.claude/rules/documentation.md`
 
+## 守ること（設計の芯）
+
+実装の細部より優先する。これを崩す変更は、実装する前に必ず相談すること。
+
+- **コマンドは素通し。** シェルを通さずに起動し、標準入出力・標準エラー出力は保持も加工もしない。終了コードは子のものをそのまま返す（bcuz 自身のエラーは 125・126・127 のみ）
+- **記録は追記だけ。** 書き換えない・消さない。1行は項目の順を固定した構造体から作り、1回の `Write` で追記する
+- **記録の失敗で、コマンドの終了コードを変えない。** `.bcuz/` が無くても実行する（警告だけ）
+- **日時は UTC で持ち、表示のときだけ見る側のタイムゾーンに直す。** 記録の項目（`v`・`ts`・`why`・`cmd`・`dir`・`exit`・`ms`）と、`docs/reference/` の出力・メッセージは変えない（変えるときは人間の了承が先）
+- **役割外の機能を足さない。** 権限の昇格・出力の保存・設定ファイル・色・`--json` などは作らない（候補は `docs/design/limitations.md`。人間が決めるまで作らない）
+- **外部依存ゼロ・cgo なし。** 標準ライブラリだけで書く
+
+## ドキュメントの言語
+
+- **`docs/` と `README.md` は英語が正本**（`X.md`）。日本語は翻訳で、同じ場所に `X_ja.md`。同じ変更の中で両方を直す
+- `docs/` 以外の文書（`dev/`・`.claude/`・`CLAUDE.md`）は**日本語**
+- コード中のコメントと、bcuz が出すメッセージは**英語**
+- 詳しくは `.claude/rules/documentation.md`
+
 ## 参照すべきファイル
 
 作業を始める前に、以下を確認すること。
 
+- **`.claude/rules/bcuz-usage.md`** — bcuzの使い方。**Bashで実行するコマンドは、必ず`bcuz "理由" コマンド…`の形で打つ**（フックが、そうでないものを断る）。理由は「なぜ」を書く。**コマンドを打つ前に読む**
 - **`.claude/rules/mtqg-usage.md`** — mtqgの使い方（記録者、種類の使い分け、こまめに記録する）
 - **`.claude/rules/srwr-usage.md`** — srwrの使い方（**厳格モード**）。**`Edit`・`Write`は禁止されており、ファイルの変更は`look`／`edit`／`new`（理由`why`つき）で行う。作業のまとまりごとに`session`で題つきのテープを始め、コミットの前にテープを閉じる。ファイルを変える前に読む**
 - **`.claude/rules/qsoku-usage.md`** — qsokuの使い方（`qsokufile`の名前の一覧、呼び方、書式、`//`、シェル連携）。**ビルド・テスト・lintは`go`などを直接打たず、ここの名前で実行する**
 - **`.claude/rules/testing.md`** — テスト方針（開発環境の前提、動作確認の粒度、Trivy、ShellCheck、`-race`、Bashサンドボックス・CIの落とし穴）
 - **`.claude/rules/directory-structure.md`** — ディレクトリ構成と、ファイルの置き場所の判断基準。**新しいファイルを追加するときに読む**
+- **`.claude/rules/datetime.md`** — 日時の扱い（データは UTC で持ち、表示だけ利用者のタイムゾーンに直す。瞬間で比べる、時計を差し替える）。**日時を保存・表示・比較するコードを書くときに読む**
 - **`.claude/rules/working-with-human.md`** — 人間とのやり取り（頼み方の3種類、小さなつまずきの頼み方、確認の自動化、見え方を変えるときの了承）。**人間に何かを頼む前に読む**
 - **`.claude/rules/naming.md`** — 命名規則（製品名、用語の日本語と英語の対応、JSON のフィールド、メッセージ、Go の名前）
 - **`.claude/rules/distribution.md`** — 配布方法（`go install`、GitHub Releases、cgo なし、バージョン）
@@ -46,10 +66,11 @@
 
 ## 開発の進め方
 
+- **Bashのコマンドは、すべて`bcuz "理由" コマンド…`で実行する**（`bcuz "lintの確認" qsoku lint`）。理由は「何をするか」でなく「なぜするか」。`bcuz`で始まらない・`&&`や`;`でつなぐコマンドは、`.claude/settings.json`の`PreToolUse`フック（`.claude/hooks/require-bcuz.sh`）が実行前に断る。実行の記録は`.bcuz/history.jsonl`に残り、`bcuz -H`で見られる（`.claude/rules/bcuz-usage.md`）
 - **ファイルの変更は、srwrの道具（`look`で見て`edit`、新規は`new`）で行い、すべてに理由（`why`）を添える。** 組み込みの`Edit`・`Write`は`.claude/settings.json`で禁止されている（厳格モード）。Bashでの書き換え（`sed -i`・リダイレクト）もしない
 - **作業のまとまり（todo・bug・人間の依頼・作業の種類の変わり目）ごとに、最初に`session`で題つきのテープを始める。** 1つの作業＝1本のテープ、コミットも同じ区切り
 - **コミットの前に、テープを閉じる**（`srwr tapes check`のあと`srwr tapes new`）。書き込み中の生のテープは`.gitignore`で対象外で、閉じて圧縮した`.srwr/tapes/*.tape.jsonl.gz`だけがgitに入る（`.claude/rules/srwr-usage.md`）
-- 実装後は`.claude/rules/testing.md`に従い、ビルド確認に加えて実際の動作確認（`qsoku check`、必要に応じて`qsoku race`・`qsoku trivy`・`qsoku shellcheck`）を行うこと。判断に迷ったら実行する側に倒すこと
+- 実装後は`.claude/rules/testing.md`に従い、ビルド確認に加えて実際の動作確認（`bcuz "…" qsoku check`、必要に応じて`qsoku race`・`qsoku trivy`・`qsoku shellcheck`）を行うこと。判断に迷ったら実行する側に倒すこと
 - 依存ライブラリを足したら、Trivyでライセンス・脆弱性を確認すること（`qsoku trivy`）。bcuz は外部依存ゼロが方針なので、足すこと自体が重要な判断（人間に聞く）
 - 人間に確認を頼むときは、`.claude/rules/working-with-human.md` 3章の形で、1コマンドと見るところだけを渡すこと
 
@@ -58,12 +79,14 @@
 - **pushは人間が行う。** Claude Codeはコミットまでで止めること。`git push`は`.claude/settings.json`で拒否（deny）されている
 - 作業の区切りでこまめにコミットしてよい（消してしまったときに戻せるように）
 - `git reset --hard`・`git clean`は、コミットしていない作業を消すので、使う前に必ず理由を説明すること
+- **コミットの前に`git config user.email`／`user.name`を確かめる。** 正しい値は`65074207+amisonnet8@users.noreply.github.com`／`amisonnet8`（GitHubのプライバシー用noreplyアドレス）。違う値なら、`.git/config`の`[user]`（ローカルの上書き）を疑う。ローカルに設定が無いと、コンテナのglobalの設定（noreplyでないことがある）が使われる
 
 ## 権限・自動化について
 
 `.claude/settings.json`（人間が管理する）により、次の設定になっている。
 
 - 拒否（deny）：`git push`、`gh pr merge`、`gh release create`
+- **`bcuz`を通さないBashコマンドの拒否**：`PreToolUse`フック（`.claude/hooks/require-bcuz.sh`）が、`bcuz`で始まらないコマンドと、後ろに別のコマンドをつなぐもの（`&&`・`||`・`;`・`&`・改行・コマンド置換）を、実行前に断る。直し方は断りのメッセージと`.claude/rules/bcuz-usage.md`に書いてある
 - 実行前に確認（ask）：`git reset --hard`、`git clean`、`sudo`、`gh pr create`
 - **Bashコマンドは既定でOSレベルのサンドボックス（Linux bubblewrap）内で実行される。** ファイルシステムの書き込み先とネットワーク接続先は許可リストで絞られている。この範囲内なら`curl`・`wget`・`go get`などは確認なしに実行できる。リストに無い宛先・書き込み先は`sandbox_violations`として拒否される。そのときは、`.claude/rules/working-with-human.md` 2章の形（原因と、`.claude/settings.json` のどこに何を足すか）で**短く頼む**（許可を広げるかは人間が判断する）。落とし穴は`.claude/rules/testing.md`「Bashサンドボックスの落とし穴」参照
 

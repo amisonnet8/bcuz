@@ -16,7 +16,8 @@
 ├── .golangci.yaml          ← lintの設定
 ├── trivy.yaml              ← 脆弱性・ライセンス検査の設定
 ├── .mcp.json               ← mtqgとsrwrのMCPサーバーの配線
-├── .srwrignore             ← srwrがテープに記録しないファイル（`.mtqg/`など）
+├── .srwrignore             ← srwrがテープに記録しないファイル（`.mtqg/`・`.bcuz/`など）
+├── .bcuz/                  ← bcuzの記録（`history.jsonl`）。`postCreate.sh`が`bcuz --init`で作る。**コミットしない**
 ├── .srwr/                  ← srwrの鍵・ロック・テープ（最初のhook・MCPの呼び出しでできる。**閉じた`tapes/*.gz`だけコミットする**）
 ├── cmd/bcuz/main.go        ← 引数を internal/cli に渡して、終了コードで終わるだけ（R0）
 ├── internal/
@@ -28,7 +29,7 @@
 ├── docs/                   ← 正本（英語。日本語は `_ja.md`）。reference/・design/・examples/・images/（README のヘッダー画像。`docs/README.md`）
 ├── dev/                    ← 開発のうちうち。roadmap.md、review/（了承をもらう資料）
 ├── .devcontainer/          ← 開発環境（devcontainer.json、postCreate.sh）
-├── .claude/                ← rules/（ルール）、hooks/、settings.json（人間が管理する）
+├── .claude/                ← rules/（ルール）、hooks/（build.sh、require-bcuz.sh とそのテスト）、settings.json（人間が管理する）
 ├── .github/workflows/      ← CI（ci.yml）、タグで下書きの Release を作る（release.yml）
 └── .mtqg/                  ← mtqgの記録
 ```
@@ -49,9 +50,11 @@
 - **`internal/`**: Goの仕組みとして、モジュールの外からimportできない。外へ公開するパッケージは`internal/`に置かない
 - **`go.sum`**: コミットする（改ざん検知・再現可能なビルドのため）
 - **`.mtqg/`**: コミットされる。中のファイルは直接編集せず、すべて`mtqg`のコマンド経由で書く（`.claude/rules/mtqg-usage.md`）。`.mtqg/.local/`はコミットされない
+- **`.claude/hooks/require-bcuz.sh`**: Bashツールのコマンドを、`bcuz`を通っていなければ実行前に断る`PreToolUse`フック。判定の表は`require-bcuz.test.sh`（`bash .claude/hooks/require-bcuz.test.sh`）。判定を変えたら、テストの表も同じ変更の中で直す
 - **`.mcp.json`**: `mtqg mcp`と`srwr mcp`（MCPサーバー）の配線。`mtqg init --agent claude-code`・`srwr init`が書くものと同じ
 - **`.srwr/`**: 最初のhook・MCPの呼び出しで、srwrが作る（`srwr init`でも作られる。鍵`key`・`lock`・`active`・`tapes/`・`init-backup/`）。**コミットするのは閉じて圧縮したテープ`tapes/*.tape.jsonl.gz`だけ**。書き込み中の生のテープ`*.tape.jsonl`は`.gitignore`で対象外（閉じると`.gz`に置き換わり、生のままコミットすると「削除＋追加」の差分が出るため）。鍵は共有しない。テンプレートには置いていない（鍵をプロジェクトごとに別にするため）
 - **`.srwrignore`**: テープに記録しないファイル（`.gitignore`と同じ書き方）。生成物や巨大なファイルはここに足す。`.env`・`*.pem`・`*.key`などはsrwrが元から外す
+- **`.devcontainer/devcontainer-lock.json`**: コンテナのビルドで自動で作られる。**できたらコミットする**（この版のfeatureでテストなどが通った証明になる）。featureを新しくしたいときは、lockを消してビルドし直し、新しいlockをコミットする
 - **VSCodeの設定**: `.devcontainer/devcontainer.json`の`customizations.vscode`に置く（拡張と設定を1か所にまとめる）。`.vscode/`は作らない
 - **`.gitattributes`**: `* text=auto eol=lf`。Windowsランナーでの改行コード変換による誤検知を防ぐ（`.claude/rules/testing.md`）。`.mtqg/`の中の`.gitattributes`は`mtqg init`が置くもので、別物
 - **`.gitignore`のドットファイル**: ルート直下のドットファイル・ドットディレクトリは**許可リスト方式**（`/.*`を無視し、追跡するものだけ`!`で戻す。`.claude/`の中は`/.claude/*`を無視して`settings.json`・`rules/`・`skills/`・`hooks/`だけ戻す）。サンドボックスが作業ディレクトリ直下に出すダミーファイルを`git add -A`で混ぜないため（`.claude/rules/testing.md`）。**追跡するドットファイルを新しく足すときは、`.gitignore`に`!`の行を足すこと**。足さないと`git add`が無視する

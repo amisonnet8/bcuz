@@ -20,6 +20,7 @@
 | `qsoku shellcheck` | 追跡中の`*.sh`・`*.bash`をShellCheckにかける | シェルスクリプトを足したとき |
 | `qsoku install-check [版]` | 一時ディレクトリに`go install`して、`--version`・`--init`・実行・`-H`を通す（`dev/install-check.sh`）。版なしはこのチェックアウト、`v0.1.0`・`latest`は公開済みのもの | 配布に関わる変更のあと、タグを公開したあと（CIの`check`ジョブも動かす） |
 | `qsoku dist` | `dist/`に6つのバイナリと`SHA256SUMS`を作る（`dev/dist.sh`）。`VERSION=v0.1.0 qsoku dist`で、版の一致も確かめる | リリースのビルド（`release.yml`が動かす）、手元の試し |
+| `qsoku hook` | `.claude/hooks/require-bcuz.test.sh`（bcuz を強制するフックの判定の表。`jq`が要る） | `require-bcuz.sh`を変えたとき |
 
 一覧は、今ある`qsokufile`の内容そのもの。`qsoku .list`（名前とコマンド）か`qsoku .names`（名前だけ）で確かめる。**引数なしで`qsoku`とだけ打っても、使い方と定義済みの名前が出る。**
 
@@ -29,6 +30,7 @@
 qsoku <名前> [引数...]
 ```
 
+- **Claude Codeは、Bashツールでは`bcuz`を通して呼ぶ**：`bcuz "理由" qsoku <名前>`（`.claude/rules/bcuz-usage.md`）。以下の例・表の`qsoku <名前>`は、素の形で書いてある
 - 引数は、項目のコマンドの中で`"$@"`・`$1`として受けられる。**このプロジェクトの`qsokufile`で引数を受けるのは`install-check`だけ**（ほかは、書いていない引数は捨てられる）。受けたいときは、項目を`unit: (cd //; go test "$@")`のように書き換える。そうすれば`qsoku unit -run TestFoo ./internal/...`が使える
 - **qsoku自身のオプションは無い。** `--help`・`--version`は**名前として調べられる**ので、「定義されていない」というエラーになる。使い方は`qsoku .help`、バージョンは`qsoku .version`
 - コマンドは、どのOSでも、また呼び出し元がどのシェルでも、常に`sh`で実行される

@@ -4,6 +4,17 @@
     "MTQG_AUTHOR_NAME": "claude-code"
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/require-bcuz.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
     "PostToolUse": [
       {
         "hooks": [
@@ -53,15 +64,11 @@
     "filesystem": {
       "allowWrite": [
         "~/.cache/go-build",
-        "~/go",
+        "/go",
         "~/.cache/trivy",
         "~/.cache/golangci-lint"
       ],
-      "denyRead": [
-        "~/.ssh",
-        "~/.aws",
-        "~/.config/gh"
-      ]
+      "denyRead": ["~/.ssh", "~/.aws", "~/.config/gh"]
     },
     "network": {
       "allowedDomains": [
@@ -96,7 +103,5 @@
       "mcp__srwr__session"
     ]
   },
-  "enabledMcpjsonServers": [
-    "srwr"
-  ]
+  "enabledMcpjsonServers": ["srwr"]
 }

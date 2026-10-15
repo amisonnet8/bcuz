@@ -83,6 +83,16 @@ go install github.com/amisonnet8/mtqg/cmd/mtqg@latest
 # follow any change in the tools' names.
 go install github.com/amisonnet8/srwr/cmd/srwr@latest
 
+# bcuz: every command Claude Code runs through the Bash tool goes through
+# `bcuz "<reason>" <command>`, which records when / why / what / result in
+# .bcuz/history.jsonl (.claude/rules/bcuz-usage.md; enforced by the PreToolUse
+# hook .claude/hooks/require-bcuz.sh). @latest, like the tools above.
+go install github.com/amisonnet8/bcuz/cmd/bcuz@latest
+
+# Create .bcuz/ at the repository root (idempotent: prints "already exists"
+# and succeeds if it is there). Without it, commands still run but are not recorded.
+(cd "$(dirname "$0")/.." && bcuz --init)
+
 # Wire up qsoku's bash integration (working-directory carry-back and
 # completion). Idempotent: skipped if already present, so re-running
 # postCreate.sh does not duplicate the line. The single quotes are intentional

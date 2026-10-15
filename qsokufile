@@ -44,3 +44,6 @@ install-check: (cd //; bash dev/install-check.sh "$@")
 # Build the six binaries and SHA256SUMS into dist/ (dev/dist.sh). Set VERSION
 # for a release build: VERSION=v0.1.0 qsoku dist.
 dist: (cd //; bash dev/dist.sh)
+
+# The decision table of the hook that forces commands through bcuz (needs jq).
+hook: (cd //; bash .claude/hooks/require-bcuz.test.sh)
