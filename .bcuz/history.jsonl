@@ -46,3 +46,19 @@
 {"v":1,"ts":"2026-10-15T21:41:53.198Z","why":"コミットの前にテープに無い変更が無いか確かめるため","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":8}
 {"v":1,"ts":"2026-10-15T21:41:56.371Z","why":"コミットにテープを入れるため今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":68}
 {"v":1,"ts":"2026-10-15T21:41:58.489Z","why":"コミットに入るものを確かめるため","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T21:42:01.815Z","why":"ルール共通化の変更と記録・テープをコミットに入れるため","cmd":["git","add",".bcuz/history.jsonl",".claude/hooks/require-bcuz.sh",".claude/hooks/require-bcuz.test.sh",".claude/rules/bcuz-usage.md",".claude/rules/mtqg-usage.md",".claude/rules/srwr-usage.md",".claude/rules/testing.md",".claude/settings.json",".devcontainer/postCreate.sh",".github/workflows/ci.yml",".mtqg/journal.jsonl","CLAUDE.md",".srwr/tapes/20261015-2139-5htb.tape.jsonl.gz"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T21:42:08.876Z","why":"コミットのあとに残りが無いか確かめるため","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:05:46.190Z","why":"v0.1.2 が要るか判断するため v0.1.1 以降のコミットを見る","cmd":["git","log","--oneline","v0.1.1..HEAD"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:05:46.562Z","why":"v0.1.2 が要るか判断するため v0.1.1 以降に変わったファイルを見る","cmd":["git","diff","--stat","v0.1.1..HEAD"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-15T22:05:51.098Z","why":"利用者向けの仕様が v0.1.1 から変わったか確かめるため","cmd":["git","diff","v0.1.1..HEAD","--","docs/reference/cli.md","docs/reference/cli_ja.md","internal/"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T22:05:56.580Z","why":"cli.md の版の例と消えたテープがどのコミットで変わったか特定するため","cmd":["git","log","--oneline","--stat","v0.1.1..HEAD","--","docs/reference/cli.md",".srwr/tapes/20261013-0213-xszm.tape.jsonl.gz"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T22:05:56.742Z","why":"v0.1.1 のタグがどのコミットを指し main とどう分かれているか確かめるため","cmd":["git","log","--oneline","--graph","-12","--all"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:06:00.865Z","why":"v0.1.1 のタグのコミットの中身を確かめるため","cmd":["git","show","--stat","4546333"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T22:06:01.047Z","why":"v0.1.1 のタグのコミットを含むブランチを確かめるため","cmd":["git","branch","-a","--contains","4546333"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:06:06.034Z","why":"リモートの main がタグのコミットを含むか確かめるため","cmd":["git","log","--oneline","-3","origin/main"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:06:06.216Z","why":"4546333 の mtqg の記録が main に無いか確かめるため","cmd":["git","show","4546333","--",".mtqg/journal.jsonl"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T22:10:52.295Z","why":"4546333 が main から外れた経緯を手元の操作記録から調べるため","cmd":["git","reflog","--date=iso","-25"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:10:58.067Z","why":"分かれ道の前後のコミットの日時を比べて経緯を推測するため","cmd":["git","log","--format=%h %ad %cd %s","--date=iso","-4","7a4d9c3","4546333"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T22:14:05.798Z","why":"merge の前に未コミットの変更が merge と重ならないか確かめるため","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-15T22:14:05.982Z","why":"journal.jsonl が merge で両側の行を残す設定か確かめるため","cmd":["git","check-attr","merge","--",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-15T22:14:06.162Z","why":"merge の前にテープに無い変更が無いか確かめるため","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":44}
