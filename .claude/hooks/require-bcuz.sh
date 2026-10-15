@@ -11,7 +11,8 @@
 #           goes in the commit message.)
 # Refused:  anything that does not start with bcuz, and anything that chains
 #           more commands behind the first one (&&  ||  ;  &  newline, command
-#           substitution), because those would run without a record.
+#           substitution outside single quotes), because those would run without
+#           a record.
 #           bcuz "<reason>" git commit ...: run git commit without bcuz.
 # Pipes and redirects are allowed (output shaping: `bcuz "x" qsoku check 2>&1 | tail`).
 # Not installed yet (bootstrap, e.g. the first `go install`): allowed.
@@ -73,10 +74,40 @@ check() {
   check_single "$cmd"
 }
 
+# Remove only single-quoted text: nothing inside single quotes is expanded, so
+# `bcuz "r" sh -c 'echo $(date)'` runs the substitution inside the recorded
+# step. Text in double quotes is kept ($(...) there is expanded by the shell
+# that runs bcuz). Backslash escapes drop the escaped character (\$( is literal).
+strip_single_quotes() {
+  local s=$1 out="" q="" c i
+  for ((i = 0; i < ${#s}; i++)); do
+    c=${s:i:1}
+    if [ "$q" = "'" ]; then
+      if [ "$c" = "'" ]; then q=""; fi
+      continue
+    fi
+    if [ "$q" = '"' ]; then
+      case $c in
+        '\') i=$((i + 1)) ;;
+        '"') q="" ;;
+        *) out+=$c ;;
+      esac
+      continue
+    fi
+    case $c in
+      "'" | '"') q=$c ;;
+      '\') i=$((i + 1)) ;;
+      *) out+=$c ;;
+    esac
+  done
+  printf '%s' "$out"
+}
+
 # Prints the reason to refuse a command that is not a single command, or nothing.
 check_single() {
-  local cmd=$1 bare
-  if [[ $cmd == *'$('* || $cmd == *'`'* || $cmd == *'<('* || $cmd == *'>('* ]]; then
+  local cmd=$1 bare unquoted
+  unquoted=$(strip_single_quotes "$cmd")
+  if [[ $unquoted == *'$('* || $unquoted == *'`'* || $unquoted == *'<('* || $unquoted == *'>('* ]]; then
     echo "contains command or process substitution (it would run without a record)"
     return
   fi

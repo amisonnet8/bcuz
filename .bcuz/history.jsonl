@@ -33,3 +33,16 @@
 {"v":1,"ts":"2026-10-15T03:22:34.279Z","why":"コミット前にテープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":40}
 {"v":1,"ts":"2026-10-15T03:22:46.121Z","why":"素の git commit のあとに記録が残っていないか確かめる","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}
 {"v":1,"ts":"2026-10-15T03:23:56.349Z","why":"残っている未コミットの中身を確かめる","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-15T21:39:24.463Z","why":"ルール共通化の未コミット差分を把握するため","cmd":["git","diff","--stat"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-15T21:39:26.878Z","why":"ルール共通化の差分の中身を読むため","cmd":["git","diff"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-15T21:39:37.101Z","why":"ルール変更に追従していない箇所（版の固定・srwrignore・trivy）を探すため","cmd":["grep","-rnE","v0\\.71|trivy|srwrignore|\\.bcuz/|version:",".srwrignore",".github/",".devcontainer/postCreate.sh","qsokufile","trivy.yaml",".claude/rules/qsoku-usage.md",".claude/rules/directory-structure.md"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T21:39:41.926Z","why":"単一引用符を通すよう変わったフックの判定の表を確かめるため","cmd":["qsoku","hook"],"dir":".","exit":0,"ms":1949}
+{"v":1,"ts":"2026-10-15T21:39:51.748Z","why":"フックに足した strip_single_quotes を ShellCheck で確かめるため","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":267}
+{"v":1,"ts":"2026-10-15T21:39:52.159Z","why":"ルール共通化の取り込み前に全体が通ることを確かめるため","cmd":["qsoku","check"],"dir":".","exit":0,"ms":12092}
+{"v":1,"ts":"2026-10-15T21:40:09.547Z","why":"フックの判定変更に追従していない説明が残っていないか探すため","cmd":["grep","-rn","コマンド置換\\|command substitution\\|setup-trivy\\|0\\.71","CLAUDE.md",".claude/rules",".claude/hooks","dev","docs","README.md"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-15T21:40:12.827Z","why":"断りのメッセージが単一引用符の案内に合っているか確かめるため","cmd":["grep","-n","sh -c\\|substitution\\|single",".claude/hooks/require-bcuz.sh"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-15T21:41:52.830Z","why":"コミットの前に作者のメールが noreply か確かめるため","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-15T21:41:53.014Z","why":"コミットの前に作者の名前を確かめるため","cmd":["git","config","user.name"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-15T21:41:53.198Z","why":"コミットの前にテープに無い変更が無いか確かめるため","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":8}
+{"v":1,"ts":"2026-10-15T21:41:56.371Z","why":"コミットにテープを入れるため今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":68}
+{"v":1,"ts":"2026-10-15T21:41:58.489Z","why":"コミットに入るものを確かめるため","cmd":["git","status","--porcelain"],"dir":".","exit":0,"ms":3}

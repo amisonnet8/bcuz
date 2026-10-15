@@ -103,5 +103,5 @@
       "mcp__srwr__session"
     ]
   },
-  "enabledMcpjsonServers": ["srwr"]
+  "enabledMcpjsonServers": ["mtqg", "srwr"]
 }

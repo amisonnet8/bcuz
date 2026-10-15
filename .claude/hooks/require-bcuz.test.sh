@@ -48,6 +48,10 @@ expect allow $'git commit -m "title\n\nbody"'
 expect allow '  git commit -F msg.txt'
 expect allow 'bcuz "git commit の前の確認" git status'
 expect allow 'bcuz "x" git commit-tree x'
+expect allow "bcuz \"x\" sh -c 'echo \$(date)'"
+expect allow "bcuz \"x\" sh -c 'echo \`date\`'"
+expect allow "bcuz \"x\" grep -n '\$(' file"
+expect allow 'bcuz "x" echo \$(date)'
 
 # refused
 expect deny 'qsoku check'
@@ -60,6 +64,9 @@ expect deny $'bcuz "a" ls\nrm x'
 expect deny 'bcuz "a" echo $(whoami)'
 expect deny 'bcuz "a $(whoami)" ls'
 expect deny 'bcuz "a" echo `whoami`'
+expect deny 'bcuz "a" sh -c "echo $(whoami)"'
+expect deny "bcuz \"a\" sh -c \"echo 'x' \$(whoami)\""
+expect deny 'bcuz "a" diff <(ls a) <(ls b)'
 expect deny 'bcuz -x ls'
 expect deny 'FOO=1 bcuz "a" ls'
 expect deny 'bcuzz "a" ls'

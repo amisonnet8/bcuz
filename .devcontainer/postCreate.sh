@@ -5,7 +5,9 @@ set -euo pipefail
 # lsb-release: Adding the Trivy apt repository below.
 # gcc:         qsoku race (CGO_ENABLED=1 go test -race) needs a C compiler.
 #              The container itself runs with CGO_ENABLED=0 (devcontainer.json).
-# jq:          Used by .claude/hooks/build.sh and for inspecting --json output.
+# jq:          Used by .claude/hooks/build.sh, .claude/hooks/require-bcuz.sh (and
+#              its test, qsoku hook) and the allowWrite block below; also for
+#              inspecting --json output.
 # ShellCheck:  Static analysis of tracked *.sh and *.bash files (qsoku shellcheck).
 #              Comment lines must not start with the lowercase directive word,
 #              or ShellCheck parses them as directives (SC1072/SC1073).

@@ -74,7 +74,7 @@ git add … && git commit …
 ## このプロジェクトでの取り決め
 
 - **テープは共有する**（閉じて圧縮したテープ`.srwr/tapes/*.tape.jsonl.gz`をgitに入れる。`.gitignore`で`.srwr/`の中は`tapes/`だけ戻し、書き込み中の生のテープ`*.tape.jsonl`は対象外）。clone先で`srwr view`・`srwr trace`が使える。**鍵`.srwr/key`・ロック・`active`・`init-backup/`は入れない**。テープはファイルの全文を含むので、秘密のファイルは記録しない（`.srwrignore`と、`.env`・`*.pem`・`*.key`などの既定の対象）
-- **記録しないもの**（`.srwrignore`）：`.mtqg/`。生成物・巨大なファイルは、プロジェクトで足す
+- **記録しないもの**（`.srwrignore`）：`.mtqg/`・`.bcuz/`。生成物・巨大なファイルは、プロジェクトで足す
 - **srwrは`.devcontainer/postCreate.sh`で`@latest`**（qsoku・mtqgと同じ）。0.xの間は道具の名前や入力が変わりうるので、**コンテナを作り直したら`srwr --version`を見て、版が変わっていたら`srwr init`を1回動かす**（許可する道具の名前が`.claude/settings.json`に追従する）
 - 厳格⇄緩いの切り替えは`srwr init`／`srwr init --lenient`。**緩いモードにするのは人間の判断**（`Write`が記録されず`external`になる）。AIが勝手に切り替えない
 - hookの`build.sh`は、srwrの`edit`・`new`の入力（`file`・`edits[].file`）を見て、`.go`・`go.mod`・`go.sum`のときだけ`qsoku build`を動かす（組み込みの`Edit`・`Write`は禁止なので、そちらでは動かない）
