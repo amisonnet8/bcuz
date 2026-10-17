@@ -97,3 +97,11 @@
 {"v":1,"ts":"2026-10-17T10:03:11.789Z","why":"直前の確認コマンドの記録もコミットに入れる","cmd":["git","add",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":3}
 {"v":1,"ts":"2026-10-17T10:10:24.511Z","why":"QA を閉じた記録をコミットに入れる","cmd":["git","add",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":4}
 {"v":1,"ts":"2026-10-17T10:10:24.695Z","why":"コミットの中身を確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-17T10:10:26.910Z","why":"直前の確認コマンドの記録もコミットに入れる","cmd":["git","add",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-17T10:30:32.591Z","why":"上げる版の名前がすでに使われていないかを確かめるため","cmd":["git","tag","--list"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T10:31:12.626Z","why":"版の例が書かれている箇所を洗い出す","cmd":["grep","-rn","v0\\.1\\.1","README.md","README_ja.md","docs","internal"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-17T10:31:20.630Z","why":"版の例を上げたあと、文書の照合テストが通るかの確認","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1114}
+{"v":1,"ts":"2026-10-17T10:31:25.624Z","why":"コミットの前に、テープに無い変更が無いかを確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":8}
+{"v":1,"ts":"2026-10-17T10:31:28.685Z","why":"コミットの前に今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":9}
+{"v":1,"ts":"2026-10-17T10:31:32.192Z","why":"v0.2.0 の準備の変更を、記録とテープも含めてコミットに入れる","cmd":["git","add","docs/reference/cli.md","docs/reference/cli_ja.md",".srwr/tapes",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-17T10:31:32.373Z","why":"コミットの中身を確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
