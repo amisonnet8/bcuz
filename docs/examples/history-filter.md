@@ -49,6 +49,16 @@ $ bcuz -H --since 2026-10-10 --until 2026-10-11
 2026-10-10 17:55:01    0   950ms  .  check the tags  $ git tag --list 'v0.*'
 ```
 
+## From standard input
+
+The same records, moved to `archive.jsonl` (see "Archiving" in [history.md](../reference/history.md)), are read with `-`. The filters work the same.
+
+```
+$ bcuz -H - --date 2026-10-10 < archive.jsonl
+2026-10-10 18:02:44    0   35.0s  .  full tests before release  $ make test
+2026-10-10 17:55:01    0   950ms  .  check the tags  $ git tag --list 'v0.*'
+```
+
 ## No match
 
 Nothing is printed, and it succeeds (0).

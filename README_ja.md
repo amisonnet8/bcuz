@@ -64,11 +64,12 @@ bcuz "テストを実行" make test         # 実行して記録する
 bcuz -- "-v を付けて確認" go test -v  # 理由が - で始まるとき
 bcuz -H                               # 履歴を新しい順に見る
 bcuz -H --date 2026-10-12             # その日だけ（--since・--until も）
+gzip -dc old.jsonl.gz | bcuz -H -     # 移した記録を標準入力から見る
 ```
 
 ```text
 bcuz [--] <理由> <コマンド> [引数...]   実行して記録
-bcuz -H, --history [--date D | --since D] [--until D]
+bcuz -H, --history [-] [--date D | --since D] [--until D]
 bcuz --init                         カレントディレクトリに .bcuz/ を作る
 bcuz -h, --help
 bcuz --version

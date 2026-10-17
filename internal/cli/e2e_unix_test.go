@@ -308,3 +308,55 @@ func TestTerminalPassesThrough(t *testing.T) {
 		t.Errorf("records = %+v", recs)
 	}
 }
+
+// The real bcuz reads a file given as standard input with "-", where there
+// is no .bcuz/.
+func TestHistoryStdinFromFile(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "old.jsonl")
+	if err := os.WriteFile(path, []byte(goodLine), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = f.Close() }()
+
+	cmd := exec.Command(bcuzBinary(t), "-H", "-")
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "TZ=UTC")
+	cmd.Stdin = f
+	out, err := cmd.Output()
+	want := "2026-10-11 21:35:12    0    8.3s  .  xxテスト実施  $ make test\n"
+	if err != nil || string(out) != want {
+		t.Errorf("err %v, stdout %q; want %q", err, out, want)
+	}
+}
+
+// Without "-", bcuz -H ends even when standard input is a pipe that is never
+// closed, as with an AI agent or CI.
+func TestHistoryDoesNotWaitForStdin(t *testing.T) {
+	work := workspace(t)
+	cmd := exec.Command(bcuzBinary(t), "-H")
+	cmd.Dir = work
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = stdin.Close() }()
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	done := make(chan error, 1)
+	go func() { done <- cmd.Wait() }()
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Errorf("bcuz -H: %v", err)
+		}
+	case <-time.After(10 * time.Second):
+		_ = cmd.Process.Kill()
+		t.Fatal("bcuz -H waited for standard input")
+	}
+}

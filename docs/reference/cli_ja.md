@@ -6,7 +6,7 @@
 
 ```
 bcuz [--] <理由> <コマンド> [引数...]    コマンドを実行して記録する
-bcuz -H [絞り込み]                     履歴を表示する（--history と同じ）
+bcuz -H [-] [絞り込み]                 履歴を表示する（--history と同じ）
 bcuz --init                          カレントディレクトリに .bcuz/ を作る
 bcuz -h                              使い方を表示する（--help と同じ）
 bcuz --version                       バージョンを表示する
@@ -67,7 +67,7 @@ bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')
 - カレントディレクトリから親へ順にたどり、**最初に見つかった `.bcuz/` ディレクトリ**を使う。ファイルシステムのルートまで無ければ「見つからない」
 - 記録は、その中の `history.jsonl` に追記する。`.bcuz/` はあるが `history.jsonl` が無いときは、作る
 - git などのリポジトリの境界では止まらない
-- 履歴（`-H`）も同じ探し方をする
+- 履歴（`-H`）も同じ探し方をする。ただし `-` のときは探さない（下の「標準入力から読む」）
 
 ## `--init`
 
@@ -96,6 +96,7 @@ bcuz -H --date 2026-10-12                    その日だけ
 bcuz -H --since 2026-10-01                   その日から
 bcuz -H --until 2026-10-10                   その日まで
 bcuz -H --since 2026-10-01 --until 2026-10-10
+bcuz -H - < old.jsonl                        標準入力から
 ```
 
 ### 絞り込み
@@ -111,6 +112,22 @@ bcuz -H --since 2026-10-01 --until 2026-10-10
 - 同じオプションを2回書くと、エラー（125）
 - 日付の形が違う・存在しない日付（`2026-02-30`）は、エラー（125）
 - `--since` が `--until` より後なら、何も出さずに成功（0）
+
+### 標準入力から読む
+
+`-` を書くと、`.bcuz/history.jsonl` の代わりに、標準入力から履歴を読む。`history.jsonl` から移した記録を見るためのもの（[history_ja.md](history_ja.md) の「アーカイブ」）。
+
+```
+gzip -dc .bcuz/history-2026.jsonl.gz | bcuz -H -
+bcuz -H - --date 2026-10-10 < old.jsonl
+```
+
+- `-` は `-H` の後のどこに書いてもよく、絞り込みと一緒に使える。2回書くと、エラー（125）
+- `.bcuz/` を探さない。`.bcuz/` の無い場所でも動く
+- 標準入力を読むのは `-` を書いたときだけ。`-` の無い `bcuz -H` は、標準入力を読まない（AI エージェントや CI のように、標準入力が端末でないときに、入力を待たないため）
+- 端末から打つと、入力の終わり（Ctrl-D）まで待つ
+- 並び・表示・読めない行の扱いは、ファイルのときと同じ。複数のファイルをつないでもよい（`cat a.jsonl b.jsonl | bcuz -H -`）。`ts` の順に並ぶ
+- メッセージでの場所は `<stdin>`
 
 ### 表示
 
@@ -154,6 +171,7 @@ bcuz -H --since 2026-10-01 --until 2026-10-10
 
 ```
 bcuz: warning: .bcuz/history.jsonl:12: skipped unreadable line
+bcuz: warning: <stdin>:12: skipped unreadable line
 ```
 
 ### `.bcuz/` が見つからないとき
@@ -166,10 +184,11 @@ bcuz: no .bcuz/ found (run 'bcuz --init')
 
 ### 履歴を読めないとき
 
-`history.jsonl` が無ければ、1件も無いものとして扱う（何も出さずに 0）。あるのに読めなければ、標準エラー出力に出して、125 で終わる。
+`history.jsonl` が無ければ、1件も無いものとして扱う（何も出さずに 0）。あるのに読めなければ、標準エラー出力に出して、125 で終わる。`-` のときの標準入力も同じ。
 
 ```
 bcuz: cannot read .bcuz/history.jsonl: permission denied
+bcuz: cannot read <stdin>: input/output error
 ```
 
 ## `-h`・`--help`
@@ -181,7 +200,7 @@ bcuz - run a command with a reason, and record it
 
 usage:
   bcuz [--] <reason> <command> [args...]
-  bcuz -H, --history [--date D | --since D] [--until D]
+  bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
   bcuz -h, --help
   bcuz --version
@@ -215,7 +234,9 @@ bcuz v0.1.1
 | `.bcuz/` が無い（実行） | `bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')` | コマンドのもの |
 | `.bcuz/` が無い（`-H`） | `bcuz: no .bcuz/ found (run 'bcuz --init')` | 125 |
 | 履歴を読めない（`-H`） | `bcuz: cannot read .bcuz/history.jsonl: permission denied` | 125 |
+| 標準入力を読めない（`-H -`） | `bcuz: cannot read <stdin>: input/output error` | 125 |
 | 読めない行（`-H`） | `bcuz: warning: .bcuz/history.jsonl:12: skipped unreadable line` | 0 |
+| 読めない行（`-H -`） | `bcuz: warning: <stdin>:12: skipped unreadable line` | 0 |
 | コマンドが見つからない | `bcuz: command not found: mkae` | 127 |
 | 起動できない | `bcuz: cannot run ./build.sh: permission denied` | 126 |
 | 記録できない | `bcuz: warning: not recorded: <理由>` | コマンドのもの |

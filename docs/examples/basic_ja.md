@@ -83,7 +83,7 @@ bcuz - run a command with a reason, and record it
 
 usage:
   bcuz [--] <reason> <command> [args...]
-  bcuz -H, --history [--date D | --since D] [--until D]
+  bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
   bcuz -h, --help
   bcuz --version

@@ -64,11 +64,12 @@ bcuz "run the tests" make test          # run and record
 bcuz -- "-v this time" go test -v       # a reason that starts with -
 bcuz -H                                 # the history, newest first
 bcuz -H --date 2026-10-12               # one day (also --since and --until)
+gzip -dc old.jsonl.gz | bcuz -H -       # records moved away, from standard input
 ```
 
 ```text
 bcuz [--] <reason> <command> [args...]   run the command and record it
-bcuz -H, --history [--date D | --since D] [--until D]
+bcuz -H, --history [-] [--date D | --since D] [--until D]
 bcuz --init
 bcuz -h, --help
 bcuz --version

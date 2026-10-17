@@ -35,6 +35,20 @@
 - A reader (`-H`) skips a line whose `v` it does not know, as an unreadable line
 - A reader accepts any time zone offset in `ts` (RFC 3339). Records written by earlier versions, with an offset such as `+09:00`, stay as they are and are read as before
 
+## Archiving
+
+bcuz never moves, compresses or deletes records. To keep `history.jsonl` small, move it away yourself. The next run creates a new `history.jsonl`.
+
+```
+mv .bcuz/history.jsonl .bcuz/history-2026.jsonl
+gzip .bcuz/history-2026.jsonl
+gzip -dc .bcuz/history-2026.jsonl.gz | bcuz -H -
+```
+
+- `-H` reads only `history.jsonl`. Moved records are read with `-H -` from standard input ([cli.md](cli.md))
+- Several files can be read together: `gzip -dc .bcuz/history-*.jsonl.gz | cat - .bcuz/history.jsonl | bcuz -H -`
+- Use `gzip -dc` rather than `zcat`: on macOS, `zcat` may not read `.gz`
+
 ## Example
 
 [../examples/history.jsonl](../examples/history.jsonl)

@@ -6,7 +6,7 @@
 
 ```
 bcuz [--] <reason> <command> [args...]    run the command and record it
-bcuz -H [filter]                          show the history (same as --history)
+bcuz -H [-] [filter]                      show the history (same as --history)
 bcuz --init                               create .bcuz/ in the current directory
 bcuz -h                                   show the usage (same as --help)
 bcuz --version                            show the version
@@ -67,7 +67,7 @@ bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')
 - Starting from the current directory and going up through its parents, the **first `.bcuz/` directory found** is used. If none is found up to the root of the file system, it is "not found"
 - Records are appended to `history.jsonl` in it. If `.bcuz/` exists but `history.jsonl` does not, it is created
 - The boundary of a repository such as git does not stop the search
-- The history (`-H`) is found the same way
+- The history (`-H`) is found the same way, except with `-` ("Reading from standard input" below)
 
 ## `--init`
 
@@ -96,6 +96,7 @@ bcuz -H --date 2026-10-12                    that day only
 bcuz -H --since 2026-10-01                   from that day
 bcuz -H --until 2026-10-10                   until that day
 bcuz -H --since 2026-10-01 --until 2026-10-10
+bcuz -H - < old.jsonl                        from standard input
 ```
 
 ### Filters
@@ -111,6 +112,22 @@ bcuz -H --since 2026-10-01 --until 2026-10-10
 - Writing the same option twice is an error (125)
 - A date in the wrong form, or one that does not exist (`2026-02-30`), is an error (125)
 - If `--since` is after `--until`, nothing is printed and it succeeds (0)
+
+### Reading from standard input
+
+With `-`, the history is read from standard input instead of `.bcuz/history.jsonl`. It is for records that were moved out of `history.jsonl` (see "Archiving" in [history.md](history.md)).
+
+```
+gzip -dc .bcuz/history-2026.jsonl.gz | bcuz -H -
+bcuz -H - --date 2026-10-10 < old.jsonl
+```
+
+- `-` can be written anywhere after `-H`, together with the filters. Writing it twice is an error (125)
+- `.bcuz/` is not looked for. It works where there is no `.bcuz/`
+- Standard input is read only with `-`. `bcuz -H` without it never reads standard input (so that it does not wait for input when standard input is not a terminal, as with an AI agent or CI)
+- Typed at a terminal, it waits until the end of the input (Ctrl-D)
+- The order, the display and the unreadable lines are the same as with the file. Several files can be joined (`cat a.jsonl b.jsonl | bcuz -H -`): the records are put in order by `ts`
+- In messages, the place is `<stdin>`
 
 ### Display
 
@@ -154,6 +171,7 @@ Columns are separated by two spaces. Place and reason are not padded to a common
 
 ```
 bcuz: warning: .bcuz/history.jsonl:12: skipped unreadable line
+bcuz: warning: <stdin>:12: skipped unreadable line
 ```
 
 ### When `.bcuz/` is not found
@@ -166,10 +184,11 @@ It is printed to standard error, and bcuz ends with 125.
 
 ### When the history cannot be read
 
-If `history.jsonl` does not exist, it is treated as having no records (nothing is printed, and it ends with 0). If it exists but cannot be read, a message goes to standard error and bcuz ends with 125.
+If `history.jsonl` does not exist, it is treated as having no records (nothing is printed, and it ends with 0). If it exists but cannot be read, a message goes to standard error and bcuz ends with 125. The same goes for standard input with `-`.
 
 ```
 bcuz: cannot read .bcuz/history.jsonl: permission denied
+bcuz: cannot read <stdin>: input/output error
 ```
 
 ## `-h`, `--help`
@@ -181,7 +200,7 @@ bcuz - run a command with a reason, and record it
 
 usage:
   bcuz [--] <reason> <command> [args...]
-  bcuz -H, --history [--date D | --since D] [--until D]
+  bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
   bcuz -h, --help
   bcuz --version
@@ -215,7 +234,9 @@ All go to standard error as one line that starts with `bcuz: `.
 | No `.bcuz/` (run) | `bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')` | the command's |
 | No `.bcuz/` (`-H`) | `bcuz: no .bcuz/ found (run 'bcuz --init')` | 125 |
 | History cannot be read (`-H`) | `bcuz: cannot read .bcuz/history.jsonl: permission denied` | 125 |
+| Standard input cannot be read (`-H -`) | `bcuz: cannot read <stdin>: input/output error` | 125 |
 | Unreadable line (`-H`) | `bcuz: warning: .bcuz/history.jsonl:12: skipped unreadable line` | 0 |
+| Unreadable line (`-H -`) | `bcuz: warning: <stdin>:12: skipped unreadable line` | 0 |
 | Command not found | `bcuz: command not found: mkae` | 127 |
 | Cannot run | `bcuz: cannot run ./build.sh: permission denied` | 126 |
 | Cannot record | `bcuz: warning: not recorded: <reason>` | the command's |

@@ -31,7 +31,7 @@ func Main(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		write(stdout, "bcuz "+version()+"\n")
 		return 0
 	case "-H", "--history":
-		return showHistory(args[1:], stdout, stderr)
+		return showHistory(args[1:], stdin, stdout, stderr)
 	case "--init":
 		return runInit(stdout, stderr)
 	case "--":
@@ -104,15 +104,22 @@ func appendRecord(root, cwd, reason string, command []string, res run.Result) er
 	})
 }
 
-// parseFilter reads what follows -H: --date, --since and --until, each with
-// one date. It returns the message of the first mistake, from the left.
-func parseFilter(args []string) (history.Filter, string) {
-	var f history.Filter
+// parseHistoryArgs reads what follows -H, in any order: "-" to read standard
+// input, and --date, --since and --until, each with one date. It returns the
+// message of the first mistake, from the left.
+func parseHistoryArgs(args []string) (f history.Filter, fromStdin bool, msg string) {
 	seen := map[string]bool{}
 	for i := 0; i < len(args); i++ {
 		name := args[i]
+		if seen[name] {
+			return f, fromStdin, fmt.Sprintf(fmtDuplicateOption, name)
+		}
 		var field *string
 		switch name {
+		case "-":
+			seen[name] = true
+			fromStdin = true
+			continue
 		case "--date":
 			field = &f.Date
 		case "--since":
@@ -120,32 +127,33 @@ func parseFilter(args []string) (history.Filter, string) {
 		case "--until":
 			field = &f.Until
 		default:
-			return f, fmt.Sprintf(fmtUnknownArgument, name)
-		}
-		if seen[name] {
-			return f, fmt.Sprintf(fmtDuplicateOption, name)
+			return f, fromStdin, fmt.Sprintf(fmtUnknownArgument, name)
 		}
 		seen[name] = true
 		if i+1 >= len(args) {
-			return f, fmt.Sprintf(fmtMissingDate, name)
+			return f, fromStdin, fmt.Sprintf(fmtMissingDate, name)
 		}
 		i++
 		if history.ParseDate(args[i]) != nil {
-			return f, fmt.Sprintf(fmtInvalidDate, args[i])
+			return f, fromStdin, fmt.Sprintf(fmtInvalidDate, args[i])
 		}
 		*field = args[i]
 	}
 	if f.Date != "" && (f.Since != "" || f.Until != "") {
-		return f, msgDateWithRange
+		return f, fromStdin, msgDateWithRange
 	}
-	return f, ""
+	return f, fromStdin, ""
 }
 
-// showHistory prints the history of the nearest .bcuz/ (-H), newest first.
-func showHistory(args []string, stdout, stderr io.Writer) int {
-	f, msg := parseFilter(args)
+// showHistory prints the history (-H), newest first: the one of the nearest
+// .bcuz/, or, with "-", what comes on standard input (no .bcuz/ is needed).
+func showHistory(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	f, fromStdin, msg := parseHistoryArgs(args)
 	if msg != "" {
 		return fail(stderr, msg)
+	}
+	if fromStdin {
+		return printHistory(stdin, placeStdin, f, stdout, stderr)
 	}
 
 	cwd, err := os.Getwd()
@@ -162,16 +170,21 @@ func showHistory(args []string, stdout, stderr io.Writer) int {
 		if errors.Is(err, fs.ErrNotExist) {
 			return 0
 		}
-		return fail(stderr, fmt.Sprintf(fmtCannotRead, record.Reason(err)))
+		return fail(stderr, fmt.Sprintf(fmtCannotRead, placeHistoryFile, record.Reason(err)))
 	}
 	defer func() { _ = file.Close() }()
+	return printHistory(file, placeHistoryFile, f, stdout, stderr)
+}
 
-	recs, skipped, err := history.Read(file)
+// printHistory reads the records from in and prints those that pass f,
+// newest first. place is what the messages call in.
+func printHistory(in io.Reader, place string, f history.Filter, stdout, stderr io.Writer) int {
+	recs, skipped, err := history.Read(in)
 	if err != nil {
-		return fail(stderr, fmt.Sprintf(fmtCannotRead, record.Reason(err)))
+		return fail(stderr, fmt.Sprintf(fmtCannotRead, place, record.Reason(err)))
 	}
 	for _, n := range skipped {
-		write(stderr, fmt.Sprintf(fmtUnreadableLine, n)+"\n")
+		write(stderr, fmt.Sprintf(fmtUnreadableLine, place, n)+"\n")
 	}
 	var out strings.Builder
 	for _, r := range history.Select(recs, f) {

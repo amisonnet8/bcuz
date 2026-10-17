@@ -10,8 +10,13 @@ import (
 )
 
 func runCLI(args ...string) (code int, stdout, stderr string) {
+	return runCLIWithInput("", args...)
+}
+
+// runCLIWithInput is runCLI with input as standard input.
+func runCLIWithInput(input string, args ...string) (code int, stdout, stderr string) {
 	var out, errOut bytes.Buffer
-	code = cli.Main(args, strings.NewReader(""), &out, &errOut)
+	code = cli.Main(args, strings.NewReader(input), &out, &errOut)
 	return code, out.String(), errOut.String()
 }
 

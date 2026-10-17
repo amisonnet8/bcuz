@@ -7,7 +7,7 @@ const usage = `bcuz - run a command with a reason, and record it
 
 usage:
   bcuz [--] <reason> <command> [args...]
-  bcuz -H, --history [--date D | --since D] [--until D]
+  bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
   bcuz -h, --help
   bcuz --version
@@ -40,8 +40,14 @@ const (
 	fmtUnknownArgument = "bcuz: unknown argument: %s"
 	fmtMissingDate     = "bcuz: missing date after %s"
 	msgNoBcuzDirHist   = "bcuz: no .bcuz/ found (run 'bcuz --init')"
-	fmtCannotRead      = "bcuz: cannot read .bcuz/history.jsonl: %s"
-	fmtUnreadableLine  = "bcuz: warning: .bcuz/history.jsonl:%d: skipped unreadable line"
+	fmtCannotRead      = "bcuz: cannot read %s: %s"
+	fmtUnreadableLine  = "bcuz: warning: %s:%d: skipped unreadable line"
+)
+
+// The places -H reads from, as messages name them.
+const (
+	placeHistoryFile = ".bcuz/history.jsonl"
+	placeStdin       = "<stdin>"
 )
 
 // exitUsage is the exit code of bcuz's own errors (docs/reference/cli.md).

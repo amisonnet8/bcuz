@@ -67,3 +67,30 @@
 {"v":1,"ts":"2026-10-15T22:14:22.232Z","why":"タグ v0.1.1 が main の履歴に入ったか確かめるため","cmd":["git","describe","--tags"],"dir":".","exit":0,"ms":2}
 {"v":1,"ts":"2026-10-15T22:14:22.414Z","why":"merge で journal.jsonl が壊れず取り込んだ memo が読めるか確かめるため","cmd":["mtqg","show","574ef5c06f"],"dir":".","exit":0,"ms":4}
 {"v":1,"ts":"2026-10-15T22:14:22.598Z","why":"文書の版の例を戻したあとも docs のテストが通るか確かめるため","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1128}
+{"v":1,"ts":"2026-10-17T09:29:01.106Z","why":"アーカイブ機能の議論のため、関連する記述を探す","cmd":["grep","-rniE","archiv|rotat|size|grow|large|old record|truncat|delete","docs/design","docs/reference","--include=*.md","-l"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T09:29:07.275Z","why":"記録の増え方を見積もるため","cmd":["wc","-lc",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T09:29:07.454Z","why":"記録の期間を知るため","cmd":["sh","-c","head -1 .bcuz/history.jsonl | cut -c1-60; tail -1 .bcuz/history.jsonl | cut -c1-60"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-17T09:29:18.768Z","why":"-H が読むファイルと大きさの扱いを確かめるため","cmd":["grep","-niE","history.jsonl|size|large|archiv","docs/reference/cli.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T09:33:36.300Z","why":"新しい順がファイルの逆順か ts の並べ替えかを確かめるため","cmd":["grep","-rnE","sort\\.|slices\\.|Reverse|for i := len","internal/history","internal/cli","--include=*.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T09:37:17.384Z","why":"標準入力の対応を計画するため、関係するファイルを洗い出す","cmd":["sh","-c","ls internal/*/ docs/examples/ docs/reference/ dev/review/ ; wc -l internal/cli/*.go internal/history/*.go internal/record/*.go"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-17T09:37:26.905Z","why":"例の照合テストが何を読むかを確かめるため","cmd":["grep","-nE","func |\\$ bcuz|stdin|Stdin|PATH|fake","internal/docs/examples_test.go","internal/docs/transcript_unix_test.go"],"dir":".","exit":0,"ms":0}
+{"v":1,"ts":"2026-10-17T09:37:31.189Z","why":"テストから標準入力を渡す道具があるかを確かめるため","cmd":["grep","-rn","-A8","^func runCLI\\|^func run(","internal/docs","internal/cli"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T09:37:34.895Z","why":"cli の履歴テストの形と、文書とメッセージの照合を確かめるため","cmd":["grep","-nE","^func |Main\\(|fmtCannotRead|fmtUnreadableLine|usage","internal/cli/history_test.go","internal/docs/cli_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T09:58:16.671Z","why":"使い方の行がほかの文書にも写されているかを確かめるため","cmd":["grep","-rn","--","--history \\[","--include=*.md","--include=*.go","."],"dir":".","exit":2,"ms":5}
+{"v":1,"ts":"2026-10-17T09:59:21.690Z","why":"gz を .bcuz/ に置いたとき merge=union が当たるかを確かめるため","cmd":["cat",".gitattributes"],"dir":".","exit":0,"ms":0}
+{"v":1,"ts":"2026-10-17T10:00:49.815Z","why":"テストの runMain が標準入力をどう渡すかを確かめるため","cmd":["grep","-rn","-A10","^func runMain","internal/cli"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T10:00:58.650Z","why":"標準入力の読み込みエラーがメッセージでどう書かれるかを確かめるため","cmd":["grep","-n","-B3","-A20","^func Reason","internal/record/record.go","internal/record/append.go","internal/record/root.go"],"dir":".","exit":1,"ms":0}
+{"v":1,"ts":"2026-10-17T10:01:00.850Z","why":"record.Reason の置き場を探すため","cmd":["grep","-rn","-A15","func Reason","internal/record"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T10:01:48.541Z","why":"本物のバイナリの通しテストに -H - を足すため、道具の形を確かめる","cmd":["grep","-nE","^func |exec.Command|Stdin","internal/cli/e2e_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T10:01:51.901Z","why":"本物の bcuz をビルドして動かすテストがあるかを確かめるため","cmd":["grep","-rnE","go\", \"build|func buildBcuz|func Test","internal/cli/e2e_unix_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T10:02:09.020Z","why":"bcuz -H - の実装と文書・テストを入れたあとの確認","cmd":["qsoku","check"],"dir":".","exit":0,"ms":12438}
+{"v":1,"ts":"2026-10-17T10:02:32.069Z","why":"壊して確かめる（1）：- を無視したときにテストが落ちるか","cmd":["qsoku","unit"],"dir":".","exit":1,"ms":722}
+{"v":1,"ts":"2026-10-17T10:02:38.388Z","why":"壊して確かめる（2）：場所の名前を取り違えたときにテストが落ちるか","cmd":["qsoku","unit"],"dir":".","exit":1,"ms":699}
+{"v":1,"ts":"2026-10-17T10:02:47.793Z","why":"変異を戻したあとの確認","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1436}
+{"v":1,"ts":"2026-10-17T10:02:49.363Z","why":"手で動かす確認のための bcuz を作る","cmd":["qsoku","bin"],"dir":".","exit":0,"ms":158}
+{"v":1,"ts":"2026-10-17T10:02:53.022Z","why":"gz に圧縮した記録を gzip -dc で流し込めるかを、本物の端末の外で確かめる","cmd":["sh","-c","gzip -c docs/examples/history.jsonl | gzip -dc | TZ=Asia/Tokyo bin/bcuz -H - --date 2026-10-10; echo \"exit=$?\"; cd \"$TMPDIR\" && printf \"not json\\n\" | /workspaces/bcuz/bin/bcuz -H -; echo \"exit=$?\"; /workspaces/bcuz/bin/bcuz -h | grep history"],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-17T10:03:01.344Z","why":"コミットの前に、テープに無い変更が無いかを確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":10}
+{"v":1,"ts":"2026-10-17T10:03:01.480Z","why":"コミットの前に作者の設定を確かめる","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-17T10:03:05.727Z","why":"コミットの前に今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":14}
+{"v":1,"ts":"2026-10-17T10:03:09.148Z","why":"bcuz -H - の変更一式を、記録とテープも含めてコミットに入れる","cmd":["git","add","README.md","README_ja.md","docs","dev/review/history-stdin","internal",".srwr/tapes",".mtqg",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-17T10:03:09.291Z","why":"コミットの中身を確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}

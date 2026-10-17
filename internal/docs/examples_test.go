@@ -11,8 +11,9 @@ import (
 
 // A transcript is a fenced block of an example: lines that start with "$ "
 // are commands, and the lines that follow are what they print. Only bcuz
-// (optionally with TZ=UTC in front) and "echo $?" are understood, and
-// arguments are split at spaces (no quotes).
+// (optionally with TZ=UTC in front, and "< file" at the end for standard
+// input) and "echo $?" are understood, and arguments are split at spaces
+// (no quotes).
 
 // runTranscript runs the commands of block in the current directory and
 // returns the transcript it makes, in the same form.
@@ -40,13 +41,21 @@ func runTranscript(t *testing.T, block string) string {
 		if !ok {
 			t.Fatalf("unsupported command: %q", line)
 		}
+		input := ""
+		if rest, file, ok := strings.Cut(args, " < "); ok {
+			b, err := os.ReadFile(file)
+			if err != nil {
+				t.Fatal(err)
+			}
+			args, input = rest, string(b)
+		}
 		var restore func()
 		if zone == "UTC" {
 			old := time.Local
 			time.Local = time.UTC
 			restore = func() { time.Local = old }
 		}
-		code, stdout, stderr := runCLI(strings.Fields(args)...)
+		code, stdout, stderr := runCLIWithInput(input, strings.Fields(args)...)
 		if restore != nil {
 			restore()
 		}
@@ -67,6 +76,7 @@ func tokyoZone(t *testing.T) {
 
 // historyExampleWorkspace is a workspace whose history is the given file of
 // docs/examples/ (history.jsonl, or history_ja.jsonl for the Japanese text).
+// The same records, moved away, are archive.jsonl next to .bcuz/.
 func historyExampleWorkspace(t *testing.T, jsonl string) {
 	t.Helper()
 	work := t.TempDir()
@@ -74,8 +84,10 @@ func historyExampleWorkspace(t *testing.T, jsonl string) {
 		t.Fatal(err)
 	}
 	text := readRepoFile(t, "docs/examples/"+jsonl)
-	if err := os.WriteFile(filepath.Join(work, ".bcuz", "history.jsonl"), []byte(text), 0o600); err != nil {
-		t.Fatal(err)
+	for _, path := range []string{filepath.Join(work, ".bcuz", "history.jsonl"), filepath.Join(work, "archive.jsonl")} {
+		if err := os.WriteFile(path, []byte(text), 0o600); err != nil {
+			t.Fatal(err)
+		}
 	}
 	t.Chdir(work)
 }

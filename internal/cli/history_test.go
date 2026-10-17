@@ -1,7 +1,10 @@
 package cli
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -77,6 +80,9 @@ func TestHistoryArgumentErrors(t *testing.T) {
 		{"missing date after --date", []string{"-H", "--date"}, fmt.Sprintf(fmtMissingDate, "--date")},
 		{"missing date after --since", []string{"-H", "--since"}, fmt.Sprintf(fmtMissingDate, "--since")},
 		{"missing date after --until", []string{"-H", "--until"}, fmt.Sprintf(fmtMissingDate, "--until")},
+		{"duplicate -", []string{"-H", "-", "--date", "2026-10-12", "-"}, fmt.Sprintf(fmtDuplicateOption, "-")},
+		{"unknown after -", []string{"-H", "-", "--foo"}, fmt.Sprintf(fmtUnknownArgument, "--foo")},
+		{"bad date with -", []string{"-H", "-", "--date", "-"}, fmt.Sprintf(fmtInvalidDate, "-")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -141,7 +147,7 @@ func TestHistoryCannotRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	code, stdout, stderr := runMain(t, "-H")
-	prefix := strings.TrimSuffix(fmtCannotRead, "%s")
+	prefix := fmt.Sprintf(fmtCannotRead, placeHistoryFile, "")
 	if code != 125 || stdout != "" || !strings.HasPrefix(stderr, prefix) || strings.Count(stderr, "\n") != 1 {
 		t.Errorf("code %d, stdout %q, stderr %q", code, stdout, stderr)
 	}
@@ -153,9 +159,114 @@ func TestHistoryUnreadableLines(t *testing.T) {
 	partial := strings.TrimSuffix(goodLine, "\n")
 	historyWorkspace(t, goodLine+"not json\n"+goodLine+partial)
 	code, stdout, stderr := runMain(t, "-H")
-	wantErr := fmt.Sprintf(fmtUnreadableLine, 2) + "\n"
+	wantErr := fmt.Sprintf(fmtUnreadableLine, placeHistoryFile, 2) + "\n"
 	if code != 0 || stdout != goodOut+goodOut || stderr != wantErr {
 		t.Errorf("code %d, stdout %q, stderr %q; want 0, two lines, %q", code, stdout, stderr, wantErr)
+	}
+}
+
+// runMainWithInput is runMain with in as standard input.
+func runMainWithInput(t *testing.T, in io.Reader, args ...string) (code int, stdout, stderr string) {
+	t.Helper()
+	var out, errOut bytes.Buffer
+	code = Main(args, in, &out, &errOut)
+	return code, out.String(), errOut.String()
+}
+
+// stdinPlace works where there is no .bcuz/, with the viewer's zone fixed
+// to +09:00: "-" must not need one.
+func stdinPlace(t *testing.T) {
+	t.Helper()
+	old := time.Local
+	time.Local = time.FixedZone("JST", 9*3600)
+	t.Cleanup(func() { time.Local = old })
+	t.Chdir(t.TempDir())
+}
+
+func TestHistoryFromStdin(t *testing.T) {
+	stdinPlace(t)
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{"-H", []string{"-H", "-"}, goodOut},
+		{"--history", []string{"--history", "-"}, goodOut},
+		{"- before a filter", []string{"-H", "-", "--date", "2026-10-12"}, goodOut},
+		{"- after a filter", []string{"-H", "--since", "2026-10-12", "-"}, goodOut},
+		{"- between filters", []string{"-H", "--since", "2026-10-01", "-", "--until", "2026-10-12"}, goodOut},
+		{"filtered out", []string{"-H", "-", "--date", "2026-10-11"}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			code, stdout, stderr := runMainWithInput(t, strings.NewReader(goodLine), tt.args...)
+			if code != 0 || stdout != tt.want || stderr != "" {
+				t.Errorf("code %d, stdout %q, stderr %q; want 0, %q, empty", code, stdout, stderr, tt.want)
+			}
+		})
+	}
+}
+
+// Joined files come in any order: the newest is shown first.
+func TestHistoryFromStdinJoined(t *testing.T) {
+	stdinPlace(t)
+	newer := strings.Replace(goodLine, "2026-10-12T06:35:12.345+09:00", "2026-10-13T00:00:00.000Z", 1)
+	code, stdout, stderr := runMainWithInput(t, strings.NewReader(newer+goodLine), "-H", "-")
+	want := "2026-10-13 09:00:00    0    8.3s  .  xxテスト実施  $ make test\n" + goodOut
+	if code != 0 || stdout != want || stderr != "" {
+		t.Errorf("code %d, stdout %q, stderr %q; want 0, %q", code, stdout, stderr, want)
+	}
+	code, stdout, _ = runMainWithInput(t, strings.NewReader(goodLine+newer), "-H", "-")
+	if code != 0 || stdout != want {
+		t.Errorf("reversed input: code %d, stdout %q; want %q", code, stdout, want)
+	}
+}
+
+// With "-", the history file of the workspace is not read.
+func TestHistoryFromStdinNotTheFile(t *testing.T) {
+	historyWorkspace(t, goodLine)
+	code, stdout, stderr := runMainWithInput(t, strings.NewReader(""), "-H", "-")
+	if code != 0 || stdout != "" || stderr != "" {
+		t.Errorf("code %d, stdout %q, stderr %q; want 0, empty, empty", code, stdout, stderr)
+	}
+}
+
+func TestHistoryFromStdinUnreadableLines(t *testing.T) {
+	stdinPlace(t)
+	partial := strings.TrimSuffix(goodLine, "\n")
+	in := strings.NewReader(goodLine + "not json\n" + goodLine + partial)
+	code, stdout, stderr := runMainWithInput(t, in, "-H", "-")
+	wantErr := "bcuz: warning: <stdin>:2: skipped unreadable line\n"
+	if code != 0 || stdout != goodOut+goodOut || stderr != wantErr {
+		t.Errorf("code %d, stdout %q, stderr %q; want 0, two lines, %q", code, stdout, stderr, wantErr)
+	}
+}
+
+// failingReader fails the first read, as standard input does on an I/O
+// error, and remembers that it was read.
+type failingReader struct{ read bool }
+
+func (r *failingReader) Read([]byte) (int, error) {
+	r.read = true
+	return 0, &os.PathError{Op: "read", Path: "/dev/stdin", Err: errors.New("input/output error")}
+}
+
+func TestHistoryFromStdinCannotRead(t *testing.T) {
+	stdinPlace(t)
+	code, stdout, stderr := runMainWithInput(t, &failingReader{}, "-H", "-")
+	wantErr := "bcuz: cannot read <stdin>: input/output error\n"
+	if code != 125 || stdout != "" || stderr != wantErr {
+		t.Errorf("code %d, stdout %q, stderr %q; want 125, empty, %q", code, stdout, stderr, wantErr)
+	}
+}
+
+// Without "-", standard input is never read, even when it is not a terminal.
+func TestHistoryWithoutDashIgnoresStdin(t *testing.T) {
+	historyWorkspace(t, goodLine)
+	in := &failingReader{}
+	code, stdout, stderr := runMainWithInput(t, in, "-H")
+	if code != 0 || stdout != goodOut || stderr != "" || in.read {
+		t.Errorf("code %d, stdout %q, stderr %q, stdin read %v", code, stdout, stderr, in.read)
 	}
 }
 

@@ -35,6 +35,20 @@
 - 読む側（`-H`）は、`v` が知らない値の行を、読めない行として飛ばす
 - 読む側は、`ts` のタイムゾーンのオフセットをどれでも受け付ける（RFC 3339）。以前の版が書いた、`+09:00` などのオフセット付きの記録は、そのまま残し、今までどおり読む
 
+## アーカイブ
+
+bcuz は、記録を移さない・圧縮しない・消さない。`history.jsonl` を小さく保ちたければ、利用者が移す。次の実行で、新しい `history.jsonl` が作られる。
+
+```
+mv .bcuz/history.jsonl .bcuz/history-2026.jsonl
+gzip .bcuz/history-2026.jsonl
+gzip -dc .bcuz/history-2026.jsonl.gz | bcuz -H -
+```
+
+- `-H` が読むのは `history.jsonl` だけ。移した記録は、`-H -` で標準入力から読む（[cli_ja.md](cli_ja.md)）
+- 複数のファイルをまとめて読める：`gzip -dc .bcuz/history-*.jsonl.gz | cat - .bcuz/history.jsonl | bcuz -H -`
+- `zcat` でなく `gzip -dc` を使う。macOS の `zcat` は `.gz` を読まないことがある
+
 ## 例
 
 [../examples/history_ja.jsonl](../examples/history_ja.jsonl)

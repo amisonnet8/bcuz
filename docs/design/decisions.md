@@ -69,6 +69,12 @@ So that "today" means the viewer's today.
 ### No colors, pager or alignment
 To keep it minimal. `bcuz -H | less` is enough.
 
+### No archive feature: moved records are read from standard input (`-H -`)
+Moving, compressing or deleting records would break "append only". People move old records away themselves (`mv`, `gzip`), and `-H -` reads them from standard input: `gzip -dc … | bcuz -H -`. The records are put in order by `ts`, so several files can be joined, and `jq` can narrow them down first.
+
+### Standard input is read only with `-`
+If `-H` read standard input whenever it is not a terminal, `bcuz -H` run by an AI agent or in CI would wait for input that never comes, or show an empty history instead of `history.jsonl`.
+
 ## How it is made
 
 ### A single Go binary, no external dependencies
