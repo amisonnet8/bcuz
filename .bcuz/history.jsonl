@@ -94,3 +94,6 @@
 {"v":1,"ts":"2026-10-17T10:03:05.727Z","why":"コミットの前に今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":14}
 {"v":1,"ts":"2026-10-17T10:03:09.148Z","why":"bcuz -H - の変更一式を、記録とテープも含めてコミットに入れる","cmd":["git","add","README.md","README_ja.md","docs","dev/review/history-stdin","internal",".srwr/tapes",".mtqg",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":4}
 {"v":1,"ts":"2026-10-17T10:03:09.291Z","why":"コミットの中身を確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-17T10:03:11.789Z","why":"直前の確認コマンドの記録もコミットに入れる","cmd":["git","add",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-17T10:10:24.511Z","why":"QA を閉じた記録をコミットに入れる","cmd":["git","add",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-17T10:10:24.695Z","why":"コミットの中身を確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
