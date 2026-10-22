@@ -9,6 +9,7 @@ usage:
   bcuz [--] <reason> <command> [args...]
   bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
+  bcuz --completion <shell>
   bcuz -h, --help
   bcuz --version
 
@@ -42,6 +43,13 @@ const (
 	msgNoBcuzDirHist   = "bcuz: no .bcuz/ found (run 'bcuz --init')"
 	fmtCannotRead      = "bcuz: cannot read %s: %s"
 	fmtUnreadableLine  = "bcuz: warning: %s:%d: skipped unreadable line"
+)
+
+// The messages of --completion. Unknown arguments after the shell use
+// fmtUnknownArgument, as after -H.
+const (
+	msgMissingShell = "bcuz: missing shell after --completion (bash, zsh, fish, powershell)"
+	fmtUnknownShell = "bcuz: unknown shell: %s (bash, zsh, fish, powershell)"
 )
 
 // The places -H reads from, as messages name them.

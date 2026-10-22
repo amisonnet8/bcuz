@@ -5,3 +5,16 @@
 #
 # 例（crube の一覧から。照合の「完全一致をパターンより優先する」という約束を壊す）：
 # 照合: 完全一致をパターンより優先しない | internal/match/match.go | ⇥⇥if e.Name == exact {⏎⇥⇥⇥return e | ⇥⇥if false && e.Name == exact {⏎⇥⇥⇥return e
+
+# --completion（docs/reference/cli.md）。fish・PowerShell のスクリプトの変異は、そのシェルがある環境で足す（無いとテストが飛び、生き残る）
+補完: シェルの後ろの余分な引数を誤りにしない | internal/cli/completion.go | ⇥if len(args) > 1 { | ⇥if false && len(args) > 1 {
+補完: bash で理由の位置にオプションを出す | internal/cli/completions/bcuz.bash | if [[ $cur == -* ]]; then | if true; then
+補完: bash で理由の後ろのコマンドの位置を数え違える | internal/cli/completions/bcuz.bash | *) start=2 ;; | *) start=3 ;;
+補完: bash で -- の後のコマンドの位置を数え違える | internal/cli/completions/bcuz.bash | --) start=3 ;; | --) start=2 ;;
+補完: bash で -H の後に、行にある絞り込みも出す | internal/cli/completions/bcuz.bash | *" $opt "* ]] || list | *" $opt "* ]] && list
+補完: bash で日付の位置に候補を出す | internal/cli/completions/bcuz.bash | ) return 0 ;; # a date | ) ;; # a date
+補完: bash で --completion の後の2語目にもシェルを出す | internal/cli/completions/bcuz.bash | if ((n == 1)); then⏎            _bcuz_reply -W 'bash | if true; then⏎            _bcuz_reply -W 'bash
+補完: zsh で理由の位置にオプションを出す | internal/cli/completions/bcuz.zsh | [[ $cur == -* ]] && compadd | compadd
+補完: zsh で理由の後ろのコマンドの位置を数え違える | internal/cli/completions/bcuz.zsh | (*) start=3 ;; | (*) start=4 ;;
+補完: zsh で -- の後のコマンドの位置を数え違える | internal/cli/completions/bcuz.zsh | (--) start=4 ;; | (--) start=3 ;;
+補完: zsh で -H の後に、行にある絞り込みも出す | internal/cli/completions/bcuz.zsh | (( ${w[(Ie)$opt]} )) || list | (( ${w[(Ie)$opt]} )) && list

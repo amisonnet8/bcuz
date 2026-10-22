@@ -34,6 +34,8 @@ func Main(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return showHistory(args[1:], stdin, stdout, stderr)
 	case "--init":
 		return runInit(stdout, stderr)
+	case "--completion":
+		return printCompletion(args[1:], stdout, stderr)
 	case "--":
 		args = args[1:]
 		if len(args) == 0 {

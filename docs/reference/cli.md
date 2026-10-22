@@ -8,13 +8,14 @@
 bcuz [--] <reason> <command> [args...]    run the command and record it
 bcuz -H [-] [filter]                      show the history (same as --history)
 bcuz --init                               create .bcuz/ in the current directory
+bcuz --completion <shell>                 print the completion script of a shell
 bcuz -h                                   show the usage (same as --help)
 bcuz --version                            show the version
 ```
 
 ### How arguments are read
 
-- **Only the first argument is read as an option.** If it is one of `-H`, `--history`, `--init`, `-h`, `--help` or `--version`, that feature runs
+- **Only the first argument is read as an option.** If it is one of `-H`, `--history`, `--init`, `--completion`, `-h`, `--help` or `--version`, that feature runs
 - If the first argument is `--`, it is dropped and the second argument is the reason
 - If the first argument starts with `-` and is anything else, it is an error (125). To start a reason with `-`, put `--` before it
 - Otherwise the first argument is the reason, and the rest is the command and its arguments. **The arguments of the command are never interpreted** (the `-h` in `bcuz "check" ls -h` goes to `ls`)
@@ -202,6 +203,7 @@ usage:
   bcuz [--] <reason> <command> [args...]
   bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
+  bcuz --completion <shell>
   bcuz -h, --help
   bcuz --version
 
@@ -216,6 +218,31 @@ bcuz v0.2.0
 
 The version comes from the build information (the tag that `go install …@v0.2.0` installs). When it is not available (a local build), it is `bcuz (devel)`.
 
+## `--completion`
+
+```
+bcuz --completion bash > ~/.local/share/bash-completion/completions/bcuz
+bcuz --completion zsh > "${fpath[1]}/_bcuz"
+bcuz --completion fish > ~/.config/fish/completions/bcuz.fish
+bcuz --completion powershell >> $PROFILE
+```
+
+Prints the completion script of a shell to standard output and ends with 0. The shell is `bash`, `zsh`, `fish` or `powershell`. Put the script where the shell looks for completions, as above.
+
+- The script is fixed text. It does not run bcuz while completing
+- After the reason, the shell completes the command as usual, and the arguments of the command are left to the command's own completion (bash uses `_command_offset` of bash-completion, and without bash-completion offers command names and files; zsh uses `_normal`, fish `complete -C`, PowerShell `CompleteInput`)
+
+| Typed | Offered |
+|---|---|
+| `bcuz -<TAB>` | `-H` `--history` `--init` `-h` `--help` `--version` `--completion` `--` |
+| `bcuz <TAB>` (the reason) | Nothing (a reason is free text) |
+| `bcuz --completion <TAB>` | `bash` `zsh` `fish` `powershell` |
+| `bcuz -H <TAB>` | `-` `--date` `--since` `--until` (those not on the line yet) |
+| `bcuz -H --date <TAB>` | Nothing (a date) |
+| `bcuz "reason" <TAB>` | Command names (the usual completion of the shell) |
+| `bcuz "reason" git <TAB>` | Left to the completion of `git` |
+| `bcuz -- "-x check" <TAB>` | Command names (one word later after `--`) |
+
 ## Error messages
 
 All go to standard error as one line that starts with `bcuz: `.
@@ -229,8 +256,10 @@ All go to standard error as one line that starts with `bcuz: `.
 | Bad date | `bcuz: invalid date: 2026-02-30` | 125 |
 | `--date` with a range | `bcuz: --date cannot be used with --since or --until` | 125 |
 | Duplicate option | `bcuz: duplicate option: --since` | 125 |
-| Unknown argument after `-H` | `bcuz: unknown argument: --foo` | 125 |
+| Unknown argument after `-H` or `--completion` | `bcuz: unknown argument: --foo` | 125 |
 | Missing date | `bcuz: missing date after --date` | 125 |
+| Missing shell | `bcuz: missing shell after --completion (bash, zsh, fish, powershell)` | 125 |
+| Unknown shell | `bcuz: unknown shell: tcsh (bash, zsh, fish, powershell)` | 125 |
 | No `.bcuz/` (run) | `bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')` | the command's |
 | No `.bcuz/` (`-H`) | `bcuz: no .bcuz/ found (run 'bcuz --init')` | 125 |
 | History cannot be read (`-H`) | `bcuz: cannot read .bcuz/history.jsonl: permission denied` | 125 |

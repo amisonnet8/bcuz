@@ -85,6 +85,7 @@ usage:
   bcuz [--] <reason> <command> [args...]
   bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
+  bcuz --completion <shell>
   bcuz -h, --help
   bcuz --version
 

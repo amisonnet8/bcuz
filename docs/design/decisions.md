@@ -10,6 +10,9 @@
 ### Only the first argument is read as an option
 So that bcuz does not take the arguments of the command (such as the `-h` of `ls -h`). `--` is needed only when the reason starts with `-`.
 
+### Shell completion is `--completion <shell>`, not `completion <shell>`
+Other tools have a `completion` subcommand, but bcuz has no subcommands: a first argument that is not an option is the reason. Taking the word `completion` would change what `bcuz completion make` does. The scripts are fixed text and do not ask bcuz for candidates, because its options are few and fixed, and a hidden option for that would be one more word read in the first argument. The four scripts are checked against each other by running the real shells in the tests.
+
 ### `-h` is help, `-H` is history
 `-h` is help in almost every tool. If it showed the history, a person who typed it expecting help would get the history.
 

@@ -60,6 +60,8 @@ dev/	Development notes and scripts, not for users (Japanese)
 			README.md	The paper: examples before and after, and what to approve
 		utc-timestamps/	Writing ts in UTC
 			README.md	The paper: examples before and after, and what to approve
+		completion/	Shell completion: bcuz --completion <shell>
+			README.md	The paper: examples before and after, and what to approve
 	README.md	What is in dev/
 	dist.sh	Builds the six release binaries and SHA256SUMS into dist/ (qsoku dist)
 	install-check.sh	go installs bcuz into a temporary directory and uses it (qsoku install-check)
@@ -92,6 +94,13 @@ internal/	The packages of bcuz (not importable from outside the module)
 	cli/	Reads the arguments, writes the messages, chooses the exit code, and calls each feature
 		cli.go	Main: the arguments, running a command and recording it, -H, --init, --version
 		cli_test.go	Tests of the options, --init and --version
+		completion.go	--completion: prints the embedded completion script of a shell
+		completion_test.go	Runs each completion script in its real shell (skipped where not installed)
+		completions/	The completion scripts, fixed text embedded in bcuz
+			bcuz.bash	bash: after the reason, _command_offset of bash-completion
+			bcuz.fish	fish: after the reason, complete -C
+			bcuz.ps1	PowerShell: after the reason, CompleteInput
+			bcuz.zsh	zsh: after the reason, _normal
 		e2e_test.go	End-to-end tests with the real bcuz; the commands run are the test binary itself
 		e2e_unix_test.go	End-to-end tests of signals and Ctrl-C (Unix only)
 		history_test.go	Tests of -H: showing, filters, reading errors

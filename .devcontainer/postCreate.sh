@@ -11,11 +11,15 @@ set -euo pipefail
 # ShellCheck:  Static analysis of tracked *.sh and *.bash files (qsoku shellcheck).
 #              Comment lines must not start with the lowercase directive word,
 #              or ShellCheck parses them as directives (SC1072/SC1073).
+# fish:        One of the four shells that bcuz --completion has a script for (the
+#              scripts are run by the real shells in internal/cli/completion_test.go).
+#              bash and zsh are in the base image, and PowerShell is the
+#              "powershell" feature in devcontainer.json.
 # gh:          GitHub CLI (issues, pull requests, Actions runs) is the "github-cli"
-#              feature in devcontainer.json, not installed here. The feature is left
+#              feature in devcontainer.json, not installed here. The features are left
 #              unpinned (no "version" option): each rebuild installs the latest release.
 sudo apt-get update
-sudo apt-get install -y wget gnupg lsb-release gcc jq shellcheck
+sudo apt-get install -y wget gnupg lsb-release gcc jq shellcheck fish
 
 # The Bash sandbox (.claude/settings.json "sandbox") needs bubblewrap (bwrap)
 # and socat on Linux; without them it silently stays off even with
@@ -101,15 +105,46 @@ go install github.com/amisonnet8/bcuz/cmd/bcuz@latest
 # (.claude/rules/crube-usage.md). @latest, like the tools above.
 go install github.com/amisonnet8/crube/cmd/crube@latest
 
-# Wire up qsoku's bash integration (working-directory carry-back and
-# completion). Idempotent: skipped if already present, so re-running
-# postCreate.sh does not duplicate the line. The single quotes are intentional
-# -- the line is meant to land in ~/.bashrc unexpanded.
+# pwsh has no $PROFILE of its own until asked: query it rather than hardcode
+# the path. zsh's fpath[1] in this image is a root-owned system directory.
+# The single quotes are intentional: $PROFILE and $fpath are not bash's.
+# shellcheck disable=SC2016
+pwsh_profile=$(pwsh -NoLogo -NoProfile -Command '$PROFILE')
+# shellcheck disable=SC2016
+zsh_fpath=$(zsh -fc 'echo $fpath[1]')
+mkdir -p "$(dirname "$pwsh_profile")" ~/.config/fish/completions ~/.local/share/bash-completion/completions
+sudo mkdir -p "$zsh_fpath"
+
+# Wire up qsoku's shell integration (working-directory carry-back and
+# completion) for bash, zsh, fish and pwsh. Idempotent: skipped if already
+# present, so re-running postCreate.sh does not duplicate the line. The single
+# quotes are intentional -- the lines are meant to land in the rc files unexpanded.
 # shellcheck disable=SC2016
 grep -qF 'qsoku .shell bash' ~/.bashrc 2>/dev/null || echo 'eval "$(qsoku .shell bash)"' >>~/.bashrc
+# shellcheck disable=SC2016
+grep -qF 'qsoku .shell zsh' ~/.zshrc 2>/dev/null || echo 'eval "$(qsoku .shell zsh)"' >>~/.zshrc
+grep -qF 'qsoku .shell fish' ~/.config/fish/config.fish 2>/dev/null || echo 'qsoku .shell fish | source' >>~/.config/fish/config.fish
+grep -qF 'qsoku .shell pwsh' "$pwsh_profile" 2>/dev/null || echo 'Invoke-Expression (& qsoku .shell pwsh | Out-String)' >>"$pwsh_profile"
 
-# The bash completion of crube and mtqg, for interactive use in this container.
-mkdir -p ~/.local/share/bash-completion/completions
-for tool in crube mtqg; do
-  "$tool" completion bash >~/.local/share/bash-completion/completions/"$tool"
+# The completion of bcuz, crube and mtqg, for interactive use in this
+# container, in all four shells, at the places their documents name. bcuz
+# prints it with --completion <shell> (it has no subcommands); the others with
+# completion <shell>. bcuz is installed @latest above, and a release older than
+# --completion has none: then it only warns, and the next rebuild after a
+# release picks it up. pwsh has no completions directory: the script is
+# appended to $PROFILE once, found again by its Register-ArgumentCompleter line.
+for tool in bcuz crube mtqg; do
+  if [ "$tool" = bcuz ]; then
+    print_completion=(bcuz --completion)
+  else
+    print_completion=("$tool" completion)
+  fi
+  if ! "${print_completion[@]}" bash >/dev/null 2>&1; then
+    echo "warning: no shell completion from this $tool (${print_completion[*]} bash failed); skipped" >&2
+    continue
+  fi
+  "${print_completion[@]}" bash >~/.local/share/bash-completion/completions/"$tool"
+  "${print_completion[@]}" zsh | sudo tee "$zsh_fpath/_$tool" >/dev/null
+  "${print_completion[@]}" fish >~/.config/fish/completions/"$tool".fish
+  grep -qF -e "-CommandName $tool -ScriptBlock" "$pwsh_profile" 2>/dev/null || "${print_completion[@]}" powershell >>"$pwsh_profile"
 done

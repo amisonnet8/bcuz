@@ -8,13 +8,14 @@
 bcuz [--] <理由> <コマンド> [引数...]    コマンドを実行して記録する
 bcuz -H [-] [絞り込み]                 履歴を表示する（--history と同じ）
 bcuz --init                          カレントディレクトリに .bcuz/ を作る
+bcuz --completion <shell>            シェルの補完スクリプトを出す
 bcuz -h                              使い方を表示する（--help と同じ）
 bcuz --version                       バージョンを表示する
 ```
 
 ### 引数の読み方
 
-- **オプションとして読むのは、第1引数だけ。** 第1引数が `-H`・`--history`・`--init`・`-h`・`--help`・`--version` のどれかなら、その機能になる
+- **オプションとして読むのは、第1引数だけ。** 第1引数が `-H`・`--history`・`--init`・`--completion`・`-h`・`--help`・`--version` のどれかなら、その機能になる
 - 第1引数が `--` なら、それを読み捨て、第2引数を理由として実行する
 - 第1引数がそれ以外で `-` から始まるなら、エラー（125）。理由を `-` で始めたいときは `--` を前に付ける
 - それ以外は、第1引数を理由、残りをコマンドと引数として実行する。**コマンドの引数は一切解釈しない**（`bcuz "確認" ls -h` の `-h` は `ls` に渡る）
@@ -202,6 +203,7 @@ usage:
   bcuz [--] <reason> <command> [args...]
   bcuz -H, --history [-] [--date D | --since D] [--until D]
   bcuz --init
+  bcuz --completion <shell>
   bcuz -h, --help
   bcuz --version
 
@@ -216,6 +218,31 @@ bcuz v0.2.0
 
 バージョンは、ビルド情報（`go install …@v0.2.0` で入るタグ）から取る。取れないとき（手元のビルド）は `bcuz (devel)`。
 
+## `--completion`
+
+```
+bcuz --completion bash > ~/.local/share/bash-completion/completions/bcuz
+bcuz --completion zsh > "${fpath[1]}/_bcuz"
+bcuz --completion fish > ~/.config/fish/completions/bcuz.fish
+bcuz --completion powershell >> $PROFILE
+```
+
+シェルの補完スクリプトを標準出力に出して、0 で終わる。シェルは `bash`・`zsh`・`fish`・`powershell`。スクリプトは、上のように、シェルが補完を探す場所に置く。
+
+- スクリプトは決まった文。補完の最中に bcuz を動かさない
+- 理由の後ろは、コマンドをシェルのいつもの補完で、コマンドの引数をそのコマンド自身の補完で出す（bash は bash-completion の `_command_offset`。bash-completion が無ければ、コマンドの名前とファイル。zsh は `_normal`、fish は `complete -C`、PowerShell は `CompleteInput`）
+
+| 打ったところ | 出るもの |
+|---|---|
+| `bcuz -<TAB>` | `-H` `--history` `--init` `-h` `--help` `--version` `--completion` `--` |
+| `bcuz <TAB>`（理由） | 何も出さない（理由は自由な文） |
+| `bcuz --completion <TAB>` | `bash` `zsh` `fish` `powershell` |
+| `bcuz -H <TAB>` | `-` `--date` `--since` `--until`（行にまだ無いもの） |
+| `bcuz -H --date <TAB>` | 何も出さない（日付） |
+| `bcuz "理由" <TAB>` | コマンドの名前（シェルのいつもの補完） |
+| `bcuz "理由" git <TAB>` | `git` 自身の補完に任せる |
+| `bcuz -- "-x の確認" <TAB>` | コマンドの名前（`--` の後は1つずれる） |
+
 ## エラーのメッセージ
 
 すべて標準エラー出力に、`bcuz: ` で始まる1行で出す。
@@ -229,8 +256,10 @@ bcuz v0.2.0
 | 日付の誤り | `bcuz: invalid date: 2026-02-30` | 125 |
 | `--date` と期間の併用 | `bcuz: --date cannot be used with --since or --until` | 125 |
 | オプションの重複 | `bcuz: duplicate option: --since` | 125 |
-| `-H` の後の知らない引数 | `bcuz: unknown argument: --foo` | 125 |
+| `-H`・`--completion` の後の知らない引数 | `bcuz: unknown argument: --foo` | 125 |
 | 日付が無い | `bcuz: missing date after --date` | 125 |
+| シェルが無い | `bcuz: missing shell after --completion (bash, zsh, fish, powershell)` | 125 |
+| 知らないシェル | `bcuz: unknown shell: tcsh (bash, zsh, fish, powershell)` | 125 |
 | `.bcuz/` が無い（実行） | `bcuz: not recorded: no .bcuz/ found (run 'bcuz --init')` | コマンドのもの |
 | `.bcuz/` が無い（`-H`） | `bcuz: no .bcuz/ found (run 'bcuz --init')` | 125 |
 | 履歴を読めない（`-H`） | `bcuz: cannot read .bcuz/history.jsonl: permission denied` | 125 |

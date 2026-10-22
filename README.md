@@ -56,6 +56,12 @@ go install github.com/amisonnet8/bcuz/cmd/bcuz@latest
 
 Pre-built binaries (Linux, macOS and Windows, amd64 and arm64) are on the [Releases](https://github.com/amisonnet8/bcuz/releases) page.
 
+Shell completion (`bash`, `zsh`, `fish` or `powershell`; see [`--completion`](docs/reference/cli.md#--completion)):
+
+```bash
+bcuz --completion bash > ~/.local/share/bash-completion/completions/bcuz
+```
+
 ## Usage
 
 ```bash
@@ -71,6 +77,7 @@ gzip -dc old.jsonl.gz | bcuz -H -       # records moved away, from standard inpu
 bcuz [--] <reason> <command> [args...]   run the command and record it
 bcuz -H, --history [-] [--date D | --since D] [--until D]
 bcuz --init
+bcuz --completion <shell>
 bcuz -h, --help
 bcuz --version
 ```

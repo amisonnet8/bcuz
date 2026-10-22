@@ -60,6 +60,8 @@ dev/	開発のうちうちの資料とスクリプト。利用者向けではな
 			README.md	資料：変更前後の例と、了承してほしいこと
 		utc-timestamps/	ts を UTC で書く
 			README.md	資料：変更前後の例と、了承してほしいこと
+		completion/	シェル補完：bcuz --completion <shell>
+			README.md	資料：変更前後の例と、了承してほしいこと
 	README.md	dev/ に何があるか
 	dist.sh	配布する6つのバイナリと SHA256SUMS を dist/ に作る（qsoku dist）
 	install-check.sh	一時ディレクトリに bcuz を go install して使ってみる（qsoku install-check）
@@ -92,6 +94,13 @@ internal/	bcuz のパッケージ（モジュールの外からは import でき
 	cli/	引数を読み、メッセージを出し、終了コードを決め、各機能を呼ぶ
 		cli.go	Main：引数、コマンドの実行と記録、-H、--init、--version
 		cli_test.go	オプション・--init・--version のテスト
+		completion.go	--completion：埋め込んだシェルの補完スクリプトを出す
+		completion_test.go	補完スクリプトをそれぞれ本物のシェルで動かす（入っていなければ飛ばす）
+		completions/	補完スクリプト。bcuz に埋め込む決まった文
+			bcuz.bash	bash：理由の後ろは bash-completion の _command_offset
+			bcuz.fish	fish：理由の後ろは complete -C
+			bcuz.ps1	PowerShell：理由の後ろは CompleteInput
+			bcuz.zsh	zsh：理由の後ろは _normal
 		e2e_test.go	本物の bcuz の通しテスト。動かすコマンドはテストのバイナリ自身
 		e2e_unix_test.go	シグナルと Ctrl-C の通しテスト（Unix のみ）
 		history_test.go	-H のテスト：表示、絞り込み、読めないとき

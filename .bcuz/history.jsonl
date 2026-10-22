@@ -143,3 +143,53 @@
 {"v":1,"ts":"2026-10-22T05:13:58.687Z","why":"共通化のルール変更のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":9}
 {"v":1,"ts":"2026-10-22T05:14:04.597Z","why":"共通化のルール変更のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":15}
 {"v":1,"ts":"2026-10-22T05:14:04.800Z","why":"共通化のルール変更のコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:14:10.809Z","why":"共通化のルール変更・crube の説明・記録・テープをコミット対象にする","cmd":["git","add",".bcuz/history.jsonl",".mtqg/journal.jsonl",".srwr/tapes",".claude/hooks/crube-untracked.sh",".claude/rules",".claude/settings.json",".claude/skills",".crube",".devcontainer/postCreate.sh",".gitignore",".mcp.json","CLAUDE.md"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-22T05:14:10.990Z","why":"コミット対象に過不足が無いか確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:22:49.008Z","why":"補完の実装を mtqg に揃えるため、mtqg の補完に関わるファイルを探す","cmd":["grep","-rli","completion","/home/vscode/mtqg","--include=*.go","--include=*.md","--include=*.sh","--include=*.json","-l"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-22T05:22:49.379Z","why":"completion を第1引数にしたとき今の仕様でどう読まれるかを確かめる","cmd":["grep","-n","-A30","-i","## Reading the arguments\\|^## Synopsis","docs/reference/cli.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:22:55.044Z","why":"mtqg の補完の仕様（出し方・入れ方・エラー）を読む","cmd":["grep","-n","-B2","-A40","-i","^## .*completion\\|^### .*completion","/home/vscode/mtqg/docs/reference/cli.md"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:22:55.294Z","why":"crube の補完の出し方を mtqg と比べるため、使い方を見る","cmd":["crube","completion","--help"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:26:12.017Z","why":"補完が候補・やらないことに挙がっていないか確かめる","cmd":["grep","-n","-i","-B1","-A3","complet","docs/design/limitations.md","docs/design/overview.md","docs/design/decisions.md","dev/roadmap.md"],"dir":".","exit":1,"ms":1}
+{"v":1,"ts":"2026-10-22T05:26:12.283Z","why":"mtqg の補完スクリプトの書き方を参考にする","cmd":["sh","-c","cd /home/vscode/mtqg/internal/cli/completions && for f in *; do echo \"=== $f\"; cat \"$f\"; done"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:26:29.692Z","why":"補完をどのシェルで手元で確かめられるかを知るため","cmd":["sh","-c","for s in bash zsh fish pwsh; do printf \"%s: \" $s; command -v $s || echo none; done; grep -n \"msgNoShell\\|msgUnknownShell\" -A3 /home/vscode/mtqg/internal/cli/messages.go | head -20; grep -n \"set -\" .devcontainer/postCreate.sh | head"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:26:34.645Z","why":"mtqg が補完スクリプトをどう試験しているかを参考にする","cmd":["sed","-n","1,80p","/home/vscode/mtqg/e2e/completion_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:26:39.998Z","why":"mtqg の開発環境が補完のためにシェルをどう入れているかを参考にする","cmd":["grep","-n","-i","-B2","-A8","fish\\|pwsh\\|powershell\\|zsh\\|completion","/home/vscode/mtqg/.devcontainer/postCreate.sh","/home/vscode/mtqg/.devcontainer/devcontainer.json"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:27:10.605Z","why":"開発環境で crube の補完も4つのシェルに入れられるか確かめる","cmd":["sh","-c","for s in zsh fish powershell; do crube completion $s >/dev/null && echo \"$s ok\"; done"],"dir":".","exit":0,"ms":9}
+{"v":1,"ts":"2026-10-22T05:27:10.790Z","why":"前の了承の資料の書きぶりに揃えるため読む","cmd":["cat","dev/review/history-stdin/README.md"],"dir":".","exit":0,"ms":0}
+{"v":1,"ts":"2026-10-22T05:32:32.063Z","why":"decisions と README の、補完を足す場所を決めるため見出しと入れ方の節を読む","cmd":["sh","-c","grep -n \"^#\" docs/design/decisions.md docs/design/decisions_ja.md; grep -n -A14 \"^## Install\" README.md; grep -n -A14 \"^## 入れ方\" README_ja.md"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:32:43.619Z","why":"README に補完の例を足して、照合のテストに引っかからないかを確かめる","cmd":["grep","-n","-i","readme","internal/docs/transcript_unix_test.go","internal/docs/cli_test.go"],"dir":".","exit":0,"ms":0}
+{"v":1,"ts":"2026-10-22T05:32:43.756Z","why":"decisions の第1引数の節の書きぶりを読む","cmd":["sed","-n","5,15p","docs/design/decisions.md","docs/design/decisions_ja.md"],"dir":".","exit":0,"ms":0}
+{"v":1,"ts":"2026-10-22T05:32:47.977Z","why":"README の使い方のブロックがどう照合されるかを確かめる","cmd":["sed","-n","470,500p","internal/docs/transcript_unix_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:32:48.110Z","why":"README の使い方のブロック全体を読む","cmd":["sed","-n","59,80p","README.md"],"dir":".","exit":0,"ms":0}
+{"v":1,"ts":"2026-10-22T05:33:47.480Z","why":"日本語の README の使い方のブロックの形を確かめる","cmd":["grep","-n","-A7","```text","README_ja.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:34:14.489Z","why":"docs を先に直したので、実装との食い違いをテストが捕まえるか確かめる","cmd":["qsoku","unit"],"dir":".","exit":1,"ms":600}
+{"v":1,"ts":"2026-10-22T05:35:23.035Z","why":"本物のシェルで補完を確かめる mtqg のテストの組み方を参考にする","cmd":["sed","-n","80,260p","/home/vscode/mtqg/e2e/completion_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:35:30.180Z","why":"補完のテストで本物の bcuz を使うため、e2e_test の用意（バイナリ・補助関数）を確かめる","cmd":["sed","-n","1,120p","internal/cli/e2e_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:36:50.761Z","why":"--completion の誤りのテストを既存の表に足すため、表の形を読む","cmd":["sed","-n","1,80p","internal/cli/cli_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:37:39.664Z","why":"実装とスクリプトを書いたので、補完と使い方のテストが通るか確かめる","cmd":["go","test","-count=1","-run","Completion|Usage|Options","-v","./internal/cli/","./internal/docs/"],"dir":".","exit":1,"ms":296}
+{"v":1,"ts":"2026-10-22T05:37:49.191Z","why":"テストのコンパイルの誤りを直したので、全テストで補完を確かめる","cmd":["qsoku","unit"],"dir":".","exit":1,"ms":834}
+{"v":1,"ts":"2026-10-22T05:38:02.754Z","why":"zsh の代役と例を直したので、全テストを確かめる","cmd":["qsoku","unit"],"dir":".","exit":0,"ms":766}
+{"v":1,"ts":"2026-10-22T05:38:10.594Z","why":"bash-completion つきのテストが飛ばされず実際に動くか（ファイルがあるか）を確かめる","cmd":["ls","-l","/usr/share/bash-completion/bash_completion"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:38:23.004Z","why":"補完の実装のあと、vet・lint・他OSを含めて通るか確かめる","cmd":["qsoku","check"],"dir":".","exit":1,"ms":520}
+{"v":1,"ts":"2026-10-22T05:38:29.714Z","why":"lint の指摘を直したので、もう一度全体を確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":2199}
+{"v":1,"ts":"2026-10-22T05:39:14.125Z","why":"mapfile を外した bash のスクリプトと Windows 向けの直しで、全体が通るか確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":2250}
+{"v":1,"ts":"2026-10-22T05:39:16.507Z","why":"新しい bcuz.bash を ShellCheck の対象（追跡中）にするため","cmd":["git","add","internal/cli/completions/bcuz.bash"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:39:20.174Z","why":"bash の補完スクリプトを ShellCheck にかける","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":307}
+{"v":1,"ts":"2026-10-22T05:39:55.759Z","why":"壊して確かめる写しを作る","cmd":["sh","-c","rm -rf \"$TMPDIR/mut\" && mkdir -p \"$TMPDIR/mut/repo\" && git ls-files -z --cached --others --exclude-standard | xargs -0 tar -cf - --ignore-failed-read | tar -x -C \"$TMPDIR/mut/repo\""],"dir":".","exit":0,"ms":20}
+{"v":1,"ts":"2026-10-22T05:39:55.952Z","why":"変異の道具を建てる","cmd":["go","-C",".claude/skills/mutation-check/mutants","build","-o","/tmp/claude-1000/mut/mutants","."],"dir":".","exit":0,"ms":209}
+{"v":1,"ts":"2026-10-22T05:40:02.465Z","why":"直した一覧を確実に写しへ入れる","cmd":["cp",".claude/skills/mutation-check/spec.txt","/tmp/claude-1000/mut/repo/.claude/skills/mutation-check/spec.txt"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:40:07.097Z","why":"補完の約束をテストが守っているか、仕様の変異で確かめる","cmd":["sh","-c","cd \"$TMPDIR/mut/repo\" && \"$TMPDIR/mut/mutants\" -spec .claude/skills/mutation-check/spec.txt -- go test -count=1 ./... > \"$TMPDIR/mut/spec.log\" 2>&1; cat \"$TMPDIR/mut/spec.log\" | grep -v \"^ok\\|^?\""],"dir":".","exit":0,"ms":9456}
+{"v":1,"ts":"2026-10-22T05:40:22.373Z","why":"completion.go の構文の変異をテストが捕まえるか確かめる","cmd":["sh","-c","cd \"$TMPDIR/mut/repo\" && \"$TMPDIR/mut/mutants\" -file internal/cli/completion.go -- go test -count=1 ./internal/cli/ 2>&1 | grep -v \"^ok\""],"dir":".","exit":0,"ms":6106}
+{"v":1,"ts":"2026-10-22T05:41:00.029Z","why":"PowerShell のプロファイルに二重に足さないための目印を、crube のスクリプトで確かめる","cmd":["sh","-c","crube completion powershell | grep -n CommandName; mtqg completion powershell | grep -n CommandName; zsh -fc \"echo \\$fpath[1]\""],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-22T05:41:35.119Z","why":"postCreate.sh で使う qsoku のシェル連携が zsh・fish・pwsh に対応しているか確かめる","cmd":["sh","-c","for s in zsh fish pwsh; do qsoku .shell $s >/dev/null && echo \"$s ok\"; done"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:41:35.256Z","why":"postCreate.sh を変えたので ShellCheck を通す","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":222}
+{"v":1,"ts":"2026-10-22T05:41:35.607Z","why":"postCreate.sh の構文の誤りが無いか確かめる","cmd":["bash","-n",".devcontainer/postCreate.sh"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:42:21.326Z","why":"補完の作業の区切りで、全体の検査を通す","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1015}
+{"v":1,"ts":"2026-10-22T05:42:22.472Z","why":"新しいファイルの英語の説明の漏れを確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:42:22.622Z","why":"新しいファイルの日本語の説明の漏れを確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:42:22.762Z","why":"手で動かして --completion の出力と誤りの見え方を確かめるため、bin/bcuz を作る","cmd":["qsoku","bin"],"dir":".","exit":0,"ms":158}
+{"v":1,"ts":"2026-10-22T05:42:29.668Z","why":"資料の例どおりの見え方か、本物の bcuz で誤りの3つと使い方を確かめる","cmd":["sh","-c","./bin/bcuz --completion; echo \"exit=$?\"; ./bin/bcuz --completion tcsh; echo \"exit=$?\"; ./bin/bcuz --completion bash zsh; echo \"exit=$?\"; ./bin/bcuz --completion bash | head -3; ./bin/bcuz -h | grep completion"],"dir":".","exit":0,"ms":9}
+{"v":1,"ts":"2026-10-22T05:42:29.884Z","why":"本物の bash と bash-completion で、理由の後ろの git の補完に任せられるか確かめる","cmd":["bash","--norc","--noprofile","-c",". /usr/share/bash-completion/bash_completion; PATH=$PWD/bin:$PATH; source <(bcuz --completion bash); COMP_WORDS=(bcuz why git chec); COMP_CWORD=3; COMP_LINE=\"bcuz why git chec\"; COMP_POINT=${#COMP_LINE}; _bcuz; printf \"%s\\n\" \"${COMPREPLY[@]}\""],"dir":".","exit":0,"ms":31}
+{"v":1,"ts":"2026-10-22T05:46:02.849Z","why":"補完のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":10}
+{"v":1,"ts":"2026-10-22T05:46:08.820Z","why":"補完のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":15}
+{"v":1,"ts":"2026-10-22T05:46:09.014Z","why":"補完のコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":4}

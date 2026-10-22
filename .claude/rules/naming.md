@@ -6,7 +6,7 @@
 |---|---|---|
 | 製品・コマンド | **bcuz** | 常に小文字。文頭でも `bcuz`。because から |
 | 記録の置き場 | `.bcuz/`・`.bcuz/history.jsonl` | 名前を変えない（`docs/reference/cli.md`） |
-| オプション | `-H`・`--history`、`--init`、`-h`・`--help`、`--version`、`--date`・`--since`・`--until` | `docs/reference/cli.md` にあるものだけ |
+| オプション | `-H`・`--history`、`--init`、`--completion`、`-h`・`--help`、`--version`、`--date`・`--since`・`--until` | `docs/reference/cli.md` にあるものだけ |
 
 ## 用語（日本語と英語の対応）
 

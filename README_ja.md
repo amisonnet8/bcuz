@@ -56,6 +56,12 @@ go install github.com/amisonnet8/bcuz/cmd/bcuz@latest
 
 ビルド済みのバイナリ（Linux・macOS・Windows の amd64・arm64）は、[Releases](https://github.com/amisonnet8/bcuz/releases) にあります。
 
+シェルの補完（`bash`・`zsh`・`fish`・`powershell`。[`--completion`](docs/reference/cli_ja.md#--completion)）：
+
+```bash
+bcuz --completion bash > ~/.local/share/bash-completion/completions/bcuz
+```
+
 ## 使い方
 
 ```bash
@@ -71,6 +77,7 @@ gzip -dc old.jsonl.gz | bcuz -H -     # 移した記録を標準入力から見�
 bcuz [--] <理由> <コマンド> [引数...]   実行して記録
 bcuz -H, --history [-] [--date D | --since D] [--until D]
 bcuz --init                         カレントディレクトリに .bcuz/ を作る
+bcuz --completion <shell>           シェルの補完スクリプトを出す
 bcuz -h, --help
 bcuz --version
 ```
