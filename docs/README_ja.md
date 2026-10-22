@@ -18,7 +18,7 @@ bcuz "xxテスト実施" make test
 
 ### reference/
 
-- [cli_ja.md](reference/cli_ja.md)：コマンドの使い方（実行、`--init`、`-H`/`--history`、`-h`/`--help`、`--version`）、`.bcuz/` の探し方、終了コード、メッセージ
+- [cli_ja.md](reference/cli_ja.md)：コマンドの使い方（実行、`--init`、`-H`/`--history`、`--completion`、`-h`/`--help`、`--version`）、`.bcuz/` の探し方、終了コード、メッセージ
 - [history_ja.md](reference/history_ja.md)：記録の形式（`history.jsonl` の1行）
 
 ### design/

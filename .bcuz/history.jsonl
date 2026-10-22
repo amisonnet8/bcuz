@@ -225,3 +225,15 @@
 {"v":1,"ts":"2026-10-22T06:41:21.831Z","why":"README の英日の対とリンクの検査が、外部のリンクを足しても通るか確かめる","cmd":["qsoku","unit"],"dir":".","exit":0,"ms":2221}
 {"v":1,"ts":"2026-10-22T06:42:58.520Z","why":"README の導線のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":7}
 {"v":1,"ts":"2026-10-22T06:43:03.988Z","why":"README の導線のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":11}
+{"v":1,"ts":"2026-10-22T06:43:04.193Z","why":"README の導線・記録・テープをコミット対象にする","cmd":["git","add",".bcuz/history.jsonl",".mtqg/journal.jsonl",".srwr/tapes","README.md","README_ja.md"],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-22T06:43:04.380Z","why":"コミット対象に過不足が無いか確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T06:45:09.125Z","why":"リリース前の見直しのため、前の版のタグからの変更と、版の書かれた箇所を確かめる","cmd":["sh","-c","git tag --sort=-v:refname | head -5; echo ===; git log --oneline v0.2.0..HEAD 2>/dev/null | head -30; echo ===; grep -rn \"v0\\.[0-9]\\.[0-9]\" README*.md docs/ | grep -v \"examples/history\""],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-22T06:45:16.216Z","why":"docs の入口・設計の文書が --completion を反映しているかを見るため読む","cmd":["cat","docs/README.md","docs/design/overview.md","docs/design/limitations.md","docs/examples/README.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T06:45:29.877Z","why":"cli.md の --version の例が、テストでどう照合されるか（版を上げる必要があるか）を確かめる","cmd":["grep","-n","-A25","func TestVersionMatchesCLIReference","internal/docs/cli_test.go"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T06:45:30.015Z","why":"前の版の準備で何を直したかを、今回の見直しの手本にする","cmd":["mtqg","show","f8b42e51d9"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T06:45:36.867Z","why":"誤りの例に --completion の誤りを足すべきかを判断するため、errors.md の見出しを読む","cmd":["grep","-n","^#","docs/examples/errors.md","docs/examples/basic.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T06:45:41.107Z","why":"誤りの例の書き方を見るため、Wrong arguments の節を読む","cmd":["sed","-n","50,74p","docs/examples/errors.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T06:48:20.603Z","why":"日本語の docs/README の cli.md の説明の行を確かめる","cmd":["grep","-n","cli_ja.md","docs/README_ja.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T06:48:33.425Z","why":"v0.3.0 の準備の直しで、文書の検査を含めて全体が通るか確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":11205}
+{"v":1,"ts":"2026-10-22T06:52:47.449Z","why":"v0.3.0 の準備のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":8}
+{"v":1,"ts":"2026-10-22T06:52:54.087Z","why":"v0.3.0 の準備のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}

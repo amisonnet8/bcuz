@@ -18,7 +18,7 @@ bcuz "run the tests" make test
 
 ### reference/
 
-- [cli.md](reference/cli.md): how to use the command (running, `--init`, `-H`/`--history`, `-h`/`--help`, `--version`), how `.bcuz/` is found, exit codes, messages
+- [cli.md](reference/cli.md): how to use the command (running, `--init`, `-H`/`--history`, `--completion`, `-h`/`--help`, `--version`), how `.bcuz/` is found, exit codes, messages
 - [history.md](reference/history.md): the format of the records (one line of `history.jsonl`)
 
 ### design/
