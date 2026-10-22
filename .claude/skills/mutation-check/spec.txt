@@ -6,7 +6,7 @@
 # 例（crube の一覧から。照合の「完全一致をパターンより優先する」という約束を壊す）：
 # 照合: 完全一致をパターンより優先しない | internal/match/match.go | ⇥⇥if e.Name == exact {⏎⇥⇥⇥return e | ⇥⇥if false && e.Name == exact {⏎⇥⇥⇥return e
 
-# --completion（docs/reference/cli.md）。fish・PowerShell のスクリプトの変異は、そのシェルがある環境で足す（無いとテストが飛び、生き残る）
+# --completion（docs/reference/cli.md）。シェルのスクリプトの変異は、そのシェルが無いとテストが飛び、生き残る（開発環境には4つともある）
 補完: シェルの後ろの余分な引数を誤りにしない | internal/cli/completion.go | ⇥if len(args) > 1 { | ⇥if false && len(args) > 1 {
 補完: bash で理由の位置にオプションを出す | internal/cli/completions/bcuz.bash | if [[ $cur == -* ]]; then | if true; then
 補完: bash で理由の後ろのコマンドの位置を数え違える | internal/cli/completions/bcuz.bash | *) start=2 ;; | *) start=3 ;;
@@ -18,3 +18,14 @@
 補完: zsh で理由の後ろのコマンドの位置を数え違える | internal/cli/completions/bcuz.zsh | (*) start=3 ;; | (*) start=4 ;;
 補完: zsh で -- の後のコマンドの位置を数え違える | internal/cli/completions/bcuz.zsh | (--) start=4 ;; | (--) start=3 ;;
 補完: zsh で -H の後に、行にある絞り込みも出す | internal/cli/completions/bcuz.zsh | (( ${w[(Ie)$opt]} )) || list | (( ${w[(Ie)$opt]} )) && list
+補完: fish で理由の位置にオプションを出す | internal/cli/completions/bcuz.fish | if string match -q -- '-*' "$cur" | if true
+補完: fish で理由の後ろのコマンドの位置を数え違える | internal/cli/completions/bcuz.fish | set start 2 # | set start 3 #
+補完: fish で -- の後のコマンドの位置を数え違える | internal/cli/completions/bcuz.fish | set start 3 # | set start 2 #
+補完: fish で -H の後に、行にある絞り込みも出す | internal/cli/completions/bcuz.fish | contains -- $opt $w[2..-1]; or echo | contains -- $opt $w[2..-1]; and echo
+補完: fish で日付の位置に候補を出す | internal/cli/completions/bcuz.fish | --until; and return # a date | --until; and true # a date
+補完: PowerShell で理由の位置にオプションを出す | internal/cli/completions/bcuz.ps1 | if ($wordToComplete.StartsWith('-')) { | if ($true) {
+補完: PowerShell で理由の後ろのコマンドの位置を数え違える | internal/cli/completions/bcuz.ps1 | $start = 1 # | $start = 2 #
+補完: PowerShell で -- の後のコマンドの位置を数え違える | internal/cli/completions/bcuz.ps1 | $start = 2 # | $start = 1 #
+補完: PowerShell で -H の後に、行にある絞り込みも出す | internal/cli/completions/bcuz.ps1 | $used -cnotcontains $_ | $used -ccontains $_
+補完: PowerShell で行の末尾の空白を足さずに切り出す | internal/cli/completions/bcuz.ps1 | .PadRight($length).Substring(0, $length) | .Substring(0, $length)
+補完: PowerShell で大文字と小文字を区別しない（-h を -H とみなす） | internal/cli/completions/bcuz.ps1 | $w[0] -ceq '-H' -or | $w[0] -eq '-H' -or

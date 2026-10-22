@@ -96,6 +96,7 @@ var completionCases = []completionCase{
 	{line: "bcuz why bcuzfake", want: []string{fakeCommand}, zsh: []string{"_normal:1:bcuzfake"}},
 	{line: "bcuz -- -x bcuzfake", want: []string{fakeCommand}, zsh: []string{"_normal:1:bcuzfake"}},
 	{line: "bcuz why bcuzfakecmd a", want: []string{"alpha"}, zsh: []string{"_normal:2:bcuzfakecmd a"}, needsCommandCompletion: true},
+	{line: "bcuz why bcuzfakecmd ", want: []string{"alpha", "beta"}, zsh: []string{"_normal:2:bcuzfakecmd "}, needsCommandCompletion: true},
 	{line: "bcuz -- -x bcuzfakecmd ", want: []string{"alpha", "beta"}, zsh: []string{"_normal:2:bcuzfakecmd "}, needsCommandCompletion: true},
 }
 
@@ -301,7 +302,7 @@ func TestCompletionInPowerShell(t *testing.T) {
 		"    param($word)\n" +
 		"    'alpha', 'beta' | Where-Object { $_.StartsWith($word) } |\n" +
 		"        ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }\n" +
-		"}\n")
+		"}\n\n") // read from standard input, a statement of several lines ends at an empty line
 	for i, tc := range completionCases {
 		fmt.Fprintf(&b, "'### %d'\n$line = %s\n(TabExpansion2 $line $line.Length).CompletionMatches | ForEach-Object { $_.CompletionText }\n",
 			i, quote(tc.line))

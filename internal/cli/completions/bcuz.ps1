@@ -5,9 +5,11 @@
 #
 # After the reason, the rest of the line is completed with CompleteInput, so
 # the completion of that command is used.
+#
+# The block has no empty line: read from standard input (pwsh -Command -), an
+# empty line ends a statement of several lines, and the block would be cut.
 Register-ArgumentCompleter -Native -CommandName bcuz -ScriptBlock {
     param($wordToComplete, $commandAst, $cursorPosition)
-
     # The elements before the one being typed, without "bcuz", and their words.
     $before = @($commandAst.CommandElements | Select-Object -Skip 1 |
         Where-Object { $_.Extent.EndOffset -lt $cursorPosition })
@@ -15,7 +17,6 @@ Register-ArgumentCompleter -Native -CommandName bcuz -ScriptBlock {
             if ($_ -is [System.Management.Automation.Language.StringConstantExpressionAst]) { $_.Value } else { $_.Extent.Text }
         })
     $n = $w.Count
-
     $offer = {
         param([string[]]$values)
         foreach ($value in $values) {
@@ -24,7 +25,6 @@ Register-ArgumentCompleter -Native -CommandName bcuz -ScriptBlock {
             }
         }
     }
-
     if ($n -eq 0) {
         # The reason is free text: only the options are offered.
         if ($wordToComplete.StartsWith('-')) {
@@ -32,7 +32,6 @@ Register-ArgumentCompleter -Native -CommandName bcuz -ScriptBlock {
         }
         return
     }
-
     $start = 1 # bcuz <reason> <command>
     if ($w[0] -ceq '--completion') {
         if ($n -eq 1) { & $offer @('bash', 'zsh', 'fish', 'powershell') }
@@ -47,13 +46,15 @@ Register-ArgumentCompleter -Native -CommandName bcuz -ScriptBlock {
     } elseif ($w[0].StartsWith('-')) {
         return
     }
-
     if ($n -lt $start) { return } # the reason
     if ($n -eq $start) {
         $rest = $wordToComplete
     } else {
+        # The text of the command ends at its last element, without the spaces
+        # typed after it: pad it up to the cursor.
         $from = $before[$start].Extent.StartOffset
-        $rest = $commandAst.Extent.Text.Substring($from - $commandAst.Extent.StartOffset, $cursorPosition - $from)
+        $length = $cursorPosition - $from
+        $rest = $commandAst.Extent.Text.Substring($from - $commandAst.Extent.StartOffset).PadRight($length).Substring(0, $length)
     }
     [System.Management.Automation.CommandCompletion]::CompleteInput($rest, $rest.Length, $null).CompletionMatches
 }
