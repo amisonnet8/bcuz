@@ -260,3 +260,21 @@
 {"v":1,"ts":"2026-10-22T20:41:48.525Z","why":"実際にコミットに使われる user.email を確かめる","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
 {"v":1,"ts":"2026-10-22T20:41:50.864Z","why":"ルール共通化のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":16}
 {"v":1,"ts":"2026-10-22T20:41:51.034Z","why":"ルール共通化のコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T22:09:13.384Z","why":"コンテナ作り直し後に goreleaser が入ったかを確かめる","cmd":["goreleaser","--version"],"dir":".","exit":0,"ms":80}
+{"v":1,"ts":"2026-10-22T22:09:13.832Z","why":"共通化のためのルール変更の中身を把握する","cmd":["git","diff"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-22T22:09:20.261Z","why":"作り直したコンテナの Go の版と、tools/licenses の新しいテストを確かめる","cmd":["go","version"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T22:09:23.928Z","why":"goreleaser の入れ方が書かれた所を、変更したルールに揃えるために探す","cmd":["git","grep","-n","-e","goreleaser/v2@","-e","GOTOOLCHAIN","-e","TestRun"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T22:09:29.935Z","why":"ルール共通化で足された tools/licenses のテストが、今の実装とコンテナで通るかを確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":13186}
+{"v":1,"ts":"2026-10-22T22:09:47.074Z","why":"新しいテストがキャッシュでなく本当に走って通ったかを確かめる","cmd":["go","test","-count=1","-v","-run","TestRun|TestCommand","./tools/licenses/"],"dir":".","exit":0,"ms":719}
+{"v":1,"ts":"2026-10-22T22:09:47.925Z","why":"goreleaser が入ったので、配布物が今の設定で作れるかを確かめる","cmd":["qsoku","snapshot"],"dir":".","exit":0,"ms":7403}
+{"v":1,"ts":"2026-10-22T22:09:59.325Z","why":"配布物に実行ファイル・LICENSE・README・licenses が入っているかを確かめる","cmd":["tar","tzf","dist/bcuz_0.3.1-snapshot_linux_amd64.tar.gz"],"dir":".","exit":0,"ms":27}
+{"v":1,"ts":"2026-10-22T22:09:59.529Z","why":"snapshot の --version が前のタグ v0.3.0 になるという記述を確かめる","cmd":["dist/bcuz_linux_amd64_v1/bcuz","--version"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T22:10:07.053Z","why":"tools/licenses の説明が新しいテストの役割とずれていないかを見る","cmd":["crube","show","tools/licenses/main_test.go"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T22:10:10.078Z","why":"日本語の説明も新しいテストとずれていないかを見る","cmd":["env","CRUBE_LANG=ja","crube","show","tools/licenses/main_test.go"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T22:10:19.731Z","why":"postCreate.sh の goreleaser の行を変えたので、シェルの検査を通す","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":237}
+{"v":1,"ts":"2026-10-22T22:10:27.002Z","why":"ルール共通化の取り込みのコミットの前に、英語の説明の漏れを確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T22:10:27.152Z","why":"ルール共通化の取り込みのコミットの前に、日本語の説明の漏れを確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T22:10:27.296Z","why":"ルール共通化の取り込みのコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":6}
+{"v":1,"ts":"2026-10-22T22:10:27.428Z","why":"セッションの最初のコミットの前に、作者の設定を確かめる","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T22:10:31.067Z","why":"ルール共通化の取り込みのコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}
+{"v":1,"ts":"2026-10-22T22:10:33.577Z","why":"ルール共通化の取り込みのコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":4}
