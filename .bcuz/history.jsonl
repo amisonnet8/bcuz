@@ -278,3 +278,8 @@
 {"v":1,"ts":"2026-10-22T22:10:27.428Z","why":"セッションの最初のコミットの前に、作者の設定を確かめる","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
 {"v":1,"ts":"2026-10-22T22:10:31.067Z","why":"ルール共通化の取り込みのコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}
 {"v":1,"ts":"2026-10-22T22:10:33.577Z","why":"ルール共通化の取り込みのコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T22:10:36.616Z","why":"ルール共通化の取り込みの変更・記録・テープをコミット対象にする","cmd":["git","add",".bcuz/history.jsonl",".mtqg/journal.jsonl",".srwr/tapes",".claude/rules/directory-structure.md",".claude/rules/distribution.md",".devcontainer/postCreate.sh","tools/licenses/main_test.go"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T22:18:42.016Z","why":"TestCommand に .exe を付けたあと、全体と他 OS 向けの検査が通るかを確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":2643}
+{"v":1,"ts":"2026-10-22T22:18:44.940Z","why":"Windows 向けに tools/licenses のテストが組み立てられるかを確かめる","cmd":["env","GOOS=windows","go","vet","./tools/licenses/"],"dir":".","exit":0,"ms":47}
+{"v":1,"ts":"2026-10-22T22:18:52.211Z","why":"TestCommand の Windows の直しのコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":8}
+{"v":1,"ts":"2026-10-22T22:18:54.817Z","why":"TestCommand の Windows の直しのコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":69}
