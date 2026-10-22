@@ -38,5 +38,5 @@
 
 - パッケージ名は短い小文字1語：`cli`・`record`・`run`・`history`・`docs`
 - 用語表の英語をそのまま型名・関数名に使う（例：`Record`、`FindRoot`、`Append`、`Filter`、`FormatLine`）
-- `cmd/bcuz/main.go` は `os.Exit(cli.Main(…))` だけにする
+- `cmd/bcuz/main.go` は `var version`（リリースのビルドが埋める）を `cli.ReleaseVersion` に渡し、`os.Exit(cli.Main(…))` するだけにする
 - OS ごとのファイルは `_unix.go`・`_windows.go` で終え、先頭に `//go:build unix`・`//go:build windows`

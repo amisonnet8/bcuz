@@ -14,8 +14,17 @@ const pseudoPrefix = "v0.0.0-"
 // readBuildInfo is replaced by the tests.
 var readBuildInfo = debug.ReadBuildInfo
 
-// version returns the module version of the build, such as "v0.1.0".
+// ReleaseVersion is the tag that the release build set (main.version, from
+// -ldflags "-X main.version=v0.1.0" in .goreleaser.yaml). Empty otherwise.
+var ReleaseVersion string
+
+// version returns the version of the build, such as "v0.1.0": the one the
+// release build set, or else the module version that Go recorded (go install
+// …@v0.1.0 records v0.1.0).
 func version() string {
+	if ReleaseVersion != "" {
+		return ReleaseVersion
+	}
 	info, ok := readBuildInfo()
 	if !ok || info.Main.Version == "" {
 		return develVersion

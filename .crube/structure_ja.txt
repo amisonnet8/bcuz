@@ -11,7 +11,7 @@
 		crube-usage.md	crube の使い方：MCP と CLI、場所の探し方、両方の言語の説明の保ち方
 		datetime.md	日時の扱い：UTC で持ち、表示だけ利用者のタイムゾーンに直す
 		directory-structure.md	ファイルの置き場所と、リポジトリの構成
-		distribution.md	配布方法：go install、GitHub Releases、cgo なし、バージョン
+		distribution.md	配布方法：go install、goreleaser での配布物の作り方、リリースの流れ、cgo なし、バージョン
 		documentation.md	ドキュメントの書き方：docs/ が正本、英語が先で日本語を対にする
 		go-code.md	bcuz 固有の Go の決まり：引数、実行とシグナル、記録の書き方・読み方
 		mtqg-usage.md	mtqg でメモ・todo・質問・不具合・決まり事を記録する方法
@@ -34,11 +34,11 @@
 .devcontainer/	開発用のコンテナ
 	devcontainer-lock.json	コンテナを作ったときの feature の版
 	devcontainer.json	コンテナの定義と VS Code の設定
-	postCreate.sh	コンテナを作ったあとに道具（qsoku・mtqg・srwr・bcuz・crube・golangci-lint・Trivy）を入れる
+	postCreate.sh	コンテナを作ったあとに道具（qsoku・mtqg・srwr・bcuz・crube・goreleaser・golangci-lint・Trivy）を入れ、4つのシェルの設定をする
 .github/	GitHub の設定
 	workflows/	GitHub Actions のワークフロー
 		ci.yml	CI：Linux・macOS・Windows での qsoku check と install-check、race、ShellCheck、フックの表、Trivy
-		release.yml	タグ v* で、テストを通してバイナリを作り、下書きの Release に添付する
+		release.yml	タグで動くリリース。ci.yml を通してから、goreleaser の配布物を Release に添付して公開する
 .mtqg/	mtqg の作業記録：メモ・todo・質問・不具合・用語・決まり事
 	.gitattributes	journal.jsonl を merge=union でマージする
 	.gitignore	.local/ を git に入れない
@@ -63,7 +63,6 @@ dev/	開発のうちうちの資料とスクリプト。利用者向けではな
 		completion/	シェル補完：bcuz --completion <shell>
 			README.md	資料：変更前後の例と、了承してほしいこと
 	README.md	dev/ に何があるか
-	dist.sh	配布する6つのバイナリと SHA256SUMS を dist/ に作る（qsoku dist）
 	install-check.sh	一時ディレクトリに bcuz を go install して使ってみる（qsoku install-check）
 	roadmap.md	段階 R0〜R5 と、それぞれの完了条件
 	try.sh	ビルドした bcuz を置いた一時の作業場でシェルを開き、人間が試す（qsoku try）
@@ -144,3 +143,10 @@ README_ja.md	README.md の日本語訳
 go.mod	Go モジュールと依存
 qsokufile	ビルド・テスト・lint の名前つきコマンド（qsoku）
 trivy.yaml	Trivy の設定：何を脆弱性・ライセンスの失敗とみなすか
+.goreleaser.yaml	配布物の作り方（goreleaser）
+	| タグで .github/workflows/release.yml が、手元では qsoku snapshot が使う。.claude/rules/distribution.md を参照。
+tools/	プロジェクトを作るための道具（bcuz には組み込まれない）
+	licenses/	配布物に入れる依存のライセンス文を集める
+		| go run ./tools/licenses <dir> <main パッケージ>。goreleaser がビルドの前に動かす。ライセンスのファイルが無いモジュールがあれば失敗する。
+		main.go	実行ファイルに組み込まれるモジュールを go list -deps で求め、ライセンス文を写す
+		main_test.go	ライセンス文を集める処理のテスト。bcuz が組み込むものの一覧

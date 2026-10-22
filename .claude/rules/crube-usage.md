@@ -23,7 +23,7 @@
 
 - **ファイル・ディレクトリを足す・動かす・消すときは、同じ変更の中で説明を直す**：足したら`set`（`set_description`）、動かしたら`mv`（`move_description`）、消したら`rm`（`remove_description`）
 - **英語と日本語の両方を直す**。言語ごとのファイルは独立で、片方だけ直すともう片方が古くなる
-- desc は1行で「何がそこにあるか」。詳しいこと（いつ使うか、ほかとの関係）は detail に書く。長さの上限は crube の文書（`docs/reference/file-format.md`）
+- desc は1行で「何がそこにあるか」。詳しいこと（いつ使うか、ほかとの関係）は detail に書く。長さの上限は crube の文書（https://github.com/amisonnet8/crube/blob/main/docs/reference/file-format.md ）
 - `.crube/`の中は、srwrの`edit`で直接直してもよい（タブのインデントを崩さない）
 - コミットしないものを`.gitignore`に足したら、`.crube/ignore`にも足す（crube は`.gitignore`を読まない）
 - テンプレートから作ったときの説明は、テンプレートのファイルのもの。プロジェクトの中身が決まったら（`CLAUDE.md`の「このプロジェクトについて」など）、ルートや`internal/`・`docs/`の説明も合わせて直す

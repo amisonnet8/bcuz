@@ -216,7 +216,7 @@ dates are YYYY-MM-DD. records go to the nearest .bcuz/history.jsonl.
 bcuz v0.3.0
 ```
 
-The version comes from the build information (the tag that `go install …@v0.3.0` installs). When it is not available (a local build), it is `bcuz (devel)`.
+The version is the tag: the release build puts it into the archives on the Releases page, and `go install …@v0.3.0` records it in the build information. When there is none (a local build), it is `bcuz (devel)`.
 
 ## `--completion`
 

@@ -11,7 +11,7 @@
 		crube-usage.md	Using crube: MCP and the CLI, finding places, keeping descriptions in both languages
 		datetime.md	Dates and times: keep UTC, show in the local time zone
 		directory-structure.md	Where each file goes, and the layout of the repository
-		distribution.md	How bcuz is distributed: go install, GitHub Releases, no cgo, the version
+		distribution.md	How bcuz is distributed: go install, building the archives with goreleaser, the release flow, no cgo, the version
 		documentation.md	Writing the documents: docs/ is the source of truth, English first with a Japanese pair
 		go-code.md	Go rules specific to bcuz: arguments, running and signals, writing and reading the record
 		mtqg-usage.md	How to record memos, todos, questions, bugs and rules with mtqg
@@ -34,11 +34,11 @@
 .devcontainer/	Development container
 	devcontainer-lock.json	Versions of the features the container was built with
 	devcontainer.json	Container definition and VS Code settings
-	postCreate.sh	Installs the tools (qsoku, mtqg, srwr, bcuz, crube, golangci-lint, Trivy) after the container is made
+	postCreate.sh	Installs the tools (qsoku, mtqg, srwr, bcuz, crube, goreleaser, golangci-lint, Trivy) after the container is made, and wires up the four shells
 .github/	GitHub settings
 	workflows/	GitHub Actions workflows
 		ci.yml	CI: qsoku check and install-check on Linux, macOS and Windows, the race detector, ShellCheck, the hook table and Trivy
-		release.yml	On a tag v*, tests, builds the binaries and attaches them to a draft release
+		release.yml	Release on a tag: runs ci.yml, attaches goreleaser's archives to a Release and publishes it
 .mtqg/	Process record kept with mtqg: memos, todos, questions, bugs, glossary and rules
 	.gitattributes	Merges journal.jsonl with merge=union
 	.gitignore	Keeps .local/ out of git
@@ -63,7 +63,6 @@ dev/	Development notes and scripts, not for users (Japanese)
 		completion/	Shell completion: bcuz --completion <shell>
 			README.md	The paper: examples before and after, and what to approve
 	README.md	What is in dev/
-	dist.sh	Builds the six release binaries and SHA256SUMS into dist/ (qsoku dist)
 	install-check.sh	go installs bcuz into a temporary directory and uses it (qsoku install-check)
 	roadmap.md	The stages R0 to R5 and when each is done
 	try.sh	Opens a shell in a temporary workspace with the built bcuz, for a person to try (qsoku try)
@@ -144,3 +143,10 @@ README_ja.md	Japanese translation of README.md
 go.mod	Go module and its dependencies
 qsokufile	Named commands for build, test and lint (qsoku)
 trivy.yaml	Trivy settings: what counts as a vulnerability or license failure
+.goreleaser.yaml	How the release archives are built (goreleaser)
+	| Used by .github/workflows/release.yml on a tag, and by qsoku snapshot locally; see .claude/rules/distribution.md.
+tools/	Tools for building the project (not built into bcuz)
+	licenses/	Gathers the license texts of the dependencies for the release archives
+		| go run ./tools/licenses <dir> <main package>; goreleaser runs it before building. Fails if a module has no license file.
+		main.go	Finds the modules linked into the command with go list -deps and copies their licenses
+		main_test.go	Tests of the license gathering, with the list of what bcuz links

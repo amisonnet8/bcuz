@@ -140,24 +140,30 @@ func TestInit(t *testing.T) {
 }
 
 func TestVersion(t *testing.T) {
-	restore := readBuildInfo
-	t.Cleanup(func() { readBuildInfo = restore })
+	restore, restoreRelease := readBuildInfo, ReleaseVersion
+	t.Cleanup(func() { readBuildInfo, ReleaseVersion = restore, restoreRelease })
 
+	pseudo := &debug.BuildInfo{Main: debug.Module{Version: "v0.0.0-20261011232240-19408631a724+dirty"}}
 	tests := []struct {
-		name string
-		info *debug.BuildInfo
-		ok   bool
-		want string
+		name    string
+		release string // what the release build set (main.version)
+		info    *debug.BuildInfo
+		ok      bool
+		want    string
 	}{
-		{"tagged", &debug.BuildInfo{Main: debug.Module{Version: "v0.1.0"}}, true, "v0.1.0"},
-		{"empty version", &debug.BuildInfo{}, true, "(devel)"},
-		{"no build info", nil, false, "(devel)"},
-		{"devel", &debug.BuildInfo{Main: debug.Module{Version: "(devel)"}}, true, "(devel)"},
-		{"pseudo-version", &debug.BuildInfo{Main: debug.Module{Version: "v0.0.0-20261011232240-19408631a724+dirty"}}, true, "(devel)"},
-		{"tag with dirty", &debug.BuildInfo{Main: debug.Module{Version: "v0.1.0+dirty"}}, true, "v0.1.0+dirty"},
+		{"tagged", "", &debug.BuildInfo{Main: debug.Module{Version: "v0.1.0"}}, true, "v0.1.0"},
+		{"empty version", "", &debug.BuildInfo{}, true, "(devel)"},
+		{"no build info", "", nil, false, "(devel)"},
+		{"devel", "", &debug.BuildInfo{Main: debug.Module{Version: "(devel)"}}, true, "(devel)"},
+		{"pseudo-version", "", pseudo, true, "(devel)"},
+		{"tag with dirty", "", &debug.BuildInfo{Main: debug.Module{Version: "v0.1.0+dirty"}}, true, "v0.1.0+dirty"},
+		// goreleaser builds in the checkout, where Go records a pseudo-version.
+		{"release build", "v0.3.0", pseudo, true, "v0.3.0"},
+		{"release build without build info", "v0.3.0", nil, false, "v0.3.0"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ReleaseVersion = tt.release
 			readBuildInfo = func() (*debug.BuildInfo, bool) { return tt.info, tt.ok }
 			_, stdout, _ := runMain(t, "--version")
 			if want := "bcuz " + tt.want + "\n"; stdout != want {

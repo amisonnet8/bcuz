@@ -216,7 +216,7 @@ dates are YYYY-MM-DD. records go to the nearest .bcuz/history.jsonl.
 bcuz v0.3.0
 ```
 
-バージョンは、ビルド情報（`go install …@v0.3.0` で入るタグ）から取る。取れないとき（手元のビルド）は `bcuz (devel)`。
+バージョンは、タグ。Releases の配布物にはリリースのビルドが埋め込み、`go install …@v0.3.0` ではビルド情報に記録される。無いとき（手元のビルド）は `bcuz (devel)`。
 
 ## `--completion`
 

@@ -19,8 +19,8 @@
 | `qsoku trivy` | 既知の脆弱性・ライセンスの検査 | 依存を足したとき |
 | `qsoku shellcheck` | 追跡中の`*.sh`・`*.bash`をShellCheckにかける | シェルスクリプトを足したとき |
 | `qsoku install-check [版]` | 一時ディレクトリに`go install`して、`--version`・`--init`・実行・`-H`を通す（`dev/install-check.sh`）。版なしはこのチェックアウト、`v0.1.0`・`latest`は公開済みのもの | 配布に関わる変更のあと、タグを公開したあと（CIの`check`ジョブも動かす） |
-| `qsoku dist` | `dist/`に6つのバイナリと`SHA256SUMS`を作る（`dev/dist.sh`）。`VERSION=v0.1.0 qsoku dist`で、版の一致も確かめる | リリースのビルド（`release.yml`が動かす）、手元の試し |
 | `qsoku hook` | `.claude/hooks/require-bcuz.test.sh`（bcuz を強制するフックの判定の表。`jq`が要る） | `require-bcuz.sh`を変えたとき |
+| `qsoku snapshot` | `goreleaser check`のあと、タグなしで配布物を`dist/`に作る（`.goreleaser.yaml`。goreleaser が要る） | タグを打つ前、`.goreleaser.yaml`や`tools/licenses`を変えたとき。中身を見てからタグを打つ（`.claude/rules/distribution.md`） |
 
 一覧は、今ある`qsokufile`の内容そのもの。`qsoku .list`（名前とコマンド）か`qsoku .names`（名前だけ）で確かめる。**引数なしで`qsoku`とだけ打っても、使い方と定義済みの名前が出る。**
 

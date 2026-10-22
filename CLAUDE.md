@@ -59,7 +59,7 @@
 - **`.claude/rules/datetime.md`** — 日時の扱い（データは UTC で持ち、表示だけ利用者のタイムゾーンに直す。瞬間で比べる、時計を差し替える）。**日時を保存・表示・比較するコードを書くときに読む**
 - **`.claude/rules/working-with-human.md`** — 人間とのやり取り（頼み方の3種類、小さなつまずきの頼み方、確認の自動化、見え方を変えるときの了承）。**人間に何かを頼む前に読む**
 - **`.claude/rules/naming.md`** — 命名規則（製品名、用語の日本語と英語の対応、JSON のフィールド、メッセージ、Go の名前）
-- **`.claude/rules/distribution.md`** — 配布方法（`go install`、GitHub Releases、cgo なし、バージョン）
+- **`.claude/rules/distribution.md`** — 配布方法（`go install`、goreleaserでの配布物の作り方とリリースの流れ、cgo なし、バージョン）
 - **`.claude/rules/documentation.md`** — ドキュメントの書き方（文書の役割、`docs/` が正本、仕様と実装がずれたとき、言語、例の値は道具で求める）
 - **`.claude/rules/go-code.md`** — Go の bcuz 固有の決まり（引数の読み方、実行とシグナル、記録の書き方、履歴の読み方）。**コードを書く前に読む**
 

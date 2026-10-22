@@ -33,7 +33,7 @@ expect allow "bcuz 'a && b; c' echo hi"
 expect allow 'bcuz "x" qsoku check 2>&1 | tail -20'
 expect allow 'bcuz "x" make test > out.txt 2>&1'
 expect allow 'bcuz "x" sh -c "cd sub && make"'
-expect allow 'bcuz "x" env VERSION=v0.1.0 qsoku dist'
+expect allow 'bcuz "x" env TZ=Asia/Tokyo qsoku unit'
 expect allow 'bcuz -- "-x reason" ls'
 expect allow 'bcuz -H'
 expect allow 'bcuz -H --date 2026-10-14'
