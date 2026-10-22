@@ -217,3 +217,11 @@
 {"v":1,"ts":"2026-10-22T06:18:58.281Z","why":"説明の漏れが無いか確かめる（日本語）","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":5}
 {"v":1,"ts":"2026-10-22T06:19:21.850Z","why":"PowerShell の直しのコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":9}
 {"v":1,"ts":"2026-10-22T06:19:27.760Z","why":"PowerShell の直しのコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":12}
+{"v":1,"ts":"2026-10-22T06:19:27.960Z","why":"PowerShell の直し・lock・記録・テープをコミット対象にする","cmd":["git","add",".bcuz/history.jsonl",".mtqg/journal.jsonl",".srwr/tapes",".devcontainer/devcontainer-lock.json",".claude/rules/testing.md",".claude/skills/mutation-check/spec.txt","internal/cli/completions/bcuz.ps1","internal/cli/completion_test.go"],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-22T06:19:28.130Z","why":"コミット対象に過不足が無いか確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T06:29:18.918Z","why":"リビルドの警告が、入っている bcuz に --completion が無いためかを確かめる","cmd":["sh","-c","command -v bcuz; bcuz --version; bcuz --completion bash >/dev/null; echo \"exit=$?\"; ls ~/.local/share/bash-completion/completions/"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T06:41:03.261Z","why":"導線を足す場所を決めるため、README の見出しと冒頭を読む","cmd":["sh","-c","grep -n \"^#\\|^\\[\\|^<\" README.md | head -40; sed -n 1,30p README.md"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T06:41:08.550Z","why":"Documentation の節に導線を足すため、英日の該当の節を読む","cmd":["sh","-c","sed -n 108,119p README.md; echo ===; grep -n \"^## \" README_ja.md; sed -n \"$(grep -n \"^## 文書\" README_ja.md | cut -d: -f1),\\$p\" README_ja.md"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-22T06:41:21.831Z","why":"README の英日の対とリンクの検査が、外部のリンクを足しても通るか確かめる","cmd":["qsoku","unit"],"dir":".","exit":0,"ms":2221}
+{"v":1,"ts":"2026-10-22T06:42:58.520Z","why":"README の導線のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-22T06:43:03.988Z","why":"README の導線のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":11}

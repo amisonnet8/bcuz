@@ -113,6 +113,7 @@ bcuz --version
 - [記録の形式](docs/reference/history_ja.md)：`history.jsonl` の1行
 - [例](docs/examples/README_ja.md)：実際の入力と出力
 - [設計](docs/design/overview_ja.md)：目的、判断の理由、制限
+- [対話形式のガイド](https://notebook.google.com/notebook/6e5c260f-9493-489a-994f-d3c6b710e24d)：質問しながら bcuz を調べられる（Gemini Notebook 製）
 
 ## ライセンス
 

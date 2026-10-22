@@ -113,6 +113,7 @@ bcuz --version
 - [Record format](docs/reference/history.md): one line of `history.jsonl`
 - [Examples](docs/examples/README.md): real input and output
 - [Design](docs/design/overview.md): purpose, reasons for the decisions, limitations
+- [Interactive guide](https://notebook.google.com/notebook/6e5c260f-9493-489a-994f-d3c6b710e24d): explore bcuz by asking questions (made with Gemini Notebook)
 
 ## License
 
