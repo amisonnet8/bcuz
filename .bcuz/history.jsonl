@@ -105,3 +105,41 @@
 {"v":1,"ts":"2026-10-17T10:31:28.685Z","why":"コミットの前に今のテープを閉じる","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":9}
 {"v":1,"ts":"2026-10-17T10:31:32.192Z","why":"v0.2.0 の準備の変更を、記録とテープも含めてコミットに入れる","cmd":["git","add","docs/reference/cli.md","docs/reference/cli_ja.md",".srwr/tapes",".mtqg/journal.jsonl",".bcuz/history.jsonl"],"dir":".","exit":0,"ms":4}
 {"v":1,"ts":"2026-10-17T10:31:32.373Z","why":"コミットの中身を確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:06:44.144Z","why":"共通化のルール変更の中身を把握する","cmd":["git","diff","--stat"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:06:44.501Z","why":"未追跡の新しいファイルを把握する","cmd":["git","status","--porcelain","-uall"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:06:49.407Z","why":"変更の差分を読む","cmd":["git","diff","--",".",":!.bcuz"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:07:05.169Z","why":"共通化で入った .crube/ が bcuz の中身を説明しているか確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":1,"ms":5}
+{"v":1,"ts":"2026-10-22T05:07:05.354Z","why":"日本語の説明の漏れも確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":1,"ms":6}
+{"v":1,"ts":"2026-10-22T05:07:05.521Z","why":"テンプレートとの違いを知るため、追跡中のファイルを一覧する","cmd":["git","ls-files"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:07:19.591Z","why":"ルールの変更で、Goのソースに本物の見えない文字が無いか確かめる","cmd":["grep","-rnP","[\\x{2028}\\x{2029}\\x{200B}-\\x{200F}\\x{0301}\\x{202A}-\\x{202E}\\x{2066}-\\x{2069}\\x{FEFF}]","--include=*.go","."],"dir":".","exit":1,"ms":3}
+{"v":1,"ts":"2026-10-22T05:07:24.616Z","why":"見えない文字を書くルールが u のエスケープを禁じたので、Goのソースに残っていないか探す","cmd":["grep","-rnE","\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8}","--include=*.go","."],"dir":".","exit":1,"ms":3}
+{"v":1,"ts":"2026-10-22T05:07:29.998Z","why":"テンプレートのCIと bcuz のCIの差を、共通化の変更が要るか見るため読む","cmd":["cat",".github/workflows/ci.yml","qsokufile",".srwrignore"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:08:00.562Z","why":"説明を正確に書くため、Goのファイルの冒頭のコメントと宣言を読む","cmd":["sh","-c","for f in cmd/bcuz/main.go internal/*/*.go; do echo \"== $f\"; grep -m4 -E \"^(// [A-Z]|func Test|func [A-Z])\" \"$f\"; done"],"dir":".","exit":1,"ms":39}
+{"v":1,"ts":"2026-10-22T05:08:00.783Z","why":"説明を正確に書くため、dev と docs の各文書の見出しを読む","cmd":["sh","-c","for f in dev/*.md dev/*.sh dev/review/*/README.md docs/*.md docs/*/*.md .github/workflows/release.yml; do echo \"== $f\"; grep -m3 -E \"^(# |## |[#] [A-Z])\" \"$f\"; done"],"dir":".","exit":0,"ms":38}
+{"v":1,"ts":"2026-10-22T05:08:05.058Z","why":"冒頭にコメントの無いファイルの役割を確かめる","cmd":["sh","-c","head -12 internal/cli/version.go internal/docs/markdown_test.go internal/run/signal_unix.go dev/README.md"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:08:43.817Z","why":"英語の説明を足したあと、漏れや形式の誤りが無いか確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-22T05:09:11.468Z","why":"日本語の説明を足したあと、漏れや形式の誤りが無いか確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-22T05:09:19.184Z","why":"共通化のルール変更を入れた状態で、vet・lint・テスト・他OSが通るか確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":11963}
+{"v":1,"ts":"2026-10-22T05:09:31.295Z","why":"共通化で入った変異の道具が、このコンテナのGoで整形・vet・テストを通るか確かめる","cmd":["sh","-c","cd .claude/skills/mutation-check/mutants && gofmt -l . && go vet ./... && go test -count=1 ./..."],"dir":".","exit":0,"ms":356}
+{"v":1,"ts":"2026-10-22T05:09:31.790Z","why":"新しいフック crube-untracked.sh を ShellCheck の対象（追跡中）にするため","cmd":["git","add",".claude/hooks/crube-untracked.sh"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-22T05:09:37.585Z","why":"新しいフック crube-untracked.sh を足したので ShellCheck を通す","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":270}
+{"v":1,"ts":"2026-10-22T05:09:38.029Z","why":"settings.json の変更で bcuz を強制するフックの判定が崩れていないか確かめる","cmd":["qsoku","hook"],"dir":".","exit":0,"ms":1953}
+{"v":1,"ts":"2026-10-22T05:09:40.126Z","why":"新しいフックが説明の無いパスを実際に知らせるか、偽の入力で確かめる","cmd":["sh","-c","echo \"{\\\"tool_input\\\":{\\\"file\\\":\\\"$PWD/internal/nope/x.go\\\"}}\" | CLAUDE_PROJECT_DIR=$PWD bash .claude/hooks/crube-untracked.sh; echo \"exit=$?\""],"dir":".","exit":0,"ms":70}
+{"v":1,"ts":"2026-10-22T05:11:25.762Z","why":"リビルド後に道具がそろっているか、版が変わったかを確かめる","cmd":["sh","-c","for t in qsoku mtqg srwr bcuz crube golangci-lint trivy shellcheck jq bwrap socat go; do printf \"%-14s \" \"$t\"; case $t in qsoku) qsoku .version;; go) go version;; golangci-lint) golangci-lint --version 2>&1 | head -1;; trivy) trivy --version 2>&1 | head -1;; bwrap|socat) command -v $t || echo MISSING;; jq) jq --version;; shellcheck) shellcheck --version | sed -n 2p;; *) $t --version 2>&1 | head -1;; esac; done"],"dir":".","exit":0,"ms":142}
+{"v":1,"ts":"2026-10-22T05:11:26.086Z","why":"リビルドで作業ツリーに変化が無いか確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:11:33.094Z","why":"リビルドで srwr の版が上がっていても設定が追従しているか確かめる（書き換えが無ければ何もしない）","cmd":["srwr","init"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T05:11:33.274Z","why":"mtqg の版を確かめる","cmd":["mtqg","version"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T05:11:33.456Z","why":"Trivy の版を確かめる","cmd":["trivy","version"],"dir":".","exit":0,"ms":52}
+{"v":1,"ts":"2026-10-22T05:11:41.753Z","why":"リビルド後に vet・lint・テスト・他OSが通るか（lint のキャッシュの書き込みも）確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1051}
+{"v":1,"ts":"2026-10-22T05:11:42.938Z","why":"リビルド後に Trivy の DB の取得と保存ができるか確かめる","cmd":["qsoku","trivy"],"dir":".","exit":0,"ms":7648}
+{"v":1,"ts":"2026-10-22T05:11:50.717Z","why":"リビルド後に cgo つきの race が動くか確かめる","cmd":["qsoku","race"],"dir":".","exit":0,"ms":27399}
+{"v":1,"ts":"2026-10-22T05:12:18.292Z","why":"リビルド後に ShellCheck が動くか確かめる","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":272}
+{"v":1,"ts":"2026-10-22T05:12:18.749Z","why":"リビルド後に bcuz を強制するフックの判定の表が通るか確かめる","cmd":["qsoku","hook"],"dir":".","exit":0,"ms":1952}
+{"v":1,"ts":"2026-10-22T05:12:20.836Z","why":"リビルド後に go install の手順が通るか確かめる","cmd":["qsoku","install-check"],"dir":".","exit":0,"ms":169}
+{"v":1,"ts":"2026-10-22T05:12:28.330Z","why":"リビルド後に crube が説明を読めて漏れが無いか確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-22T05:12:28.516Z","why":"日本語の説明も確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-22T05:13:58.327Z","why":"セッション最初のコミットの前に、作者のメールを確かめる","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:13:58.509Z","why":"セッション最初のコミットの前に、作者の名前を確かめる","cmd":["git","config","user.name"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T05:13:58.687Z","why":"共通化のルール変更のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":9}
+{"v":1,"ts":"2026-10-22T05:14:04.597Z","why":"共通化のルール変更のコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":15}
+{"v":1,"ts":"2026-10-22T05:14:04.800Z","why":"共通化のルール変更のコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}

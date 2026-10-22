@@ -95,6 +95,12 @@ go install github.com/amisonnet8/bcuz/cmd/bcuz@latest
 # and succeeds if it is there). Without it, commands still run but are not recorded.
 (cd "$(dirname "$0")/.." && bcuz --init)
 
+# crube: descriptions of this repository's files and directories in .crube/,
+# used by Claude Code through the crube / crube-ja MCP servers of .mcp.json,
+# the CLI and the hook .claude/hooks/crube-untracked.sh
+# (.claude/rules/crube-usage.md). @latest, like the tools above.
+go install github.com/amisonnet8/crube/cmd/crube@latest
+
 # Wire up qsoku's bash integration (working-directory carry-back and
 # completion). Idempotent: skipped if already present, so re-running
 # postCreate.sh does not duplicate the line. The single quotes are intentional
@@ -102,6 +108,8 @@ go install github.com/amisonnet8/bcuz/cmd/bcuz@latest
 # shellcheck disable=SC2016
 grep -qF 'qsoku .shell bash' ~/.bashrc 2>/dev/null || echo 'eval "$(qsoku .shell bash)"' >>~/.bashrc
 
-# mtqg's own bash completion, for interactive use in this container.
+# The bash completion of crube and mtqg, for interactive use in this container.
 mkdir -p ~/.local/share/bash-completion/completions
-mtqg completion bash >~/.local/share/bash-completion/completions/mtqg
+for tool in crube mtqg; do
+  "$tool" completion bash >~/.local/share/bash-completion/completions/"$tool"
+done

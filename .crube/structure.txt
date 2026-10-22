@@ -1,0 +1,137 @@
+.bcuz/	Record of the commands run through bcuz (committed)
+	history.jsonl	One JSON line per command: when, why, what and the exit code
+.claude/	Claude Code settings shared in the repository
+	hooks/	Hooks that Claude Code runs around its tools
+		build.sh	Runs qsoku build after a .go, go.mod or go.sum file is changed with srwr
+		crube-untracked.sh	After srwr new creates a file, tells Claude which of its paths have no description, per language
+		require-bcuz.sh	PreToolUse hook that refuses Bash commands not run through bcuz
+		require-bcuz.test.sh	Table of the commands require-bcuz.sh allows and refuses (qsoku hook)
+	rules/	Rules for working in this repository (Japanese); CLAUDE.md says when to read each
+		bcuz-usage.md	How to run Bash commands through bcuz, and keeping secrets out of them
+		crube-usage.md	Using crube: MCP and the CLI, finding places, keeping descriptions in both languages
+		datetime.md	Dates and times: keep UTC, show in the local time zone
+		directory-structure.md	Where each file goes, and the layout of the repository
+		distribution.md	How bcuz is distributed: go install, GitHub Releases, no cgo, the version
+		documentation.md	Writing the documents: docs/ is the source of truth, English first with a Japanese pair
+		go-code.md	Go rules specific to bcuz: arguments, running and signals, writing and reading the record
+		mtqg-usage.md	How to record memos, todos, questions, bugs and rules with mtqg
+		naming.md	Naming: the product, Japanese and English terms, JSON fields, messages, Go names
+		qsoku-usage.md	The qsoku names for build, test and lint, and how to call them
+		srwr-usage.md	Editing files only through srwr (strict mode), and closing tapes
+		testing.md	Test policy, and pitfalls of the sandbox and of CI on each OS
+		working-with-human.md	How to ask people: small blockers, checks, and approval of what users see
+	settings.json	Permissions, sandbox and hooks of Claude Code (managed by people)
+	skills/	Skills of Claude Code
+		commit-with-tape/	Skill: close the srwr tape and commit
+			SKILL.md	The steps of the skill
+		mutation-check/	Skill: break the code on purpose to see that the tests notice
+			SKILL.md	The steps of the skill
+			spec.txt	Mutations that break the promises of the project one by one, in the words of the spec (empty at first)
+			mutants/	The tool that makes the mutations and runs the tests (a Go module of its own)
+				go.mod	Module definition, apart from this project
+				main.go	Makes syntactic mutations, or those of a list, one at a time, and puts the files back
+				main_test.go	Tests of the tool
+.devcontainer/	Development container
+	devcontainer-lock.json	Versions of the features the container was built with
+	devcontainer.json	Container definition and VS Code settings
+	postCreate.sh	Installs the tools (qsoku, mtqg, srwr, bcuz, crube, golangci-lint, Trivy) after the container is made
+.github/	GitHub settings
+	workflows/	GitHub Actions workflows
+		ci.yml	CI: qsoku check and install-check on Linux, macOS and Windows, the race detector, ShellCheck, the hook table and Trivy
+		release.yml	On a tag v*, tests, builds the binaries and attaches them to a draft release
+.mtqg/	Process record kept with mtqg: memos, todos, questions, bugs, glossary and rules
+	.gitattributes	Merges journal.jsonl with merge=union
+	.gitignore	Keeps .local/ out of git
+	SCHEMA.md	Data format of journal.jsonl
+	journal.jsonl	The records, one JSON line each (written only through mtqg)
+	version	Version of the mtqg data format
+.srwr/	srwr: tapes of the file edits made by AI, each with its reason
+	tapes/	Closed tapes (committed); replay them with srwr view
+		| One compressed tape (*.tape.jsonl.gz) for each unit of work.
+		| The tapes are left out by .crube/ignore, so that they need no description.
+cmd/	Commands built from this module
+	bcuz/	The bcuz command
+		main.go	Passes the arguments to internal/cli and exits with its exit code; nothing else
+dev/	Development notes and scripts, not for users (Japanese)
+	review/	Short papers to get approval before changing what users see (one directory per subject)
+		history-read-error/	What -H says when it cannot read the history
+			README.md	The paper: examples before and after, and what to approve
+		history-stdin/	bcuz -H - reads the history from standard input
+			README.md	The paper: examples before and after, and what to approve
+		utc-timestamps/	Writing ts in UTC
+			README.md	The paper: examples before and after, and what to approve
+	README.md	What is in dev/
+	dist.sh	Builds the six release binaries and SHA256SUMS into dist/ (qsoku dist)
+	install-check.sh	go installs bcuz into a temporary directory and uses it (qsoku install-check)
+	roadmap.md	The stages R0 to R5 and when each is done
+	try.sh	Opens a shell in a temporary workspace with the built bcuz, for a person to try (qsoku try)
+docs/	The documents: the source of truth for the behavior (English; the Japanese pair is X_ja.md)
+	design/	For people who work on bcuz: purpose, decisions and limitations
+		decisions.md	Decisions and their reasons
+		limitations.md	Limitations, and candidates that are not decided
+		overview.md	Purpose, when to use it, and what bcuz does not do
+		*_ja.md	Japanese translation of the English file of the same name
+	examples/	Real input and output; the tests in internal/docs check them against bcuz
+		README.md	List of the examples
+		basic.md	Basics: create .bcuz/, run a command, see the history
+		errors.md	Failures and mistakes: no .bcuz/, command not found, wrong arguments
+		history-filter.md	What -H prints for history.jsonl, with each date filter
+		history.jsonl	The records the history examples are made from
+		history_ja.jsonl	The same records with Japanese reasons
+		shell.md	Shell syntax and quoting: what stays outside bcuz, arguments kept as received
+		*_ja.md	Japanese translation of the English file of the same name
+	images/	Images of the documents
+		banner.svg	The header image of README.md
+	reference/	The specification
+		cli.md	Usage, output, messages and exit codes of the command
+		history.md	The format of .bcuz/history.jsonl
+		*_ja.md	Japanese translation of the English file of the same name
+	README.md	The layout of docs/ and the rules for the documents
+	README_ja.md	Japanese translation of README.md
+internal/	The packages of bcuz (not importable from outside the module)
+	cli/	Reads the arguments, writes the messages, chooses the exit code, and calls each feature
+		cli.go	Main: the arguments, running a command and recording it, -H, --init, --version
+		cli_test.go	Tests of the options, --init and --version
+		e2e_test.go	End-to-end tests with the real bcuz; the commands run are the test binary itself
+		e2e_unix_test.go	End-to-end tests of signals and Ctrl-C (Unix only)
+		history_test.go	Tests of -H: showing, filters, reading errors
+		messages.go	The messages and usage text, word for word as in docs/reference/cli.md
+		version.go	The version shown by --version, from the build information
+	docs/	Tests only: docs/ and README.md agree with the real bcuz and with each other
+		cli_test.go	The usage and --version blocks of cli.md match bcuz
+		doc.go	Package comment
+		examples_test.go	The blocks of history-filter.md are what -H prints for the example records
+		history_test.go	The example records and every json block are in the documented format
+		links_test.go	Relative links exist, and docs/ does not link to dev/
+		markdown_test.go	Helpers that read the Markdown files of the repository
+		transcript_unix_test.go	Runs the transcripts of the examples and README through the real bcuz (Unix only)
+		translations_test.go	Every English document has a Japanese one with the same structure
+	history/	Reads history.jsonl and shows it: date filters, durations, quoting
+		history.go	Read, Filter and FormatLine
+		history_test.go	Tests of durations, quoting, dates and lines, at their boundaries
+	record/	Owns the record format: one line, finding .bcuz/, appending, --init
+		append.go	Appends one record with a single Write
+		append_test.go	Tests of appending, also with many writers at once
+		init.go	Init: makes .bcuz/ and an empty history.jsonl
+		record.go	The Record type, its fixed field order, and its JSON line
+		record_test.go	Tests of writing and reading lines, also old lines with an offset
+		root.go	FindRoot and the dir field relative to the workspace
+		root_test.go	Tests of finding .bcuz/, the relative dir and Init
+	run/	Starts the command without a shell and waits for it; knows nothing of the record
+		run.go	Run: the exit code, 126 and 127, the start time and the duration
+		run_test.go	Tests of exit codes and streams; the command is the test binary itself
+		run_unix_test.go	Tests of a command ended by a signal (Unix only)
+		signal_unix.go	Signals on Unix: ignore SIGINT and SIGQUIT, forward SIGTERM and SIGHUP
+		signal_windows.go	Signals on Windows: ignore the interrupt
+.gitattributes	Line endings (LF everywhere) and merge=union for the record files
+.gitignore	Files kept out of git; dot entries in the root are an allowlist
+.golangci.yaml	golangci-lint settings
+.mcp.json	MCP servers for Claude Code: mtqg, srwr, and crube in English and Japanese
+.srwrignore	Files srwr does not put on its tapes
+CLAUDE.md	Rules for Claude Code in this repository, and the rule files to read
+LICENSE	MIT license
+README.md	The entrance for users: what bcuz is, how to install and use it
+README_ja.md	Japanese translation of README.md
+go.mod	Go module and its dependencies
+qsokufile	Named commands for build, test and lint (qsoku)
+trivy.yaml	Trivy settings: what counts as a vulnerability or license failure

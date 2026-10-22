@@ -1,0 +1,137 @@
+.bcuz/	bcuz を通して動かしたコマンドの記録（コミットする）
+	history.jsonl	1コマンド1行の JSON：いつ・なぜ・何を・終了コード
+.claude/	リポジトリで共有する Claude Code の設定
+	hooks/	Claude Code が道具の前後に動かすフック
+		build.sh	srwr で .go・go.mod・go.sum を変えたあとに qsoku build を動かす
+		crube-untracked.sh	srwr の new でファイルを作ったあと、説明の無いパスを言語ごとに Claude に知らせる
+		require-bcuz.sh	bcuz を通さない Bash のコマンドを断る PreToolUse フック
+		require-bcuz.test.sh	require-bcuz.sh が通す・断るコマンドの表（qsoku hook）
+	rules/	このリポジトリで作業するときのルール（日本語）。いつ読むかは CLAUDE.md にある
+		bcuz-usage.md	Bash のコマンドを bcuz で動かす方法と、秘密をコマンドに書かないこと
+		crube-usage.md	crube の使い方：MCP と CLI、場所の探し方、両方の言語の説明の保ち方
+		datetime.md	日時の扱い：UTC で持ち、表示だけ利用者のタイムゾーンに直す
+		directory-structure.md	ファイルの置き場所と、リポジトリの構成
+		distribution.md	配布方法：go install、GitHub Releases、cgo なし、バージョン
+		documentation.md	ドキュメントの書き方：docs/ が正本、英語が先で日本語を対にする
+		go-code.md	bcuz 固有の Go の決まり：引数、実行とシグナル、記録の書き方・読み方
+		mtqg-usage.md	mtqg でメモ・todo・質問・不具合・決まり事を記録する方法
+		naming.md	命名規則：製品名、用語の日本語と英語、JSON のフィールド、メッセージ、Go の名前
+		qsoku-usage.md	ビルド・テスト・lint の qsoku の名前と呼び方
+		srwr-usage.md	ファイルは srwr だけで変える（厳格モード）こと、テープの閉じ方
+		testing.md	テスト方針と、サンドボックス・OS ごとの CI の落とし穴
+		working-with-human.md	人間への頼み方：小さなつまずき、確認、見え方の了承
+	settings.json	Claude Code の許可・サンドボックス・フック（人間が管理する）
+	skills/	Claude Code のスキル
+		commit-with-tape/	スキル：srwr のテープを閉じてコミットする
+			SKILL.md	スキルの手順
+		mutation-check/	スキル：実装をわざと壊して、テストが気づくか確かめる
+			SKILL.md	スキルの手順
+			spec.txt	プロジェクトの仕様の約束を1つずつ壊す変異の一覧（仕様の言葉で書く。最初は空）
+			mutants/	変異を入れてテストを回す道具（独立した Go モジュール）
+				go.mod	モジュールの定義（このプロジェクトとは別）
+				main.go	構文の変異、または一覧の変異を1つずつ入れ、ファイルを元に戻す
+				main_test.go	道具のテスト
+.devcontainer/	開発用のコンテナ
+	devcontainer-lock.json	コンテナを作ったときの feature の版
+	devcontainer.json	コンテナの定義と VS Code の設定
+	postCreate.sh	コンテナを作ったあとに道具（qsoku・mtqg・srwr・bcuz・crube・golangci-lint・Trivy）を入れる
+.github/	GitHub の設定
+	workflows/	GitHub Actions のワークフロー
+		ci.yml	CI：Linux・macOS・Windows での qsoku check と install-check、race、ShellCheck、フックの表、Trivy
+		release.yml	タグ v* で、テストを通してバイナリを作り、下書きの Release に添付する
+.mtqg/	mtqg の作業記録：メモ・todo・質問・不具合・用語・決まり事
+	.gitattributes	journal.jsonl を merge=union でマージする
+	.gitignore	.local/ を git に入れない
+	SCHEMA.md	journal.jsonl のデータ形式
+	journal.jsonl	記録そのもの。1件1行の JSON（mtqg からだけ書く）
+	version	mtqg のデータ形式の版
+.srwr/	srwr：AI によるファイル編集のテープ（操作ごとに理由つき）
+	tapes/	閉じたテープ（コミットする）。srwr view で再生できる
+		| 作業のまとまりごとに1本のテープ（圧縮済みの *.tape.jsonl.gz）。
+		| テープは .crube/ignore で crube の対象から外してあり、説明は要らない。
+cmd/	このモジュールから作るコマンド
+	bcuz/	bcuz のコマンド
+		main.go	引数を internal/cli に渡し、その終了コードで終わるだけ
+dev/	開発のうちうちの資料とスクリプト。利用者向けではない（日本語）
+	review/	利用者の目に触れる見え方を変える前に、了承をもらう短い資料（題ごとに1ディレクトリ）
+		history-read-error/	-H が履歴を読めないときの見え方
+			README.md	資料：変更前後の例と、了承してほしいこと
+		history-stdin/	bcuz -H - で履歴を標準入力から読む
+			README.md	資料：変更前後の例と、了承してほしいこと
+		utc-timestamps/	ts を UTC で書く
+			README.md	資料：変更前後の例と、了承してほしいこと
+	README.md	dev/ に何があるか
+	dist.sh	配布する6つのバイナリと SHA256SUMS を dist/ に作る（qsoku dist）
+	install-check.sh	一時ディレクトリに bcuz を go install して使ってみる（qsoku install-check）
+	roadmap.md	段階 R0〜R5 と、それぞれの完了条件
+	try.sh	ビルドした bcuz を置いた一時の作業場でシェルを開き、人間が試す（qsoku try）
+docs/	文書：振る舞いの正本（英語。日本語の対は X_ja.md）
+	design/	bcuz の開発に加わる人向け：目的・判断・制限
+		decisions.md	判断とその理由
+		limitations.md	制限と、未定の追加の候補
+		overview.md	目的、使う場面、bcuz がやらないこと
+		*_ja.md	同じ名前の英語のファイルの日本語訳
+	examples/	実際の入出力。internal/docs のテストが本物の bcuz と照合する
+		README.md	例の一覧
+		basic.md	基本：.bcuz/ を作る、実行する、履歴を見る
+		errors.md	失敗と誤り：.bcuz/ が無い、コマンドが見つからない、引数の誤り
+		history-filter.md	history.jsonl に対して、日付の絞り込みごとに -H が出すもの
+		history.jsonl	履歴の例のもとになる記録
+		history_ja.jsonl	同じ記録の、理由が日本語のもの
+		shell.md	シェルの構文と引用：bcuz の外に残るもの、受け取ったままの引数
+		*_ja.md	同じ名前の英語のファイルの日本語訳
+	images/	文書の画像
+		banner.svg	README.md のヘッダー画像
+	reference/	仕様
+		cli.md	コマンドの使い方・出力・メッセージ・終了コード
+		history.md	.bcuz/history.jsonl の形式
+		*_ja.md	同じ名前の英語のファイルの日本語訳
+	README.md	docs/ の構成と、文書の決まり
+	README_ja.md	README.md の日本語訳
+internal/	bcuz のパッケージ（モジュールの外からは import できない）
+	cli/	引数を読み、メッセージを出し、終了コードを決め、各機能を呼ぶ
+		cli.go	Main：引数、コマンドの実行と記録、-H、--init、--version
+		cli_test.go	オプション・--init・--version のテスト
+		e2e_test.go	本物の bcuz の通しテスト。動かすコマンドはテストのバイナリ自身
+		e2e_unix_test.go	シグナルと Ctrl-C の通しテスト（Unix のみ）
+		history_test.go	-H のテスト：表示、絞り込み、読めないとき
+		messages.go	メッセージと使い方の文。docs/reference/cli.md と一字一句同じ
+		version.go	--version が出す版（ビルドの情報から）
+	docs/	テストだけ：docs/ と README.md が、本物の bcuz と、互いに合っているか
+		cli_test.go	cli.md の使い方と --version のブロックが bcuz と一致する
+		doc.go	パッケージのコメント
+		examples_test.go	history-filter.md の各ブロックが、例の記録に対する -H の出力と一致する
+		history_test.go	例の記録とすべての json ブロックが、文書の形式に合う
+		links_test.go	相対リンクが存在し、docs/ が dev/ を指さない
+		markdown_test.go	リポジトリの Markdown を読む補助
+		transcript_unix_test.go	例と README の書き起こしを本物の bcuz に通す（Unix のみ）
+		translations_test.go	英語の文書ごとに、同じ構造の日本語の文書がある
+	history/	history.jsonl を読んで見せる：日付の絞り込み、時間、引用
+		history.go	Read・Filter・FormatLine
+		history_test.go	時間・引用・日付・1行の表示のテスト（境界を含む）
+	record/	記録の形式を持つ：1行、.bcuz/ の探索、追記、--init
+		append.go	1件の記録を1回の Write で追記する
+		append_test.go	追記のテスト（同時に多く書く場合も）
+		init.go	Init：.bcuz/ と空の history.jsonl を作る
+		record.go	Record 型、固定した項目の順、1行の JSON
+		record_test.go	1行の読み書きのテスト（オフセット付きの古い行も）
+		root.go	FindRoot と、作業場からの相対の dir
+		root_test.go	.bcuz/ の探索・相対の dir・Init のテスト
+	run/	シェルを通さずにコマンドを起動して待つ。記録のことは知らない
+		run.go	Run：終了コード、126 と 127、開始時刻と時間
+		run_test.go	終了コードと標準入出力のテスト。コマンドはテストのバイナリ自身
+		run_unix_test.go	シグナルで終わったコマンドのテスト（Unix のみ）
+		signal_unix.go	Unix のシグナル：SIGINT・SIGQUIT は捨て、SIGTERM・SIGHUP は転送する
+		signal_windows.go	Windows のシグナル：割り込みを捨てる
+.gitattributes	改行（すべて LF）と、記録のファイルの merge=union
+.gitignore	git に入れないもの。ルート直下のドットで始まる名前は許可リスト方式
+.golangci.yaml	golangci-lint の設定
+.mcp.json	Claude Code に mtqg・srwr と、crube（英語・日本語）の MCP サーバーをつなぐ設定
+.srwrignore	srwr がテープに記録しないファイル
+CLAUDE.md	このリポジトリでの Claude Code のルールと、読むべきルールファイルの案内
+LICENSE	MIT ライセンス
+README.md	利用者向けの入口：bcuz とは何か、入れ方と使い方
+README_ja.md	README.md の日本語訳
+go.mod	Go モジュールと依存
+qsokufile	ビルド・テスト・lint の名前つきコマンド（qsoku）
+trivy.yaml	Trivy の設定：何を脆弱性・ライセンスの失敗とみなすか
