@@ -283,3 +283,23 @@
 {"v":1,"ts":"2026-10-22T22:18:44.940Z","why":"Windows 向けに tools/licenses のテストが組み立てられるかを確かめる","cmd":["env","GOOS=windows","go","vet","./tools/licenses/"],"dir":".","exit":0,"ms":47}
 {"v":1,"ts":"2026-10-22T22:18:52.211Z","why":"TestCommand の Windows の直しのコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":8}
 {"v":1,"ts":"2026-10-22T22:18:54.817Z","why":"TestCommand の Windows の直しのコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":69}
+{"v":1,"ts":"2026-10-22T22:18:57.989Z","why":"TestCommand の Windows の直しの変更・記録・テープをコミット対象にする","cmd":["git","add",".bcuz/history.jsonl",".mtqg/journal.jsonl",".srwr/tapes","tools/licenses/main_test.go",".claude/rules/testing.md"],"dir":".","exit":0,"ms":7}
+{"v":1,"ts":"2026-10-22T22:19:00.748Z","why":"TestCommand の Windows の直しのコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T22:20:36.689Z","why":"リビルド後に道具が揃っているかを確かめる","cmd":["sh","-c","for c in go qsoku mtqg srwr bcuz crube golangci-lint trivy shellcheck goreleaser jq fish pwsh zsh bwrap socat; do printf \"%-14s \" $c; command -v $c >/dev/null || { echo MISSING; continue; }; case $c in go) go version;; qsoku) qsoku .version;; golangci-lint) golangci-lint version 2>&1 | head -1;; trivy) trivy --version | head -1;; shellcheck) shellcheck --version | sed -n 2p;; goreleaser) goreleaser --version 2>&1 | grep GitVersion;; jq|zsh|fish|pwsh) $c --version | head -1;; bwrap|socat) echo ok;; *) $c --version 2>&1 | head -1;; esac; done"],"dir":".","exit":0,"ms":248}
+{"v":1,"ts":"2026-10-22T22:20:37.114Z","why":"リビルド後に普段の検査が通るかを確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":1625}
+{"v":1,"ts":"2026-10-22T22:20:47.321Z","why":"リビルドでシェルが入れ替わったので、補完のテストが飛ばされずに通るかをキャッシュなしで確かめる","cmd":["sh","-c","go test -count=1 -v -run TestCompletionIn ./internal/cli/ 2>&1 | grep -E \"^(--- |ok|FAIL)|SKIP\""],"dir":".","exit":0,"ms":1221}
+{"v":1,"ts":"2026-10-22T22:20:48.675Z","why":"リビルド後もキャッシュに頼らず全テストが通るかを確かめる","cmd":["go","test","-count=1","./..."],"dir":".","exit":0,"ms":1509}
+{"v":1,"ts":"2026-10-22T22:20:50.312Z","why":"リビルドで jq などが変わっても bcuz を強制するフックの判定が保たれるかを確かめる","cmd":["qsoku","hook"],"dir":".","exit":0,"ms":1923}
+{"v":1,"ts":"2026-10-22T22:20:52.365Z","why":"リビルド後の ShellCheck でシェルスクリプトの検査が通るかを確かめる","cmd":["qsoku","shellcheck"],"dir":".","exit":0,"ms":227}
+{"v":1,"ts":"2026-10-22T22:20:52.722Z","why":"リビルド後に cgo つきの -race が動くかを確かめる","cmd":["qsoku","race"],"dir":".","exit":0,"ms":27452}
+{"v":1,"ts":"2026-10-22T22:21:26.145Z","why":"リビルド後に脆弱性 DB を取得・保存でき、検査が通るかを確かめる","cmd":["qsoku","trivy"],"dir":".","exit":0,"ms":6650}
+{"v":1,"ts":"2026-10-22T22:21:32.929Z","why":"リビルド後に go install での入れ方が通るかを、このチェックアウトで確かめる","cmd":["qsoku","install-check"],"dir":".","exit":0,"ms":191}
+{"v":1,"ts":"2026-10-22T22:21:33.261Z","why":"リビルド後に crube の説明に漏れが無いかを確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":0,"ms":4}
+{"v":1,"ts":"2026-10-22T22:21:33.409Z","why":"リビルド後に crube の日本語の説明に漏れが無いかを確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-22T22:21:33.551Z","why":"リビルド後の mtqg の版を確かめる","cmd":["mtqg","version"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-22T22:22:38.311Z","why":"リリースが要るかを判断するため、v0.3.0 のあとのコミットを見る","cmd":["git","log","--oneline","v0.3.0..HEAD"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-22T22:22:38.499Z","why":"リリースが要るかを判断するため、v0.3.0 のあとに利用者に届くもの（コード・README・docs）が変わったかを見る","cmd":["git","diff","--stat","v0.3.0..HEAD","--","cmd","internal","go.mod","go.sum","README.md","README_ja.md","docs","LICENSE",".goreleaser.yaml"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T22:22:43.727Z","why":"リリースが要るかを判断するため、版の扱いと cli.md の変わり方を見る","cmd":["git","diff","v0.3.0..HEAD","--","cmd/bcuz/main.go","internal/cli/version.go","docs/reference/cli.md"],"dir":".","exit":0,"ms":2}
+{"v":1,"ts":"2026-10-22T22:22:43.913Z","why":"v0.3.0 の Release が公開済みで、配布物が付いているかを確かめる","cmd":["gh","release","view","v0.3.0","--json","tagName,isDraft,publishedAt,assets","--jq","{tag:.tagName,draft:.isDraft,published:.publishedAt,assets:[.assets[].name]}"],"dir":".","exit":4,"ms":32}
+{"v":1,"ts":"2026-10-22T22:23:29.941Z","why":"リビルド後の確認とリリース判断の記録のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":64}
+{"v":1,"ts":"2026-10-22T22:23:30.184Z","why":"リビルド後の確認とリリース判断の記録のコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
