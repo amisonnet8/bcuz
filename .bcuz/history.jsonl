@@ -303,3 +303,14 @@
 {"v":1,"ts":"2026-10-22T22:22:43.913Z","why":"v0.3.0 の Release が公開済みで、配布物が付いているかを確かめる","cmd":["gh","release","view","v0.3.0","--json","tagName,isDraft,publishedAt,assets","--jq","{tag:.tagName,draft:.isDraft,published:.publishedAt,assets:[.assets[].name]}"],"dir":".","exit":4,"ms":32}
 {"v":1,"ts":"2026-10-22T22:23:29.941Z","why":"リビルド後の確認とリリース判断の記録のコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":0,"ms":64}
 {"v":1,"ts":"2026-10-22T22:23:30.184Z","why":"リビルド後の確認とリリース判断の記録のコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T23:52:30.600Z","why":"ルール共通化の未コミットの変更を把握する","cmd":["git","status","--short"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T23:52:30.873Z","why":"ルール共通化の未コミットの変更の中身を読む","cmd":["git","diff"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T23:52:36.476Z","why":"共通化で足されたテストが今の実装で通るかを見る","cmd":["go","test","-count=1","-run","TestRunRemovesEarlierOutput","-v","./tools/licenses/"],"dir":".","exit":0,"ms":1032}
+{"v":1,"ts":"2026-10-22T23:52:45.095Z","why":"共通のテストの一覧を書いた資料を探し、新しいテストを足すべきか見る","cmd":["git","grep","-n","-e","TestRunNoLicense","-e","TestRunDependencies","-e","TestCommand"],"dir":".","exit":0,"ms":3}
+{"v":1,"ts":"2026-10-22T23:53:05.627Z","why":"共通化で足されたテストを含め、全体と他 OS 向けの検査が通るかを確かめる","cmd":["qsoku","check"],"dir":".","exit":0,"ms":12396}
+{"v":1,"ts":"2026-10-22T23:53:28.085Z","why":"共通テストの取り込みのコミットの前に、英語の説明の漏れを確かめる","cmd":["crube","status","--require","all"],"dir":".","exit":0,"ms":5}
+{"v":1,"ts":"2026-10-22T23:53:28.284Z","why":"共通テストの取り込みのコミットの前に、日本語の説明の漏れを確かめる","cmd":["env","CRUBE_LANG=ja","crube","status","--require","all"],"dir":".","exit":0,"ms":6}
+{"v":1,"ts":"2026-10-22T23:53:28.466Z","why":"共通テストの取り込みのコミットの前に、テープに無い変更が無いか確かめる","cmd":["srwr","tapes","check"],"dir":".","exit":1,"ms":8}
+{"v":1,"ts":"2026-10-22T23:53:33.173Z","why":"共通テストの取り込みのコミットに入れるため、テープを閉じて圧縮する","cmd":["srwr","tapes","new"],"dir":".","exit":0,"ms":10}
+{"v":1,"ts":"2026-10-22T23:53:33.361Z","why":"コミットの前に、作者の設定が noreply のものかを確かめる","cmd":["git","config","user.email"],"dir":".","exit":0,"ms":1}
+{"v":1,"ts":"2026-10-22T23:53:36.533Z","why":"共通テストの取り込みのコミットに入るものを確かめる","cmd":["git","status","--short"],"dir":".","exit":0,"ms":4}
